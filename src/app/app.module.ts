@@ -7,10 +7,14 @@ import { AppComponent } from './app.component';
 import { BungieHttpService } from './services/bungie-http.service';
 import { HttpClientModule } from '@angular/common/http';
 import { RoutesModule } from './routes/routes.module';
+import { SearchComponent } from './search/search.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SearchComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
