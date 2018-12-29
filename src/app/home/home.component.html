@@ -1,3 +1,12 @@
-<p>
-  home works!
-</p>
+<p>Search Player</p>
+
+<form [formGroup]="searchForm" (ngSubmit)="search()">
+
+  <div class="form-group">
+    <input type="text" id="name" formControlName="name" class="form-control" placeholder="Guardian">
+  </div>
+
+  <button type="submit" [disabled]="searchForm.invalid" class="btn btn-primary float-right">Ajouter</button>
+  <div class="clearfix"></div>
+
+</form>

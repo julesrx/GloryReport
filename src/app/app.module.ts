@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -25,11 +25,13 @@ import { NavComponent } from './nav/nav.component';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     RoutesModule,
   ],
-  providers: [BungieHttpService],
+  providers: [
+    BungieHttpService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
