@@ -1,38 +1,61 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BungieHttpService } from '../services/bungie-http.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { Subscription, Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServerResponse, UserInfoCard } from 'bungie-api-ts/user';
+import { BungieMembershipType } from 'bungie-api-ts/common'
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
 
+  public platforms: any[];
   public searching: boolean;
   public searchResults: UserInfoCard[];
 
-  private searchName: BehaviorSubject<string>;
+  private search: Observable<any>;
   private searchResponse: Subscription;
-  private params$: Subscription;
 
   constructor(
     private bHttp: BungieHttpService,
     private router: Router,
-    private route: ActivatedRoute
+    private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    this.searchName = new BehaviorSubject('');
     this.searching = true;
 
-    const guardian = this.route.snapshot.params['guardian'];
-    if (guardian) {
-      this.searchName.next(guardian);
-    }
+    this.platforms = [
+      { title: "Xbox", value: BungieMembershipType.TigerXbox },
+      { title: "Playstation", value: BungieMembershipType.TigerPsn },
+      { title: "PC", value: BungieMembershipType.TigerBlizzard },];
 
-    console.log(this.searchName);
+    const guardian = this.activatedRoute.snapshot.params['guardian'];
+
+    this.search = this.bHttp.get(
+      'https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/-1/' +
+      encodeURIComponent(guardian) +
+      '/'
+    );
+
+    this.searchResponse = this.search.subscribe(
+      ((res: ServerResponse<UserInfoCard[]>) => {
+        this.searchResults = res.Response;
+        const result = this.searchResults[0];
+      })
+    );
+
+    this.searching = false;
+  }
+
+  ngOnDestroy() {
+    this.searchResponse.unsubscribe();
+  }
+
+  route(route: any[]) {
+    this.router.navigate(route);
   }
 }
