@@ -1,3 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
-@import "assets/variables";
-@import "~bootstrap/scss/bootstrap";
+// @import "assets/variables";
+// @import "~bootstrap/scss/bootstrap";
+
+@import "~normalize.css";
+
+html,
+body {
+  // height: 100%;
+}
+
+body {
+  font-family: sans-serif;
+  font-style: 18px;
+}

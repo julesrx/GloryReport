@@ -2,11 +2,15 @@
 
 <form [formGroup]="searchForm" (ngSubmit)="search()">
 
-  <div class="form-group">
-    <input type="text" id="name" formControlName="name" class="form-control" placeholder="Guardian">
-  </div>
+  <select id="platform" formControlName="platform">
+    <option *ngFor="let platform of platforms" [value]="platform.value" [class]="platform.icon">
+      <li class="{{platform.icon}}"></li>
+      {{platform.title}}
+    </option>
+  </select>
 
-  <button type="submit" [disabled]="searchForm.invalid" class="btn btn-primary float-right">Ajouter</button>
-  <div class="clearfix"></div>
+  <input type="text" id="name" formControlName="name" placeholder="Guardian">
+
+  <button type="submit" [disabled]="searchForm.invalid">Search</button>
 
 </form>

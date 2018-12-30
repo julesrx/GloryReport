@@ -5,7 +5,7 @@ import { HomeComponent } from '../home/home.component';
 import { SearchComponent } from '../search/search.component';
 
 const appRoutes: Routes = [
-  { path: 'search/:guardian', component: SearchComponent },
+  { path: 'search/:platform/:guardian', component: SearchComponent },
   { path: '', component: HomeComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
