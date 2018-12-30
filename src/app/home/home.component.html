@@ -2,10 +2,10 @@
 
 <form [formGroup]="searchForm" (ngSubmit)="search()">
 
-  <select id="platform" formControlName="platform">
-    <option *ngFor="let platform of platforms" [value]="platform.value" [class]="platform.icon">
-      <li class="{{platform.icon}}"></li>
-      {{platform.title}}
+  <select id="membershipType" formControlName="membershipType">
+    <option *ngFor="let membershipType of membershipTypes" [value]="membershipType.value" [class]="membershipType.icon">
+      <li class="{{membershipType.icon}}"></li>
+      {{membershipType.title}}
     </option>
   </select>
 

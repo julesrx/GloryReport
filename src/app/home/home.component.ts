@@ -11,7 +11,7 @@ import { BungieMembershipType } from 'bungie-api-ts/common';
 export class HomeComponent implements OnInit {
 
   public searchForm: FormGroup;
-  public platforms: any[];
+  public membershipTypes: any[];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.initForm();
 
-    this.platforms = [
+    this.membershipTypes = [
       { title: 'Xbox',icon:'fab fa-xbox', value: BungieMembershipType.TigerXbox },
       { title: 'Playstation',icon:'fab fa-playstation', value: BungieMembershipType.TigerPsn },
       { title: 'PC',icon:'fab fa-windows', value: BungieMembershipType.TigerBlizzard }
@@ -30,17 +30,17 @@ export class HomeComponent implements OnInit {
 
   initForm() {
     this.searchForm = this.formBuilder.group({
-      platform: [Validators.required],
+      membershipType: [Validators.required],
       name: ['', Validators.required]
     })
   }
 
   search() {
-    const platform = this.searchForm.get('platform').value;
+    const membershipType = this.searchForm.get('membershipType').value;
     const name = this.searchForm.get('name').value;
 
     if (name.length) {
-      this.router.navigate(['/search', platform, name]);
+      this.router.navigate(['/search', membershipType, name]);
     }
   }
 }

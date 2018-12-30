@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
 
 import { ServerResponse, UserInfoCard } from 'bungie-api-ts/user';
-import { BungieMembershipType } from 'bungie-api-ts/common'
+import { BungieMembershipType } from 'bungie-api-ts/common';
 
 import { BungieHttpService } from '../services/bungie-http.service';
 
@@ -29,11 +29,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.searching = true;
 
-    const platform = this.activatedRoute.snapshot.params['platform'];
+    const membershipType = this.activatedRoute.snapshot.params['membershipType'];
     const guardian = this.activatedRoute.snapshot.params['guardian'];
 
     this.search = this.bHttp.get(
-      'https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/' + encodeURIComponent(platform) + '/' + encodeURIComponent(guardian) + '/'
+      'https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/' + encodeURIComponent(membershipType) + '/' + encodeURIComponent(guardian) + '/'
     );
 
     this.searchResponse = this.search.subscribe(
