@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { BungieMembershipType } from 'bungie-api-ts/common';
 
 @Component({
@@ -22,9 +23,9 @@ export class HomeComponent implements OnInit {
     this.initForm();
 
     this.membershipTypes = [
-      { title: 'Xbox',icon:'fab fa-xbox', value: BungieMembershipType.TigerXbox },
-      { title: 'Playstation',icon:'fab fa-playstation', value: BungieMembershipType.TigerPsn },
-      { title: 'PC',icon:'fab fa-windows', value: BungieMembershipType.TigerBlizzard }
+      { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },
+      { title: 'Playstation', icon: 'fab fa-playstation', value: BungieMembershipType.TigerPsn },
+      { title: 'PC', icon: 'fab fa-windows', value: BungieMembershipType.TigerBlizzard }
     ];
   }
 

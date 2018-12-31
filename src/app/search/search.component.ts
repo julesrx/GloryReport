@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, Observable } from 'rxjs';
 
 import { ServerResponse, UserInfoCard } from 'bungie-api-ts/user';
-import { BungieMembershipType } from 'bungie-api-ts/common';
 
 import { BungieHttpService } from '../services/bungie-http.service';
 
@@ -15,10 +14,10 @@ import { BungieHttpService } from '../services/bungie-http.service';
 export class SearchComponent implements OnInit, OnDestroy {
 
   public searching: boolean;
-  public searchResults: UserInfoCard[];
+  public players: UserInfoCard[];
 
-  private search: Observable<any>;
-  private searchResponse: Subscription;
+  private searchResponse: Observable<ServerResponse<UserInfoCard[]>>;
+  private searchSubscription: Subscription;
 
   constructor(
     private bHttp: BungieHttpService,
@@ -32,14 +31,14 @@ export class SearchComponent implements OnInit, OnDestroy {
     const membershipType = this.activatedRoute.snapshot.params['membershipType'];
     const guardian = this.activatedRoute.snapshot.params['guardian'];
 
-    this.search = this.bHttp.get(
+    this.searchResponse = this.bHttp.get(
       'https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/' + encodeURIComponent(membershipType) + '/' + encodeURIComponent(guardian) + '/'
     );
 
-    this.searchResponse = this.search.subscribe(
+    this.searchSubscription = this.searchResponse.subscribe(
       ((res: ServerResponse<UserInfoCard[]>) => {
-        this.searchResults = res.Response;
-        const result = this.searchResults[0];
+        this.players = res.Response;
+        console.log(this.players)
       })
     );
 
@@ -47,7 +46,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.searchResponse.unsubscribe();
+    this.searchSubscription.unsubscribe();
   }
 
   route(route: any[]) {

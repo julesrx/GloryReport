@@ -1,5 +1,5 @@
 <ul class="results">
-  <li class="result" *ngFor="let result of searchResults" (click)="route(['/guardian', result.membershipType, result.membershipId])">
-    <img class="resultConsoleIcon" [src]="'https://www.bungie.net' + result.iconPath">{{ result.displayName }}
+  <li class="result" *ngFor="let player of players" (click)="route(['/report', player.membershipType, player.membershipId])">
+    <img [src]="'https://www.bungie.net' + player.iconPath">{{ player.displayName }}
   </li>
 </ul>
