@@ -5,9 +5,11 @@
     "ng": "ng",
     "start": "ng serve --host dev.glory.report",
     "build": "ng build",
+    "prod": "ng build --prod --base-href /GloryReport/",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "ngh": "npm run build && ngh --dir dist/GloryReport --no-silent"
   },
   "private": true,
   "dependencies": {
