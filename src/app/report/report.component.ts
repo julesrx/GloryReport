@@ -14,7 +14,7 @@ import { BungieHttpService } from '../services/bungie-http.service';
 })
 export class ReportComponent implements OnInit, OnDestroy {
 
-  public profile: DestinyProfileResponse;
+  public destinyProfile: DestinyProfileResponse;
   public characters: DictionaryComponentResponse<DestinyCharacterComponent>;
 
   private accountResponse: Observable<ServerResponse<DestinyProfileResponse>>;
@@ -36,8 +36,11 @@ export class ReportComponent implements OnInit, OnDestroy {
 
     this.accountSubscription = this.accountResponse.subscribe(
       ((res: ServerResponse<DestinyProfileResponse>) => {
-        this.profile = res.Response;
-        console.log(this.profile)
+        this.destinyProfile = res.Response;
+        console.log(this.destinyProfile)
+
+        this.characters = this.destinyProfile.characters;
+        console.log(this.characters);
       })
     );
   }
