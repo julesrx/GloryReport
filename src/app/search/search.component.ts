@@ -39,6 +39,11 @@ export class SearchComponent implements OnInit, OnDestroy {
       ((res: ServerResponse<UserInfoCard[]>) => {
         this.players = res.Response;
         console.log(this.players)
+
+        if (this.players.length == 1) {
+          var player = this.players[0];
+          this.router.navigate(['/report', player.membershipType, player.membershipId]);
+        }
       })
     );
 
