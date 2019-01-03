@@ -5,11 +5,11 @@
     "ng": "ng",
     "start": "ng serve --host dev.glory.report",
     "build": "ng build",
-    "prod": "ng build --prod --baseHref /GloryReport/",
+    "prod": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "ngh": "npm run prod && ngh --dir dist/GloryReport"
+    "ngh": "ng build --prod && cp dist/GloryReport/index.html dist/GloryReport/404.html && cp CNAME dist/GloryReport/CNAME && ngh --dir dist/GloryReport"
   },
   "private": true,
   "dependencies": {
