@@ -22,12 +22,12 @@ export class BungieHttpService {
         break;
 
       case 'https://glory.report':
-        this._apiKey = '';
+        this._apiKey = '457b1436a98a4390be099a140c42fd3d';
         break;
     }
   }
 
-  get(url): Observable<ServerResponse<any>> {
+  get(url: string): Observable<ServerResponse<any>> {
     const httpOptions = {
       headers: new HttpHeaders({
         'x-api-key': this._apiKey
