@@ -9,8 +9,23 @@
     </option>
   </select>
 
-  <input type="text" id="name" formControlName="name" placeholder="Guardian">
+  <input type="text" id="player" formControlName="player" placeholder="You">
+
+  <span>vs</span>
+
+  <input type="text" id="opponent" formControlName="opponent" placeholder="Your Opponent">
 
   <button type="submit" [disabled]="searchForm.invalid">Search</button>
 
 </form>
+
+<div *ngIf="errors.length && !searching && displayResults">
+  <p *ngFor="let error of errors" style="color:red">{{error}}</p>
+</div>
+
+
+<div *ngIf="!errors.length && !searching && displayResults">
+
+  <p style="color:green">Found</p>
+
+</div>
