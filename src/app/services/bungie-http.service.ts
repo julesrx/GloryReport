@@ -1,7 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ServerResponse } from 'bungie-api-ts/common';
 import { BehaviorSubject, Observable } from 'rxjs';
+
+import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class BungieHttpService {
 
   public error: BehaviorSubject<ServerResponse<any>>;
+  public membershipTypes: any[];
 
   private _origin: string;
   private _apiKey: string;
@@ -25,6 +27,12 @@ export class BungieHttpService {
         this._apiKey = '457b1436a98a4390be099a140c42fd3d';
         break;
     }
+
+    this.membershipTypes = [
+      { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },
+      { title: 'Playstation', icon: 'fab fa-playstation', value: BungieMembershipType.TigerPsn },
+      { title: 'PC', icon: 'fab fa-windows', value: BungieMembershipType.TigerBlizzard }
+    ];
   }
 
   get(url: string): Observable<ServerResponse<any>> {

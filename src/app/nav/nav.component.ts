@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { BungieMembershipType } from 'bungie-api-ts/user';
+import { BungieHttpService } from '../services/bungie-http.service';
 
 @Component({
   selector: 'app-nav',
@@ -10,22 +11,19 @@ import { BungieMembershipType } from 'bungie-api-ts/user';
 })
 export class NavComponent implements OnInit {
 
+  public membershipType: number;
   public playerName: string;
   public opponentName: string;
-  public membershipType: number;
 
   public membershipTypes: any[];
 
   constructor(
     private router: Router,
+    private bHttp: BungieHttpService
   ) { }
 
   ngOnInit() {
-    this.membershipTypes = [
-      { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },
-      { title: 'Playstation', icon: 'fab fa-playstation', value: BungieMembershipType.TigerPsn },
-      { title: 'PC', icon: 'fab fa-windows', value: BungieMembershipType.TigerBlizzard }
-    ];
+    this.membershipTypes = this.bHttp.membershipTypes;
 
     this.membershipType = BungieMembershipType.TigerXbox;
     this.playerName = 'Myjulot';
