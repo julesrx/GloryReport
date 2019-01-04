@@ -1,5 +1,0 @@
-<ul class="results">
-  <li class="result" *ngFor="let player of players" (click)="route(['/report', player.membershipType, player.membershipId])">
-    <img [src]="'https://www.bungie.net' + player.iconPath">{{ player.displayName }}
-  </li>
-</ul>

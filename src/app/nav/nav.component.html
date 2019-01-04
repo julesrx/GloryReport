@@ -1,3 +1,20 @@
-<p>
-  nav works!
-</p>
+<p>Search Player</p>
+
+<form (ngSubmit)="search()">
+
+  <select name="membershipType" [(ngModel)]="membershipType">
+    <option *ngFor="let membershipType of membershipTypes" [value]="membershipType.value" [class]="membershipType.icon">
+      <li class="{{membershipType.icon}}"></li>
+      {{membershipType.title}}
+    </option>
+  </select>
+
+  <input type="text" name="playerName" [(ngModel)]="playerName" placeholder="You">
+
+  <span>vs</span>
+
+  <input type="text" name="opponentName" [(ngModel)]="opponentName" placeholder="Your opponent">
+
+  <button type="submit">Search</button>
+
+</form>

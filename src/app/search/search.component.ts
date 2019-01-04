@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable, forkJoin } from 'rxjs';
 
-import { ServerResponse, UserInfoCard } from 'bungie-api-ts/user';
+import { ServerResponse, UserInfoCard, BungieMembershipType } from 'bungie-api-ts/user';
 
 import { BungieHttpService } from '../services/bungie-http.service';
+import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-search',
@@ -14,42 +15,77 @@ import { BungieHttpService } from '../services/bungie-http.service';
 export class SearchComponent implements OnInit, OnDestroy {
 
   public searching: boolean;
-  public players: UserInfoCard[];
+  public show: boolean;
+  public errors: string[];
 
-  private searchResponse: Observable<ServerResponse<UserInfoCard[]>>;
-  private searchSubscription: Subscription;
+  public player: UserInfoCard;
+  public opponent: UserInfoCard;
+
+  private playerObs: Observable<ServerResponse<UserInfoCard>>;
+  private opponentObs: Observable<ServerResponse<UserInfoCard>>;
+
+  private searchResponse: Subscription;
+
+  public membershipTypes: any[];
 
   constructor(
-    private bHttp: BungieHttpService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private route: ActivatedRoute,
+    private bHttp: BungieHttpService,
   ) { }
 
   ngOnInit() {
     this.searching = true;
+    this.errors = [];
 
-    const membershipType = this.activatedRoute.snapshot.params['membershipType'];
-    const guardian = this.activatedRoute.snapshot.params['guardian'];
+    this.membershipTypes = [
+      { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },
+      { title: 'Playstation', icon: 'fab fa-playstation', value: BungieMembershipType.TigerPsn },
+      { title: 'PC', icon: 'fab fa-windows', value: BungieMembershipType.TigerBlizzard }
+    ];
 
-    this.searchResponse = this.bHttp.get(
-      'https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/' + encodeURIComponent(membershipType) + '/' + encodeURIComponent(guardian) + '/'
+    const membershipType = +this.route.snapshot.paramMap.get('membershipType');
+    const playerName = this.route.snapshot.paramMap.get('player');
+    const opponentName = this.route.snapshot.paramMap.get('opponent');
+
+    this.playerObs = this.bHttp.get(
+      'https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/' + membershipType + '/' + encodeURIComponent(playerName) + '/'
+    );
+    this.opponentObs = this.bHttp.get(
+      'https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/' + membershipType + '/' + encodeURIComponent(opponentName) + '/'
     );
 
-    this.searchSubscription = this.searchResponse.subscribe(
-      ((res: ServerResponse<UserInfoCard[]>) => {
-        this.players = res.Response;
-        console.log(this.players)
-      })
+    this.searchResponse = forkJoin([this.playerObs, this.opponentObs]).subscribe(
+      (results) => {
+        this.player = results[0].Response;
+        this.opponent = results[1].Response;
+
+        console.log(this.player)
+        console.log(this.opponent)
+
+        if (!this.player.membershipId) {
+          this.errors.push('The player ' + playerName + ' was not found');
+        }
+        if (!this.opponent.membershipId) {
+          this.errors.push('The player ' + opponentName + ' was not found');
+        }
+
+        if (this.player && this.opponent) {
+          console.log('ALL OK');
+        }
+      },
+      (error) => {
+        console.log('ERROR')
+      },
+      () => {
+        this.show = true;
+      }
     );
 
     this.searching = false;
   }
 
   ngOnDestroy() {
-    this.searchSubscription.unsubscribe();
-  }
-
-  route(route: any[]) {
-    this.router.navigate(route);
+    this.searchResponse.unsubscribe();
   }
 }
