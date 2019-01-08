@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, Observable, forkJoin } from 'rxjs';
+import { ActivatedRoute, Router, Params } from '@angular/router';
+import { Subscription, Observable, forkJoin, BehaviorSubject } from 'rxjs';
 
 import { ServerResponse, UserInfoCard, BungieMembershipType } from 'bungie-api-ts/user';
 
@@ -19,11 +19,14 @@ export class SearchComponent implements OnInit, OnDestroy {
   public player: UserInfoCard;
   public opponent: UserInfoCard;
 
+  private membershipTypeR: BehaviorSubject<string>;
+  private playerName: BehaviorSubject<string>;
+  private opponentName: BehaviorSubject<string>;
+
   private playerObs: Observable<ServerResponse<UserInfoCard>>;
   private opponentObs: Observable<ServerResponse<UserInfoCard>>;
 
   private searchResponse: Subscription;
-
   private params$: Subscription;
 
   constructor(
@@ -33,7 +36,21 @@ export class SearchComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.membershipTypeR = new BehaviorSubject('');
+    this.playerName = new BehaviorSubject('');
+    this.opponentName = new BehaviorSubject('');
+
     this.searching = true;
+
+    this.params$ = this.route.params.subscribe((params: Params) => {
+      if (params['membershipType'] && params['player'] && params['opponent']) {
+        this.membershipTypeR.next(params['membershipType']);
+        this.playerName.next(params['player']);
+        this.opponentName.next(params['opponent']);
+
+        console.log(params);
+      }
+    });
 
     const membershipType = +this.route.snapshot.paramMap.get('membershipType');
     const playerName = this.route.snapshot.paramMap.get('player');
@@ -54,7 +71,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         console.log(this.player)
         console.log(this.opponent)
 
-        // this.router.navigate(['/report',this.player.membershipId, this.opponent.membershipId]);
+        // this.router.navigate(['/report', this.player.membershipId, this.opponent.membershipId]);
       },
       (error) => {
         console.log(error)
@@ -67,5 +84,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.searchResponse.unsubscribe();
+    this.params$.unsubscribe();
   }
 }
