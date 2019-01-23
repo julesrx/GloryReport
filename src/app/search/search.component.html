@@ -1,12 +1,12 @@
-<p *ngIf="searching">
-  Loading...
-</p>
-
 <ul *ngIf="!searching">
+  <p *ngIf="!searchResults.length">No player found with the name {{ searchName.value }}</p>
   <li *ngFor="let result of searchResults">
-    <a href="#" style="color:inherit;text-decoration:none">
+    <a [routerLink]="['/report', result.membershipType, result.membershipId]" style="color:inherit;text-decoration:none">
       <img [src]="'https://www.bungie.net' + result.iconPath" alt="Platform Icon" height="16">
       {{ result.displayName }}
     </a>
   </li>
+</ul>
+<ul *ngIf="searching">
+  <p>Fetching data...</p>
 </ul>

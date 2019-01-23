@@ -1,7 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router, Params } from '@angular/router';
-import { Subscription, BehaviorSubject, empty as observableEmpty, throwError as observableThrowError } from 'rxjs';
-import { catchError, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import {
+  Subscription,
+  BehaviorSubject,
+  empty as observableEmpty,
+  throwError as observableThrowError
+} from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 
 import { ServerResponse, UserInfoCard } from 'bungie-api-ts/user';
 
@@ -61,7 +66,10 @@ export class SearchComponent implements OnInit, OnDestroy {
       )
       .subscribe((res: ServerResponse<UserInfoCard[]>) => {
         this.searchResults = res.Response;
-        console.log(this.searchResults);
+        if (this.searchResults.length == 1) {
+          let result = this.searchResults[0];
+          this.router.navigate(['/report', result.membershipType, result.membershipId]);
+        }
         this.searching = false;
       })
   }
