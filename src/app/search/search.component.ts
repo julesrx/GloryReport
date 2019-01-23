@@ -16,48 +16,35 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   public searching: boolean;
 
-  public player: UserInfoCard;
+  public searchResults: UserInfoCard[];
 
-  private membershipType: BehaviorSubject<string>;
-  private playerName: BehaviorSubject<string>;
-
+  private searchName: BehaviorSubject<string>;
   private searchResponse: Subscription;
   private params$: Subscription;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private bHttp: BungieHttpService,
   ) { }
 
   ngOnInit() {
-    // this.membershipType = new BehaviorSubject('');
-    this.playerName = new BehaviorSubject('');
+    this.searchName = new BehaviorSubject('');
 
     this.searching = true;
 
     this.params$ = this.route.params.subscribe((params: Params) => {
-      if (params['player']) {
-        // this.membershipType.next(params['membershipType']);
-        this.playerName.next(params['player']);
+      if (params['searchName']) {
+        this.searchName.next(params['searchName']);
       }
     });
 
-    // this.searchResponse = this.membershipType
-    //   .subscribe(res => {
-    //     console.log(res);
-    //   });
-
-    this.searchResponse = this.playerName
+    this.searchResponse = this.searchName
       .pipe(
-        map(playerName => {
+        map(searchName => {
           this.searching = true;
-          if (playerName.length) {
-            return 'https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/1/' + encodeURIComponent(playerName) + '/';
-          } else {
-            return '';
-          }
+          return searchName.length ? 'https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/-1/' + encodeURIComponent(searchName) + '/' : '';
         }),
-        distinctUntilChanged(),
         switchMap(url => {
           if (url.length) {
             return this.bHttp
@@ -73,13 +60,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((res: ServerResponse<UserInfoCard[]>) => {
-        this.player = res.Response[0];
-        console.log(this.player);
-
+        this.searchResults = res.Response;
+        console.log(this.searchResults);
         this.searching = false;
-      });
-
-    this.searching = false;
+      })
   }
 
   ngOnDestroy() {

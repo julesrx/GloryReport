@@ -1,20 +1,11 @@
-<p>Search Player</p>
+<h1>GloryReport</h1>
 
-<form (ngSubmit)="search()">
+<nav>
+  <form (ngSubmit)="search()">
 
-  <select name="membershipType" [(ngModel)]="membershipType">
-    <option *ngFor="let membershipType of membershipTypes" [value]="membershipType.value" [class]="membershipType.icon">
-      <li class="{{membershipType.icon}}"></li>
-      {{membershipType.title}}
-    </option>
-  </select>
+    <input type="text" name="searchName" [(ngModel)]="searchName" placeholder="Gamertag or BattleTag#1234" autofocus>
 
-  <input type="text" name="playerName" [(ngModel)]="playerName" placeholder="You">
+    <button type="submit">Search</button>
 
-  <span>vs</span>
-
-  <input type="text" name="opponentName" [(ngModel)]="opponentName" placeholder="Your opponent">
-
-  <button type="submit">Search</button>
-
-</form>
+  </form>
+</nav>

@@ -7,7 +7,7 @@ import { ReportComponent } from '../report/report.component';
 
 const appRoutes: Routes = [
   { path: 'report/:playerMembershipId/:opponentMembershipId', component: ReportComponent },
-  { path: 'search/:membershipType/:player/:opponent', component: SearchComponent },
+  { path: 'search/:searchName', component: SearchComponent },
   { path: '', component: HomeComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
