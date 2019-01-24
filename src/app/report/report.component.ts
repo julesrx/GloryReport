@@ -5,11 +5,12 @@ import {
   empty as observableEmpty,
   combineLatest as observableCombineLatest,
   throwError as observableThrowError,
+  Subscription,
 } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 
 import { ServerResponse } from 'bungie-api-ts/user';
-import { DestinyProfileResponse, DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
+import { DestinyProfileResponse, DestinyCharacterComponent, DestinyActivityHistoryResults, DestinyItemResponse, DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2';
 
 import { BungieHttpService } from '../services/bungie-http.service';
 
@@ -20,6 +21,8 @@ import { BungieHttpService } from '../services/bungie-http.service';
 })
 export class ReportComponent implements OnInit, OnDestroy {
 
+  private subs: Subscription[];
+
   private membershipType: Observable<string>;
   private membershipId: Observable<string>;
 
@@ -29,12 +32,19 @@ export class ReportComponent implements OnInit, OnDestroy {
   public characters: Observable<DestinyCharacterComponent[]>;
   public minutesPlayedTotal: Observable<number>;
 
+  public activities: DestinyActivityHistoryResults[];
+  public pgcr: DestinyPostGameCarnageReportData[];
+
   constructor(
     private route: ActivatedRoute,
     private bHttp: BungieHttpService
   ) { }
 
   ngOnInit() {
+    this.subs = [];
+    this.activities = [];
+    this.pgcr = [];
+
     this.membershipType = this.route.params
       .pipe(
         map((params: Params) => {
@@ -57,7 +67,11 @@ export class ReportComponent implements OnInit, OnDestroy {
         map(([membershipType, membershipId]) => {
           try {
             if (membershipType && membershipId) {
-              return membershipType && membershipId ? 'https://www.bungie.net/Platform/Destiny2/' + membershipType + '/Profile/' + membershipId + '/?components=100,200' : '';
+              if (membershipType && membershipId) {
+                return 'https://www.bungie.net/Platform/Destiny2/' + membershipType + '/Profile/' + membershipId + '/?components=100,200';
+              } else {
+                return '';
+              }
             }
           } catch (e) {
             return '';
@@ -108,9 +122,56 @@ export class ReportComponent implements OnInit, OnDestroy {
           return minutesPlayed;
         })
       );
+
+    this.subs.push(
+      observableCombineLatest(
+        this.membershipId,
+        this.membershipType,
+        this.characters
+      )
+        .pipe()
+        .subscribe(([membershipId, membershipType, characters]) => {
+          this.activities = [];
+          characters.forEach(character => {
+            const url =
+              'https://www.bungie.net/Platform/Destiny2/' + membershipType + '/Account/' + membershipId + '/Character/' + character.characterId + '/Stats/Activities/?mode=5&count=250&page=';
+            // Search the first 3 pages of 250 activites, if there is still activites, repeat until none are found
+            // addActivity is called 3 times at the same time
+            for (let i = 0; i < characters.length; i++) {
+              this.getActivites(url, i);
+            }
+          });
+        })
+    );
+  }
+
+  getActivites(url: string, page: number) {
+    this.subs.push(
+      this.bHttp
+        .get(url + page)
+        .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
+          // console.log(res.Response);
+          if (res.Response.activities && res.Response.activities.length) {
+            this.getActivites(url, page + 3);
+            res.Response.activities.forEach(activity => {
+              // var act = res.Response.activities[0];
+              this.bHttp
+                .get('https://www.bungie.net/Platform/Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
+                .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+                  // console.log(res.Response);
+                  this.pgcr.push(res.Response);
+                  this.pgcr.sort((a, b) => {
+                    return new Date(a.period) > new Date(b.period) ? -1 : 1;
+                  });
+                })
+            });
+          } else {
+          }
+        })
+    )
   }
 
   ngOnDestroy() {
-
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 }

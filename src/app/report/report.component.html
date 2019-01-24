@@ -1,3 +1,9 @@
-<p>
-  report works!
-</p>
+<h2>{{ displayName | async }}</h2>
+<p>Played a total of {{ minutesPlayedTotal | async }} minutes.</p>
+
+<h3 *ngIf="pgcr.length">PGCR</h3>
+<ul>
+  <!-- <li *ngFor="let report of pgcr">
+    <a [href]="'https://guardian.gg/2/pgcr/' + report.activityDetails.instanceId" target="_blank">{{ report.period }}</a>
+  </li> -->
+</ul>
