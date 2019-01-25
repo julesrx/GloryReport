@@ -7,12 +7,13 @@ import {
   throwError as observableThrowError,
   Subscription,
 } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { map, switchMap, catchError, distinctUntilChanged } from 'rxjs/operators';
 
 import { ServerResponse } from 'bungie-api-ts/user';
-import { DestinyProfileResponse, DestinyCharacterComponent, DestinyActivityHistoryResults, DestinyItemResponse, DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2';
+import { DestinyProfileResponse, DestinyCharacterComponent, DestinyActivityHistoryResults, DestinyItemResponse, DestinyPostGameCarnageReportData, DestinyPostGameCarnageReportEntry } from 'bungie-api-ts/destiny2';
 
 import { BungieHttpService } from '../services/bungie-http.service';
+import { PlayerOccurence } from '../player-occurence';
 
 @Component({
   selector: 'app-report',
@@ -35,6 +36,8 @@ export class ReportComponent implements OnInit, OnDestroy {
   public activities: DestinyActivityHistoryResults[];
   public pgcr: DestinyPostGameCarnageReportData[];
 
+  public playersOccurences: PlayerOccurence[];
+
   constructor(
     private route: ActivatedRoute,
     private bHttp: BungieHttpService
@@ -44,6 +47,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     this.subs = [];
     this.activities = [];
     this.pgcr = [];
+    this.playersOccurences = [];
 
     this.membershipType = this.route.params
       .pipe(
@@ -77,6 +81,7 @@ export class ReportComponent implements OnInit, OnDestroy {
             return '';
           }
         }),
+        distinctUntilChanged(),
         switchMap(url => {
           if (url.length) {
             return this.bHttp
@@ -129,7 +134,9 @@ export class ReportComponent implements OnInit, OnDestroy {
         this.membershipType,
         this.characters
       )
-        .pipe()
+        .pipe(
+          distinctUntilChanged()
+        )
         .subscribe(([membershipId, membershipType, characters]) => {
           this.activities = [];
           characters.forEach(character => {
@@ -163,12 +170,22 @@ export class ReportComponent implements OnInit, OnDestroy {
                   this.pgcr.sort((a, b) => {
                     return new Date(a.period) > new Date(b.period) ? -1 : 1;
                   });
+                  this.addPlayers(res.Response.entries);
                 })
             });
           } else {
           }
         })
     )
+  }
+
+  addPlayers(entries: DestinyPostGameCarnageReportEntry[]) {
+    entries.forEach((entry: DestinyPostGameCarnageReportEntry) => {
+      if (this.playersOccurences) {
+
+      }
+      this.playersOccurences.push();
+    })
   }
 
   ngOnDestroy() {
