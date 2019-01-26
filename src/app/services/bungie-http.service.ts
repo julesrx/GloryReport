@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
@@ -10,6 +11,7 @@ import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
 export class BungieHttpService {
 
   public error: BehaviorSubject<ServerResponse<any>>;
+  public endpointDestiny2: string;
   public membershipTypes: any[];
 
   private _origin: string;
@@ -27,6 +29,8 @@ export class BungieHttpService {
         this._apiKey = '457b1436a98a4390be099a140c42fd3d';
         break;
     }
+
+    this.endpointDestiny2 = 'https://www.bungie.net/Platform/Destiny2/';
 
     this.membershipTypes = [
       { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },

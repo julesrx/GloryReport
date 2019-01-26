@@ -72,7 +72,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           try {
             if (membershipType && membershipId) {
               if (membershipType && membershipId) {
-                return 'https://www.bungie.net/Platform/Destiny2/' + membershipType + '/Profile/' + membershipId + '/?components=100,200';
+                return this.bHttp.endpointDestiny2 + membershipType + '/Profile/' + membershipId + '/?components=100,200';
               } else {
                 return '';
               }
@@ -141,7 +141,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           this.activities = [];
           characters.forEach(character => {
             const url =
-              'https://www.bungie.net/Platform/Destiny2/' + membershipType + '/Account/' + membershipId + '/Character/' + character.characterId + '/Stats/Activities/?mode=5&count=250&page=';
+              this.bHttp.endpointDestiny2 + membershipType + '/Account/' + membershipId + '/Character/' + character.characterId + '/Stats/Activities/?mode=5&count=250&page=';
             // Search the first 3 pages of 250 activites, if there is still activites, repeat until none are found
             // addActivity is called 3 times at the same time
             for (let i = 0; i < characters.length; i++) {
