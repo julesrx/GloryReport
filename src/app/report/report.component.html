@@ -1,7 +1,7 @@
 <h2>{{ displayName | async }}</h2>
-<p *ngIf="loading">Fteching data... This could take a while.</p>
+<p *ngIf="loading">Fetching data... This could take a while.</p>
 
-<div *ngIf="!loading">
+<div>
 
   <p>You played a total of {{ minutesPlayedTotal | async }} minutes.</p>
 
