@@ -1,0 +1,21 @@
+<h1>
+  <a routerLink="/" style="color:inherit;text-decoration:none">
+    GloryReport
+  </a>
+</h1>
+
+<p class="links">
+  <a routerLink="/faq">FAQ</a>
+  <a routerLink="/changelog">Changelog</a>
+  <a href="https://github.com/JulesRx/GloryReport">GitHub</a>
+</p>
+
+<nav>
+  <form (ngSubmit)="search()">
+
+    <input type="text" name="searchName" [(ngModel)]="searchName" placeholder="Gamertag or BattleTag#1234" autofocus>
+
+    <button type="submit">Search</button>
+
+  </form>
+</nav>

@@ -1,0 +1,22 @@
+<h2>{{ displayName | async }}</h2>
+<p *ngIf="loading">Fteching data... This could take a while.</p>
+
+<div *ngIf="!loading">
+
+  <p>You played a total of {{ minutesPlayedTotal | async }} minutes.</p>
+
+  <h3 *ngIf="pgcr.length">Players encountered</h3>
+  <p>
+    You encountered a total of {{ occurences.length }} players in PvP over the course of NB games.
+    <br>
+    Here are the first one hundred of them :
+  </p>
+  <ul>
+    <li *ngFor="let occurence of occurences; let i = index">
+      <div *ngIf="i <= 100">
+        {{ occurence.displayName }} : {{ occurence.count }} times
+      </div>
+    </li>
+  </ul>
+
+</div>

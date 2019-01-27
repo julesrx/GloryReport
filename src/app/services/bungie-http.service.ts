@@ -1,15 +1,21 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ServerResponse } from 'bungie-api-ts/common';
+
 import { BehaviorSubject, Observable } from 'rxjs';
+
+import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BungieHttpService {
+
+  public error: BehaviorSubject<ServerResponse<any>>;
+  public endpointDestiny2: string;
+  public membershipTypes: any[];
+
   private _origin: string;
   private _apiKey: string;
-  public error: BehaviorSubject<ServerResponse<any>>;
 
   constructor(private http: HttpClient) {
     this.error = new BehaviorSubject(null);
@@ -20,12 +26,20 @@ export class BungieHttpService {
         break;
 
       case 'https://glory.report':
-        this._apiKey = '';
+        this._apiKey = '457b1436a98a4390be099a140c42fd3d';
         break;
     }
+
+    this.endpointDestiny2 = 'https://www.bungie.net/Platform/Destiny2/';
+
+    this.membershipTypes = [
+      { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },
+      { title: 'Playstation', icon: 'fab fa-playstation', value: BungieMembershipType.TigerPsn },
+      { title: 'PC', icon: 'fab fa-windows', value: BungieMembershipType.TigerBlizzard }
+    ];
   }
 
-  get(url): Observable<ServerResponse<any>> {
+  get(url: string): Observable<ServerResponse<any>> {
     const httpOptions = {
       headers: new HttpHeaders({
         'x-api-key': this._apiKey
