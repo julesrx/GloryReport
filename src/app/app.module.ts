@@ -12,6 +12,7 @@ import { HomeComponent } from './home/home.component';
 import { FooterComponent } from './footer/footer.component';
 import { NavComponent } from './nav/nav.component';
 import { ReportComponent } from './report/report.component';
+import { FaqComponent } from './faq/faq.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { ReportComponent } from './report/report.component';
     HomeComponent,
     FooterComponent,
     NavComponent,
-    ReportComponent
+    ReportComponent,
+    FaqComponent
   ],
   imports: [
     BrowserModule,
