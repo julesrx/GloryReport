@@ -5,11 +5,13 @@ import { HomeComponent } from '../home/home.component';
 import { SearchComponent } from '../search/search.component';
 import { ReportComponent } from '../report/report.component';
 import { FaqComponent } from '../faq/faq.component';
+import { ChangelogComponent } from '../changelog/changelog.component';
 
 const appRoutes: Routes = [
   { path: 'search/:searchName', component: SearchComponent },
   { path: 'report/:membershipType/:membershipId', component: ReportComponent },
   { path: 'faq', component: FaqComponent },
+  { path: 'changelog', component: ChangelogComponent },
   { path: '', component: HomeComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
