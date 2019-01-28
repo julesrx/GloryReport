@@ -11,11 +11,10 @@
     <br>
     Here are the first one hundred of them :
   </p>
+
   <ul>
-    <li *ngFor="let occurence of occurences; let i = index">
-      <div *ngIf="i <= 100">
+    <li *ngFor="let occurence of occurences | slice:0:100; let i = index">
         {{ occurence.displayName }} : {{ occurence.count }} times
-      </div>
     </li>
   </ul>
 
