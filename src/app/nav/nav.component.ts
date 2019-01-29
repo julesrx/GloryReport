@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-nav',
@@ -8,13 +9,16 @@ import { Router } from '@angular/router';
 })
 export class NavComponent implements OnInit {
 
+  public title: string;
   public searchName: string;
 
   constructor(
     private router: Router,
+    private titleService: Title
   ) { }
 
   ngOnInit() {
+    this.title = this.titleService.getTitle();
     this.searchName = '';
   }
 
