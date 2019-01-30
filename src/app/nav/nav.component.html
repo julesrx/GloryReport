@@ -10,6 +10,12 @@
   <a href="https://github.com/JulesRx/GloryReport">GitHub</a>
 </nav>
 
+<div *ngIf="globalAlerts" style="color:red">
+  <div *ngFor="let alert of globalAlerts">
+    {{ alert.AlertHtml }}
+  </div>
+</div>
+
 <form (ngSubmit)="search()">
 
   <input type="text" name="searchName" [(ngModel)]="searchName" placeholder="Gamertag or BattleTag#1234" autofocus>
