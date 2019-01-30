@@ -3,11 +3,11 @@
 
 <div>
 
-  <p>You played a total of {{ minutesPlayedTotal | async }} minutes.</p>
+  <p>You played a total of {{ minutesPlayedTotal | async }} minutes across all activities (PvE & PvP).</p>
 
   <h3 *ngIf="pgcr.length">Players encountered</h3>
   <p>
-    You encountered a total of {{ occurences.length }} players in PvP over the course of NB games.
+    You encountered a total of {{ occurences.length }} players in PvP over the course of {{ activities.length }} games.
     <br>
     Here are the first one hundred of them :
   </p>

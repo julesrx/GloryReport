@@ -25,9 +25,6 @@ import {
 
 import { BungieHttpService } from '../services/bungie-http.service';
 import { Occurence } from '../models/occurence';
-import { resolve } from 'dns';
-import { reject } from 'q';
-import { promise } from 'protractor';
 
 @Component({
   selector: 'app-report',
