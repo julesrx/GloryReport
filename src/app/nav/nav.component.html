@@ -11,9 +11,9 @@
 </nav>
 
 <div *ngIf="globalAlerts" style="color:red">
-  <div *ngFor="let alert of globalAlerts">
+  <p *ngFor="let alert of globalAlerts">
     {{ alert.AlertHtml }}
-  </div>
+  </p>
 </div>
 
 <form (ngSubmit)="search()">
