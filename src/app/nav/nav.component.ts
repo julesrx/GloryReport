@@ -27,7 +27,7 @@ export class NavComponent implements OnInit {
     this.searchName = '';
 
     this.bHttp
-      .get(this.bHttp.platformEndpoint + 'GlobalAlerts/')
+      .get(this.bHttp.bungiePlatformEndpoint + 'GlobalAlerts/')
       .subscribe((res) => {
         this.globalAlerts = res.Response;
       });

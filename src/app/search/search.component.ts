@@ -47,7 +47,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       .pipe(
         map(searchName => {
           this.searching = true;
-          return searchName.length ? this.bHttp.platformEndpoint + 'Destiny2/SearchDestinyPlayer/-1/' + encodeURIComponent(searchName) + '/' : '';
+          return searchName.length ? this.bHttp.bungiePlatformEndpoint + 'Destiny2/SearchDestinyPlayer/-1/' + encodeURIComponent(searchName) + '/' : '';
         }),
         switchMap(url => {
           if (url.length) {

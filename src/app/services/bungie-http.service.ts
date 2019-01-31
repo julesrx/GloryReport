@@ -11,8 +11,10 @@ import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
 export class BungieHttpService {
 
   public error: BehaviorSubject<ServerResponse<any>>;
-  public platformEndpoint: string;
   public membershipTypes: any[];
+
+  public bungiePlatformEndpoint: string;
+  public statsPlatformEndpoint: string;
 
   private _origin: string;
   private _apiKey: string;
@@ -30,7 +32,8 @@ export class BungieHttpService {
         break;
     }
 
-    this.platformEndpoint = 'https://www.bungie.net/Platform/';
+    this.bungiePlatformEndpoint = 'https://www.bungie.net/Platform/';
+    this.statsPlatformEndpoint = 'https://stats.bungie.net/Platform/';
 
     this.membershipTypes = [
       { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },
