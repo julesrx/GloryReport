@@ -7,10 +7,21 @@ import {
   throwError as observableThrowError,
   Subscription,
 } from 'rxjs';
-import { map, switchMap, catchError, distinctUntilChanged } from 'rxjs/operators';
+import {
+  map,
+  switchMap,
+  catchError,
+  distinctUntilChanged
+} from 'rxjs/operators';
 
 import { ServerResponse } from 'bungie-api-ts/user';
-import { DestinyProfileResponse, DestinyCharacterComponent, DestinyActivityHistoryResults, DestinyItemResponse, DestinyPostGameCarnageReportData, DestinyPostGameCarnageReportEntry } from 'bungie-api-ts/destiny2';
+import {
+  DestinyProfileResponse,
+  DestinyCharacterComponent,
+  DestinyActivityHistoryResults,
+  DestinyPostGameCarnageReportData,
+  DestinyPostGameCarnageReportEntry
+} from 'bungie-api-ts/destiny2';
 
 import { BungieHttpService } from '../services/bungie-http.service';
 import { Occurence } from '../models/occurence';
@@ -47,8 +58,6 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loading = true;
-    console.error('Need to fix the loading prompt');
-
     this.subs = [];
     this.activities = [];
     this.pgcr = [];
@@ -77,7 +86,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           try {
             if (membershipType && membershipId) {
               if (membershipType && membershipId) {
-                return this.bHttp.endpointDestiny2 + membershipType + '/Profile/' + membershipId + '/?components=100,200';
+                return this.bHttp.bungiePlatformEndpoint + 'Destiny2/' + membershipType + '/Profile/' + membershipId + '/?components=100,200';
               } else {
                 return '';
               }
@@ -145,13 +154,10 @@ export class ReportComponent implements OnInit, OnDestroy {
         .subscribe(([membershipId, membershipType, characters]) => {
           this.activities = [];
           characters.forEach(character => {
-            const url =
-              this.bHttp.endpointDestiny2 + membershipType + '/Account/' + membershipId + '/Character/' + character.characterId + '/Stats/Activities/?mode=5&count=250&page=';
-            // Search the first 3 pages of 250 activites, if there is still activites, repeat until none are found
-            // addActivity is called 3 times at the same time
-            for (let i = 0; i < characters.length; i++) {
-              this.getActivites(url, i);
-            }
+            const url = this.bHttp.bungiePlatformEndpoint + 'Destiny2/' + membershipType + '/Account/' + membershipId + '/Character/' + character.characterId + '/Stats/Activities/?mode=5&count=250&page=';
+            this.getActivites(url, 0);
+            // this.getActivites(url, 1);
+            // this.getActivites(url, 2);
           });
         })
     );
@@ -162,25 +168,18 @@ export class ReportComponent implements OnInit, OnDestroy {
       this.bHttp
         .get(url + page)
         .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-          if (res.Response.activities && res.Response.activities.length) {
-            this.getActivites(url, page + 3);
+          if (res.Response.activities) {
             res.Response.activities.forEach(activity => {
               this.bHttp
-                .get(this.bHttp.endpointDestiny2 + 'Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
+                .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
                 .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-                  // console.log(res.Response);
-                  // this.pgcr.push(res.Response);
-                  // this.pgcr.sort((a, b) => {
-                  //   return new Date(a.period) > new Date(b.period) ? -1 : 1;
-                  // });
                   this.addPlayers(res.Response.entries);
-                })
+                });
             });
-          } else {
-            this.loading = false;
-          }
+            this.getActivites(url, page + 1);
+          } else { }
         })
-    )
+    );
   }
 
   addPlayers(entries: DestinyPostGameCarnageReportEntry[]) {
@@ -188,9 +187,9 @@ export class ReportComponent implements OnInit, OnDestroy {
       let occurence = new Occurence(
         entry.player.destinyUserInfo.membershipId,
         entry.player.destinyUserInfo.displayName
-      )
+      );
 
-      let found = this.occurences.find((o: Occurence) => {
+      const found = this.occurences.find((o: Occurence) => {
         if (o.membershipId == occurence.membershipId) {
           o.count++;
           return true;
@@ -205,8 +204,7 @@ export class ReportComponent implements OnInit, OnDestroy {
 
     this.occurences.sort((a, b) => {
       return a.count > b.count ? -1 : 1;
-    })
-    // console.log(this.occurences);
+    });
   }
 
   ngOnDestroy() {

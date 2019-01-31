@@ -1,5 +1,11 @@
 .links {
+  margin-bottom: 10px;
+
   a {
     margin-right: 6px;
   }
+}
+
+input[type="text"] {
+  min-width: 200px;
 }
