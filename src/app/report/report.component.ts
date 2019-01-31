@@ -20,7 +20,8 @@ import {
   DestinyCharacterComponent,
   DestinyActivityHistoryResults,
   DestinyPostGameCarnageReportData,
-  DestinyPostGameCarnageReportEntry
+  DestinyPostGameCarnageReportEntry,
+  DestinyHistoricalStatsPeriodGroup
 } from 'bungie-api-ts/destiny2';
 
 import { BungieHttpService } from '../services/bungie-http.service';
@@ -46,9 +47,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   public characters: Observable<DestinyCharacterComponent[]>;
   public minutesPlayedTotal: Observable<number>;
 
-  public activities: DestinyActivityHistoryResults[];
-  public pgcr: DestinyPostGameCarnageReportData[];
-
+  public activities: DestinyHistoricalStatsPeriodGroup[];
   public occurences: Occurence[];
 
   constructor(
@@ -60,7 +59,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.subs = [];
     this.activities = [];
-    this.pgcr = [];
     this.occurences = [];
 
     this.membershipType = this.route.params
@@ -152,7 +150,6 @@ export class ReportComponent implements OnInit, OnDestroy {
           distinctUntilChanged()
         )
         .subscribe(([membershipId, membershipType, characters]) => {
-          this.activities = [];
           characters.forEach(character => {
             const url = this.bHttp.bungiePlatformEndpoint + 'Destiny2/' + membershipType + '/Account/' + membershipId + '/Character/' + character.characterId + '/Stats/Activities/?mode=5&count=250&page=';
             this.getActivites(url, 0);
@@ -170,6 +167,7 @@ export class ReportComponent implements OnInit, OnDestroy {
         .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
           if (res.Response.activities) {
             res.Response.activities.forEach(activity => {
+              this.activities.push(activity);
               this.bHttp
                 .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
                 .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
@@ -177,7 +175,9 @@ export class ReportComponent implements OnInit, OnDestroy {
                 });
             });
             this.getActivites(url, page + 1);
-          } else { }
+          } else {
+            this.loading = false;
+          }
         })
     );
   }
