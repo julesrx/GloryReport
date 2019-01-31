@@ -11,7 +11,7 @@ import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
 export class BungieHttpService {
 
   public error: BehaviorSubject<ServerResponse<any>>;
-  public endpointDestiny2: string;
+  public platformEndpoint: string;
   public membershipTypes: any[];
 
   private _origin: string;
@@ -30,7 +30,7 @@ export class BungieHttpService {
         break;
     }
 
-    this.endpointDestiny2 = 'https://www.bungie.net/Platform/Destiny2/';
+    this.platformEndpoint = 'https://www.bungie.net/Platform/';
 
     this.membershipTypes = [
       { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },

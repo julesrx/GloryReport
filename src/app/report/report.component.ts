@@ -86,7 +86,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           try {
             if (membershipType && membershipId) {
               if (membershipType && membershipId) {
-                return this.bHttp.endpointDestiny2 + membershipType + '/Profile/' + membershipId + '/?components=100,200';
+                return this.bHttp.platformEndpoint + 'Destiny2/' + membershipType + '/Profile/' + membershipId + '/?components=100,200';
               } else {
                 return '';
               }
@@ -154,7 +154,7 @@ export class ReportComponent implements OnInit, OnDestroy {
         .subscribe(([membershipId, membershipType, characters]) => {
           this.activities = [];
           characters.forEach(character => {
-            const url = this.bHttp.endpointDestiny2 + membershipType + '/Account/' + membershipId + '/Character/' + character.characterId + '/Stats/Activities/?mode=5&count=250&page=';
+            const url = this.bHttp.platformEndpoint + 'Destiny2/' + membershipType + '/Account/' + membershipId + '/Character/' + character.characterId + '/Stats/Activities/?mode=5&count=250&page=';
             this.getActivites(url, 0);
             // this.getActivites(url, 1);
             // this.getActivites(url, 2);
@@ -171,7 +171,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           if (res.Response.activities) {
             res.Response.activities.forEach(activity => {
               this.bHttp
-                .get(this.bHttp.endpointDestiny2 + 'Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
+                .get(this.bHttp.platformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
                 .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
                   this.addPlayers(res.Response.entries);
                 });
