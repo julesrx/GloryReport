@@ -16,6 +16,7 @@ import { NavComponent } from './nav/nav.component';
 import { ReportComponent } from './report/report.component';
 import { FaqComponent } from './faq/faq.component';
 import { ChangelogComponent } from './changelog/changelog.component';
+import { LoadingReducePipe } from './pipes/loading-reduce.pipe';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { ChangelogComponent } from './changelog/changelog.component';
     NavComponent,
     ReportComponent,
     FaqComponent,
-    ChangelogComponent
+    ChangelogComponent,
+    LoadingReducePipe
   ],
   imports: [
     BrowserModule,

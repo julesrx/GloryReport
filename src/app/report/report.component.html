@@ -1,5 +1,5 @@
 <h2>{{ displayName | async }}</h2>
-<p *ngIf="loading">Fetching data... This could take a while.</p>
+<p *ngIf="loadings | loadingReduce">Fetching data... This could take a while.</p>
 
 <div>
 

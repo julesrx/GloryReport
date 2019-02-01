@@ -34,7 +34,7 @@ import { Occurence } from '../models/occurence';
 })
 export class ReportComponent implements OnInit, OnDestroy {
 
-  public loading: boolean;
+  public loadings: { loading: boolean }[];
 
   private subs: Subscription[];
 
@@ -56,7 +56,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.loading = true;
+    this.loadings = [];
     this.subs = [];
     this.activities = [];
     this.occurences = [];
@@ -161,6 +161,9 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   getActivites(url: string, page: number) {
+    const loading = { loading: true };
+    this.loadings.push(loading);
+
     this.subs.push(
       this.bHttp
         .get(url + page)
@@ -171,18 +174,17 @@ export class ReportComponent implements OnInit, OnDestroy {
               this.bHttp
                 .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
                 .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-                  this.addPlayers(res.Response.entries);
+                  this.addOccurences(res.Response.entries);
                 });
             });
             this.getActivites(url, page + 1);
-          } else {
-            this.loading = false;
-          }
+          } else { }
+          loading.loading = false;
         })
     );
   }
 
-  addPlayers(entries: DestinyPostGameCarnageReportEntry[]) {
+  addOccurences(entries: DestinyPostGameCarnageReportEntry[]) {
     entries.forEach((entry: DestinyPostGameCarnageReportEntry) => {
       let occurence = new Occurence(
         entry.player.destinyUserInfo.membershipId,
