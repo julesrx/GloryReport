@@ -51,4 +51,5 @@ export class BungieHttpService {
 
     return this.http.get<ServerResponse<any>>(url, httpOptions);
   }
+
 }

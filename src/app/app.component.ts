@@ -15,4 +15,5 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.titleService.setTitle(environment.appTitle + ' v' + environment.VERSION);
   }
+
 }

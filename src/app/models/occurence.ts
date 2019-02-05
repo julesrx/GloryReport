@@ -1,4 +1,5 @@
 export class Occurence {
+
   public membershipId: string;
   public displayName: string;
   public count: number;
@@ -8,4 +9,5 @@ export class Occurence {
     this.displayName = displayName;
     this.count = 1;
   }
+
 }

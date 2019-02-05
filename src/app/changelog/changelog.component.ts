@@ -9,7 +9,6 @@ export class ChangelogComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
 }

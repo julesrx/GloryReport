@@ -212,4 +212,5 @@ export class ReportComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subs.forEach(sub => sub.unsubscribe());
   }
+
 }

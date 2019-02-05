@@ -77,4 +77,5 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.searchResponse.unsubscribe();
     this.params$.unsubscribe();
   }
+
 }
