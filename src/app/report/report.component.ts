@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
+
 import {
   Observable,
   empty as observableEmpty,
@@ -21,7 +22,7 @@ import {
   DestinyActivityHistoryResults,
   DestinyPostGameCarnageReportData,
   DestinyPostGameCarnageReportEntry,
-  DestinyHistoricalStatsPeriodGroup
+  DestinyHistoricalStatsPeriodGroup,
 } from 'bungie-api-ts/destiny2';
 
 import { BungieHttpService } from '../services/bungie-http.service';
@@ -169,19 +170,31 @@ export class ReportComponent implements OnInit, OnDestroy {
         .get(url + page)
         .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
           if (res.Response.activities) {
-            res.Response.activities.forEach(activity => {
-              this.activities.push(activity);
-              this.bHttp
-                .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
-                .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-                  this.addOccurences(res.Response.entries);
-                });
-            });
+            this.getPGCR(res.Response.activities);
+            // res.Response.activities.forEach(activity => {
+            //   this.activities.push(activity);
+            //   this.bHttp
+            //     .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
+            //     .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+            //       this.addOccurences(res.Response.entries);
+            //     });
+            // });
             this.getActivites(url, page + 1);
           } else { }
           loading.loading = false;
         })
     );
+  }
+
+  getPGCR(activities: DestinyHistoricalStatsPeriodGroup[]) {
+    activities.forEach(activity => {
+      this.activities.push(activity);
+      this.bHttp
+        .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
+        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+          this.addOccurences(res.Response.entries);
+        });
+    });
   }
 
   addOccurences(entries: DestinyPostGameCarnageReportEntry[]) {
