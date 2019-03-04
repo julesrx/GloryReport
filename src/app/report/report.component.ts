@@ -239,6 +239,11 @@ export class ReportComponent implements OnInit, OnDestroy {
     this.occurences.sort((a, b) => {
       return a.count > b.count ? -1 : 1;
     });
+    this.occurences.forEach(occ => {
+      occ.activities.sort((a, b) => {
+        return a.period > b.period ? -1 : 1;
+      });
+    });
   }
 
   ngOnDestroy() {
