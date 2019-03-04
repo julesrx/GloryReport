@@ -50,7 +50,18 @@ export class ReportComponent implements OnInit, OnDestroy {
   public minutesPlayedTotal: Observable<number>;
 
   public activities: DestinyHistoricalStatsPeriodGroup[];
+
   public occurences: Occurence[];
+
+  public filter: string;
+
+  // Computed property, bad performances
+  get filteredOccurences() {
+    if (this.filter === '') return this.occurences;
+    return this.occurences.filter(occ => {
+      return occ.displayName.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1;
+    });
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -62,6 +73,8 @@ export class ReportComponent implements OnInit, OnDestroy {
     this.subs = [];
     this.activities = [];
     this.occurences = [];
+
+    this.filter = '';
 
     this.membershipType = this.route.params
       .pipe(
@@ -189,14 +202,14 @@ export class ReportComponent implements OnInit, OnDestroy {
 
   getPGCR(activities: DestinyHistoricalStatsPeriodGroup[]) {
     activities.forEach((activity, i) => {
-      setTimeout(() => {
-        this.activities.push(activity);
-        this.bHttp
-          .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
-          .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-            this.addOccurences(res.Response.entries);
-          });
-      }, 200 * i);
+      // setTimeout(() => {
+      this.activities.push(activity);
+      this.bHttp
+        .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
+        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+          this.addOccurences(res.Response.entries);
+        });
+      // }, 200 * i);
     });
   }
 
