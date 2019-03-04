@@ -27,7 +27,6 @@ import {
 
 import { BungieHttpService } from '../services/bungie-http.service';
 import { Occurence } from '../models/occurence';
-import { PlayerComponent } from './player/player.component';
 
 @Component({
   selector: 'app-report',
@@ -54,6 +53,8 @@ export class ReportComponent implements OnInit, OnDestroy {
   public occurences: Occurence[];
 
   public filter: string;
+
+  public selection: Occurence;
 
   // Computed property, bad performances
   get filteredOccurences() {
@@ -207,13 +208,13 @@ export class ReportComponent implements OnInit, OnDestroy {
       this.bHttp
         .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
         .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-          this.addOccurences(res.Response.entries);
+          this.addOccurences(res.Response.entries, activity);
         });
       // }, 200 * i);
     });
   }
 
-  addOccurences(entries: DestinyPostGameCarnageReportEntry[]) {
+  addOccurences(entries: DestinyPostGameCarnageReportEntry[], activity: DestinyHistoricalStatsPeriodGroup) {
     entries.forEach((entry: DestinyPostGameCarnageReportEntry) => {
       let occurence = new Occurence(
         entry.player.destinyUserInfo.membershipId,
@@ -223,12 +224,14 @@ export class ReportComponent implements OnInit, OnDestroy {
       const found = this.occurences.find((o: Occurence) => {
         if (o.membershipId == occurence.membershipId) {
           o.count++;
+          o.activities.push({ instanceId: activity.activityDetails.instanceId, period: activity.period });
           return true;
         }
         return false;
       });
 
       if (!found) {
+        occurence.activities.push({ instanceId: activity.activityDetails.instanceId, period: activity.period });
         this.occurences.push(occurence);
       }
     });

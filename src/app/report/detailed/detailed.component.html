@@ -1,0 +1,15 @@
+<h2>{{ player.displayName }}</h2>
+
+<label for="site">Select your site :
+  <select name="site" id="site" [(ngModel)]="site">
+    <option *ngFor="let s of sites" [value]="s">
+      {{ s }}
+    </option>
+  </select>
+</label>
+
+<ul>
+  <li *ngFor="let act of player.activities">
+    {{ act.period }} : <a [href]="site + act.instanceId" target="_blank">{{ act.instanceId }}</a>
+  </li>
+</ul>

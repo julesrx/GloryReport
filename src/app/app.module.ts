@@ -18,6 +18,7 @@ import { FaqComponent } from './faq/faq.component';
 import { ChangelogComponent } from './changelog/changelog.component';
 import { LoadingReducePipe } from './pipes/loading-reduce.pipe';
 import { PlayerComponent } from './report/player/player.component';
+import { DetailedComponent } from './report/detailed/detailed.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { PlayerComponent } from './report/player/player.component';
     FaqComponent,
     ChangelogComponent,
     LoadingReducePipe,
-    PlayerComponent
+    PlayerComponent,
+    DetailedComponent
   ],
   imports: [
     BrowserModule,

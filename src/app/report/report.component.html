@@ -1,21 +1,25 @@
-<h2>{{ displayName | async }}</h2>
+<h2 [ngStyle]="{'margin-bottom': 0}">{{ displayName | async }}</h2>
 <p *ngIf="loadings | loadingReduce">Fetching data... This could take a while.</p>
 
-<label for="filter">
-  Search for player :
-  <input type="text" name="filter" id="filter" [(ngModel)]="filter">
-</label>
+<div class="ui">
+  <div class="occurences">
+    <p>You played a total of {{ minutesPlayedTotal | async }} minutes across all activities (PvE & PvP).</p>
 
-<div>
-  <p>You played a total of {{ minutesPlayedTotal | async }} minutes across all activities (PvE & PvP).</p>
+    <p>
+      You encountered a total of {{ occurences.length }} players over the course of {{ activities.length }} PvP games.
+      <br>
+      This is the first one hundred of them :
+    </p>
 
-  <p>
-    You encountered a total of {{ occurences.length }} players over the course of {{ activities.length }} PvP games.
-    <br>
-    This is the first one hundred of them :
-  </p>
+    <label for="filter">
+      Search for player :
+      <input type="text" name="filter" id="filter" [(ngModel)]="filter">
+    </label>
 
-  <ul>
-    <app-player *ngFor="let occurence of filteredOccurences | slice:0:100" [occurence]="occurence"></app-player>
-  </ul>
+    <ul>
+      <app-player *ngFor="let occurence of filteredOccurences | slice:0:100" [occurence]="occurence" (click)="selection = occurence" class="player"></app-player>
+    </ul>
+  </div>
+
+  <app-detailed class="selection" [player]="selection" *ngIf="selection"></app-detailed>
 </div>
