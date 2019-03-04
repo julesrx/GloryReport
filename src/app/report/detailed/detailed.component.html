@@ -10,6 +10,6 @@
 
 <ul>
   <li *ngFor="let act of player.activities">
-    {{ act.period }} : <a [href]="site + act.instanceId" target="_blank">{{ act.instanceId }}</a>
+    {{ act.period }} : <a [href]="site + act.activityDetails.instanceId" target="_blank">{{ act.activityDetails.instanceId }}</a>
   </li>
 </ul>

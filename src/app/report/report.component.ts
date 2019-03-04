@@ -224,14 +224,14 @@ export class ReportComponent implements OnInit, OnDestroy {
       const found = this.occurences.find((o: Occurence) => {
         if (o.membershipId == occurence.membershipId) {
           o.count++;
-          o.activities.push({ instanceId: activity.activityDetails.instanceId, period: activity.period });
+          o.activities.push(activity);
           return true;
         }
         return false;
       });
 
       if (!found) {
-        occurence.activities.push({ instanceId: activity.activityDetails.instanceId, period: activity.period });
+        occurence.activities.push(activity);
         this.occurences.push(occurence);
       }
     });
