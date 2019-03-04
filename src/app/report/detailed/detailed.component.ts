@@ -24,7 +24,7 @@ export class DetailedComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.sites = [
       'https://guardian.gg/2/pgcr/',
-      'https://destinytracker.com/',
+      'https://destinytracker.com/d2/pgcr/',
     ]
     this.site = this.sites[0];
   }
