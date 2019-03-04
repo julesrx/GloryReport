@@ -17,6 +17,7 @@ import { ReportComponent } from './report/report.component';
 import { FaqComponent } from './faq/faq.component';
 import { ChangelogComponent } from './changelog/changelog.component';
 import { LoadingReducePipe } from './pipes/loading-reduce.pipe';
+import { PlayerComponent } from './report/player/player.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { LoadingReducePipe } from './pipes/loading-reduce.pipe';
     ReportComponent,
     FaqComponent,
     ChangelogComponent,
-    LoadingReducePipe
+    LoadingReducePipe,
+    PlayerComponent
   ],
   imports: [
     BrowserModule,

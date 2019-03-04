@@ -27,6 +27,7 @@ import {
 
 import { BungieHttpService } from '../services/bungie-http.service';
 import { Occurence } from '../models/occurence';
+import { PlayerComponent } from './player/player.component';
 
 @Component({
   selector: 'app-report',
@@ -151,7 +152,7 @@ export class ReportComponent implements OnInit, OnDestroy {
           distinctUntilChanged()
         )
         .subscribe(([membershipId, membershipType, characters]) => {
-          characters.forEach(character => {
+          characters.forEach((character) => {
             const url = this.bHttp.bungiePlatformEndpoint + 'Destiny2/' + membershipType + '/Account/' + membershipId + '/Character/' + character.characterId + '/Stats/Activities/?mode=5&count=250&page=';
             this.getActivites(url, 0);
             // this.getActivites(url, 1);
@@ -187,13 +188,15 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   getPGCR(activities: DestinyHistoricalStatsPeriodGroup[]) {
-    activities.forEach(activity => {
-      this.activities.push(activity);
-      this.bHttp
-        .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
-        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-          this.addOccurences(res.Response.entries);
-        });
+    activities.forEach((activity, i) => {
+      setTimeout(() => {
+        this.activities.push(activity);
+        this.bHttp
+          .get(this.bHttp.statsPlatformEndpoint + 'Destiny2/Stats/PostGameCarnageReport/' + activity.activityDetails.instanceId + '/')
+          .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+            this.addOccurences(res.Response.entries);
+          });
+      }, 200 * i);
     });
   }
 

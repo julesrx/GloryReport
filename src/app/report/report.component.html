@@ -11,8 +11,6 @@
   </p>
 
   <ul>
-    <li *ngFor="let occurence of occurences | slice:0:100">
-        {{ occurence.displayName }} : {{ occurence.count }} times
-    </li>
+    <app-player *ngFor="let occurence of occurences | slice:0:100" [occurence]="occurence"></app-player>
   </ul>
 </div>
