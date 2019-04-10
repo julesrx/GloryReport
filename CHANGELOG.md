@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [v0.3.0] - 2019-04-10
+### Added
+- Better font
+
+### Fixed
+- Small improvement in performances
+
+### Notes
+Preparation for app rework.
+
 ## [v0.2.0] - 2019-03-05
 ### Added
 - Player search
@@ -22,6 +32,7 @@ All notable changes to this project will be documented in this file.
 - FAQ page
 - Changelog page
 
+[v0.3.0]: https://github.com/julesrx/gloryreport/releases/tag/v0.3.0
 [v0.2.0]: https://github.com/julesrx/gloryreport/releases/tag/v0.2.0
 [v0.1.1]: https://github.com/julesrx/gloryreport/releases/tag/v0.1.1
 [v0.1.0]: https://github.com/julesrx/gloryreport/releases/tag/v0.1.0
