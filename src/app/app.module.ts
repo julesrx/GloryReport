@@ -6,17 +6,20 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BungieHttpService } from './services/bungie-http.service';
+import {RoutesModule} from './routes/routes.module';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    // RoutesModule
+     RoutesModule
   ],
   providers: [
     BungieHttpService

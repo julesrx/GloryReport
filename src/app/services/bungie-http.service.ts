@@ -32,9 +32,6 @@ export class BungieHttpService {
         break;
     }
 
-    this.bungiePlatformEndpoint = 'https://www.bungie.net/Platform/';
-    this.statsPlatformEndpoint = 'https://stats.bungie.net/Platform/';
-
     this.membershipTypes = [
       { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },
       { title: 'Playstation', icon: 'fab fa-playstation', value: BungieMembershipType.TigerPsn },
@@ -42,14 +39,15 @@ export class BungieHttpService {
     ];
   }
 
-  get(url: string): Observable<ServerResponse<any>> {
-    const httpOptions = {
+  get(url: string, stats: boolean = false): Observable<ServerResponse<any>> {
+    const options = {
       headers: new HttpHeaders({
         'x-api-key': this._apiKey
       })
     };
 
-    return this.http.get<ServerResponse<any>>(url, httpOptions);
+    const endpoint: string = 'https://' + (stats ? 'stats' : 'www') + '.bungie.net/Platform/';
+    return this.http.get<ServerResponse<any>>(endpoint + url, options);
   }
 
 }
