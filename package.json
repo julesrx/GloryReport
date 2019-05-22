@@ -3,7 +3,11 @@
   "description": "",
   "version": "0.3.0",
   "homepage": "https://glory.report",
-  "author": "JulesRx <julesraffoux@utila.io> (https://julesrx.fr/)",
+  "author": {
+    "name": "JulesRx",
+    "email": "julesraffoux@utila.io",
+    "url": "https://julesrx.fr"
+  },
   "keywords": [
     "destiny",
     "api",
@@ -34,7 +38,6 @@
     "@angular/platform-browser-dynamic": "~7.2.0",
     "@angular/router": "~7.2.0",
     "@fortawesome/fontawesome-free": "^5.8.1",
-    "bootstrap": "^4.3.1",
     "bungie-api-ts": "^2.0.0",
     "core-js": "^2.5.4",
     "ngx-markdown": "^7.1.5",

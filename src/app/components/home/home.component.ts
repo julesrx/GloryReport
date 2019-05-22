@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { BungieHttpService } from '../services/bungie-http.service';
+import { BungieHttpService } from '../../services/bungie-http.service';
 
 @Component({
   selector: 'app-home',

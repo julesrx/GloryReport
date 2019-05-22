@@ -7,8 +7,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BungieHttpService } from './services/bungie-http.service';
 import { RoutesModule } from './routes/routes.module';
-import { HomeComponent } from './home/home.component';
-import { NavComponent } from './nav/nav.component';
+import { HomeComponent } from './components/home/home.component';
+import { NavComponent } from './components/nav/nav.component';
 
 @NgModule({
   declarations: [
