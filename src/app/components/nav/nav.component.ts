@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Router } from '@angular/router';
+
+import { BungieHttpService } from 'src/app/services/bungie-http.service';
 
 @Component({
   selector: 'app-nav',
@@ -10,11 +11,20 @@ import { Router } from '@angular/router';
 export class NavComponent implements OnInit {
 
   public gamertag: string;
+  public globalAlerts: [];
 
-  constructor(private router: Router) { }
+  constructor(
+    private bHttp: BungieHttpService,
+    private router: Router
+  ) { }
 
   ngOnInit() {
     this.gamertag = '';
+
+    this.bHttp.get('GlobalAlerts/')
+      .subscribe((res) => {
+        this.globalAlerts = res.Response;
+      });
   }
 
   search() {
