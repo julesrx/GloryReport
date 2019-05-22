@@ -13,9 +13,6 @@ export class BungieHttpService {
   public error: BehaviorSubject<ServerResponse<any>>;
   public membershipTypes: any[];
 
-  public bungiePlatformEndpoint: string;
-  public statsPlatformEndpoint: string;
-
   private _origin: string;
   private _apiKey: string;
 

@@ -1,0 +1,6 @@
+<ul>
+  <li *ngFor="let r of results">
+    <img [src]="'https://www.bungie.net/' + r.iconPath" [alt]="r.displayName" height="20"> {{ r.displayName }}
+    <!-- Add fontawesome icon -->
+  </li>
+</ul>

@@ -1,3 +1,7 @@
 <nav>
-  <input type="text" class="form-control" placeholder="Gamertag">
+  <form (submit)="search()">
+    <input type="text" name="gamertag" [(ngModel)]="gamertag" placeholder="Gamertag" required autofocus>
+
+    <button type="submit">Search</button>
+  </form>
 </nav>
