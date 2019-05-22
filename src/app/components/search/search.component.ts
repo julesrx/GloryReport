@@ -6,6 +6,7 @@ import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
+import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 
 @Component({
   selector: 'app-search',
@@ -19,7 +20,8 @@ export class SearchComponent implements OnInit {
 
   constructor(
     private bHttp: BungieHttpService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private typeIdService: MembershipTypeIdService
   ) { }
 
   ngOnInit() {
@@ -42,6 +44,10 @@ export class SearchComponent implements OnInit {
           }
         });
     })
+  }
+
+  membershipTypeId(user: UserInfoCard): string {
+    return this.typeIdService.combine(user.membershipType, user.membershipId);
   }
 
 }

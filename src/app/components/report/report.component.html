@@ -1,0 +1,8 @@
+<h1>{{ displayName }}</h1>
+
+<p>Characters :</p>
+<ul>
+  <li *ngFor="let c of characters">
+    <img [src]="'https://www.bungie.net' + c.emblemBackgroundPath" [alt]="c.characterId">
+  </li>
+</ul>

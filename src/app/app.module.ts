@@ -10,13 +10,15 @@ import { RoutesModule } from './routes/routes.module';
 import { HomeComponent } from './components/home/home.component';
 import { NavComponent } from './components/nav/nav.component';
 import { SearchComponent } from './components/search/search.component';
+import { ReportComponent } from './components/report/report.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     NavComponent,
-    SearchComponent
+    SearchComponent,
+    ReportComponent
   ],
   imports: [
     BrowserModule,

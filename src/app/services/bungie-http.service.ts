@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -36,10 +36,13 @@ export class BungieHttpService {
     ];
   }
 
-  get(url: string, stats: boolean = false): Observable<ServerResponse<any>> {
+  get(url: string, params: any = {}, stats: boolean = false): Observable<ServerResponse<any>> {
     const options = {
       headers: new HttpHeaders({
         'x-api-key': this._apiKey
+      }),
+      params: new HttpParams({
+        fromObject: params
       })
     };
 
