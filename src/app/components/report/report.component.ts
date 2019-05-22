@@ -19,6 +19,7 @@ import { PostGameCarnageReport } from 'src/app/interfaces/post-game-carnage-repo
 import { PostGameCarnageReportEntry } from 'src/app/interfaces/post-game-carnage-report-entry';
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
+import { Encounter } from 'src/app/interfaces/encounter';
 
 @Component({
   selector: 'app-report',
@@ -36,6 +37,7 @@ export class ReportComponent implements OnInit {
   public activities: DestinyHistoricalStatsPeriodGroup[];
 
   public report: Report;
+  public encounters: Encounter[];
 
   constructor(
     private bHttp: BungieHttpService,
@@ -47,6 +49,7 @@ export class ReportComponent implements OnInit {
     this.membershipTypeId = new BehaviorSubject('');
     this.characters = [];
     this.activities = [];
+    this.encounters = [];
 
     this.route.params.subscribe((params: Params) => {
       if (params['membershipTypeId']) {
@@ -74,7 +77,6 @@ export class ReportComponent implements OnInit {
             destinyUserInfo: this.profile.userInfo,
             pgcrs: []
           };
-          console.log(this.report);
 
           this.characters.forEach((c: DestinyCharacterComponent) => {
             this.getActivities(c, DestinyActivityModeType.AllPvP);
@@ -86,7 +88,7 @@ export class ReportComponent implements OnInit {
   getActivities(c: DestinyCharacterComponent, mode: DestinyActivityModeType, page: number = 0, count: number = 100) {
     this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, {
       count: 100,
-      mode: mode,
+      mode: mode, // TODO: add PrivateMatchesAll, mode[]
       page: page
     }).subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
       if (res.Response.activities && res.Response.activities.length) {
@@ -120,8 +122,33 @@ export class ReportComponent implements OnInit {
           pgcr.entries.push(entry);
         });
 
+        this.getEncounters(pgcr.entries);
         this.report.pgcrs.push(pgcr);
       });
+  }
+
+  getEncounters(entries: PostGameCarnageReportEntry[]) {
+    // entries.forEach((entry: PostGameCarnageReportEntry) => {
+    //   let enc: Encounter = this.encounters.find((e: Encounter) => {
+    //     // console.log(e.membershipId);
+    //     return e.membershipId == entry.player.membershipId
+    //   });
+    //   if (enc != null && enc.count) {
+    //     enc.count++;
+    //   } else {
+    //     let encounter: Encounter = {
+    //       membershipId: entry.player.membershipId,
+    //       membershipType: entry.player.membershipType,
+    //       displayName: entry.player.displayName,
+    //       count: 1
+    //     };
+    //     this.encounters.push(encounter);
+    //   }
+
+    //   this.encounters.sort((a, b) => {
+    //     return a.count < b.count ? 1 : -1;
+    //   });
+    // });
   }
 
 }

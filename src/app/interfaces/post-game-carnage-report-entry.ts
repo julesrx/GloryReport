@@ -5,5 +5,5 @@ export interface PostGameCarnageReportEntry {
   player: UserInfoCard;
   characterClass: string;
   characterId: string;
-  // score:string; // score: basic: displayValue
+  // score:string; // TODO: score: basic: displayValue
 }
