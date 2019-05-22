@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { BehaviorSubject } from 'rxjs';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
@@ -21,6 +21,7 @@ export class SearchComponent implements OnInit {
   constructor(
     private bHttp: BungieHttpService,
     private route: ActivatedRoute,
+    private router: Router,
     private typeIdService: MembershipTypeIdService
   ) { }
 
@@ -40,7 +41,7 @@ export class SearchComponent implements OnInit {
           this.results = res.Response;
 
           if (this.results.length == 1) {
-            console.log(this.results[0].displayName + ' found');
+            this.router.navigate(['/report', this.membershipTypeId(this.results[0])]);
           }
         });
     })
