@@ -115,7 +115,7 @@ export class ReportComponent implements OnInit {
           let entry: PostGameCarnageReportEntry = {
             characterClass: ent.player.characterClass,
             characterId: ent.characterId,
-            player: ent.player.bungieNetUserInfo,
+            player: ent.player.destinyUserInfo,
             standing: ent.standing
           };
 
@@ -128,27 +128,28 @@ export class ReportComponent implements OnInit {
   }
 
   getEncounters(entries: PostGameCarnageReportEntry[]) {
-    // entries.forEach((entry: PostGameCarnageReportEntry) => {
-    //   let enc: Encounter = this.encounters.find((e: Encounter) => {
-    //     // console.log(e.membershipId);
-    //     return e.membershipId == entry.player.membershipId
-    //   });
-    //   if (enc != null && enc.count) {
-    //     enc.count++;
-    //   } else {
-    //     let encounter: Encounter = {
-    //       membershipId: entry.player.membershipId,
-    //       membershipType: entry.player.membershipType,
-    //       displayName: entry.player.displayName,
-    //       count: 1
-    //     };
-    //     this.encounters.push(encounter);
-    //   }
+    entries.forEach((entry: PostGameCarnageReportEntry) => {
+      if (entry.player.displayName !== this.displayName) { // TODO: Switch to membershipTypeId
+        let enc: Encounter = this.encounters.find((e: Encounter) => {
+          return e.membershipId == entry.player.membershipId
+        });
+        if (enc != null && enc.count) {
+          enc.count++;
+        } else {
+          let encounter: Encounter = {
+            membershipId: entry.player.membershipId,
+            membershipType: entry.player.membershipType,
+            displayName: entry.player.displayName,
+            count: 1
+          };
+          this.encounters.push(encounter);
+        }
 
-    //   this.encounters.sort((a, b) => {
-    //     return a.count < b.count ? 1 : -1;
-    //   });
-    // });
+        this.encounters.sort((a, b) => {
+          return a.count < b.count ? 1 : -1;
+        });
+      }
+    });
   }
 
 }
