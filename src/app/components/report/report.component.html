@@ -15,11 +15,9 @@
 <div class="flex">
   <div class="encounters">
     <p>Encounters :</p>
-    <ul>
-      <li *ngFor="let enc of encounters | slice:0:100; let i = index" class="encounter" (click)="selectPlayer(enc)">
-        {{ enc.displayName }} : {{ enc.count }}
-      </li>
-    </ul>
+    <div class="players">
+      <app-player-card *ngFor="let enc of encounters | slice:0:100; let i = index" [encounter]="enc" [membershipTypeId]="typeIdService.combine(enc.membershipType, enc.membershipId)" (click)="selectPlayer(enc)"></app-player-card>
+    </div>
   </div>
 
   <report-details [encounter]="selection" *ngIf="selection != null"></report-details>

@@ -12,6 +12,7 @@ import { NavComponent } from './components/nav/nav.component';
 import { SearchComponent } from './components/search/search.component';
 import { ReportComponent } from './components/report/report.component';
 import { DetailsComponent } from './components/report/details/details.component';
+import { PlayerCardComponent } from './components/player-card/player-card.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { DetailsComponent } from './components/report/details/details.component'
     NavComponent,
     SearchComponent,
     ReportComponent,
-    DetailsComponent
+    DetailsComponent,
+    PlayerCardComponent
   ],
   imports: [
     BrowserModule,
