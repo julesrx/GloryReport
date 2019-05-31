@@ -35,6 +35,7 @@ export class ReportComponent implements OnInit {
   public displayName: string;
 
   public activities: DestinyHistoricalStatsPeriodGroup[];
+  public fetched: number;
 
   public report: Report;
   public encounters: Encounter[];
@@ -49,6 +50,7 @@ export class ReportComponent implements OnInit {
     this.membershipTypeId = new BehaviorSubject('');
     this.characters = [];
     this.activities = [];
+    this.fetched = 0;
     this.encounters = [];
 
     this.route.params.subscribe((params: Params) => {
@@ -129,7 +131,7 @@ export class ReportComponent implements OnInit {
 
   getEncounters(entries: PostGameCarnageReportEntry[]) {
     entries.forEach((entry: PostGameCarnageReportEntry) => {
-      if (entry.player.displayName !== this.displayName) { // TODO: Switch to membershipTypeId
+      if (entry.player.displayName !== this.displayName) { // TODO: Compare membershipId instead
         let enc: Encounter = this.encounters.find((e: Encounter) => {
           return e.membershipId == entry.player.membershipId
         });
@@ -148,6 +150,8 @@ export class ReportComponent implements OnInit {
         this.encounters.sort((a, b) => {
           return a.count < b.count ? 1 : -1;
         });
+      } else {
+        this.fetched++;
       }
     });
   }
