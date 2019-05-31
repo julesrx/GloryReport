@@ -40,6 +40,9 @@ export class ReportComponent implements OnInit {
   public report: Report;
   public encounters: Encounter[];
 
+  public targetedDisplayName: string;
+  public targetedPGCRs: PostGameCarnageReport[];
+
   constructor(
     private bHttp: BungieHttpService,
     private route: ActivatedRoute,
@@ -52,6 +55,7 @@ export class ReportComponent implements OnInit {
     this.activities = [];
     this.fetched = 0;
     this.encounters = [];
+    this.targetedPGCRs = [];
 
     this.route.params.subscribe((params: Params) => {
       if (params['membershipTypeId']) {
@@ -154,6 +158,15 @@ export class ReportComponent implements OnInit {
         this.fetched++;
       }
     });
+  }
+
+  getTargetedPGCRs(membershipId: string, displayName: string) { // TODO: Improve
+    this.targetedPGCRs = this.report.pgcrs.filter(p => {
+      return p.entries.find(e => e.player.membershipId == membershipId) != null;
+    });
+    this.targetedDisplayName = displayName;
+    console.error('Use a custom interface instead');
+    console.error('Subscribe to elements instead to update targets while requests are being made');
   }
 
 }

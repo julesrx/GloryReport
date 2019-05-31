@@ -11,6 +11,7 @@ import { HomeComponent } from './components/home/home.component';
 import { NavComponent } from './components/nav/nav.component';
 import { SearchComponent } from './components/search/search.component';
 import { ReportComponent } from './components/report/report.component';
+import { DetailsComponent } from './components/report/details/details.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { ReportComponent } from './components/report/report.component';
     HomeComponent,
     NavComponent,
     SearchComponent,
-    ReportComponent
+    ReportComponent,
+    DetailsComponent
   ],
   imports: [
     BrowserModule,
