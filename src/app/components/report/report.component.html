@@ -16,7 +16,7 @@
   <div class="encounters">
     <p>Encounters :</p>
     <div class="players">
-      <app-player-card *ngFor="let enc of encounters | slice:0:100; let i = index" [encounter]="enc" [membershipTypeId]="typeIdService.combine(enc.membershipType, enc.membershipId)" (click)="selectPlayer(enc)"></app-player-card>
+      <app-player-card *ngFor="let enc of encounters | slice:0:100; let i = index" [encounter]="enc" [membershipTypeId]="typeIdService.combine(enc.membershipType, enc.membershipId)" (select)="selectPlayer(enc)"></app-player-card>
     </div>
   </div>
 

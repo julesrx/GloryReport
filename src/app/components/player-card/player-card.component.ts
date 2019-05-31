@@ -1,8 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+
+import { ServerResponse } from 'bungie-api-ts/common';
+import { DestinyProfileResponse } from 'bungie-api-ts/destiny2/interfaces';
 
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { Encounter } from 'src/app/interfaces/encounter';
+import { BungieHttpService } from 'src/app/services/bungie-http.service';
 
+// Reusable component, switch between encounter or membershipTypeId
 @Component({
   selector: 'app-player-card',
   templateUrl: './player-card.component.html',
@@ -13,16 +18,30 @@ export class PlayerCardComponent implements OnInit {
   @Input() encounter: Encounter;
   @Input() membershipTypeId: string;
 
-  // Reusable component, switch between encounter or membershipTypeId
+  @Output() select: EventEmitter<any> = new EventEmitter();
 
-  // TODO: Add custom event for selection
+  public loading: boolean;
 
-  constructor(private typeIdService: MembershipTypeIdService) { }
+  constructor(
+    private bHttp: BungieHttpService,
+    private typeIdService: MembershipTypeIdService
+  ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.loading = false;
+  }
 
   getStats() {
-    console.log(this.typeIdService.getMembershipId(this.membershipTypeId));
+    let membershipId: string = this.typeIdService.getMembershipId(this.membershipTypeId);
+    let membershipType: number = this.typeIdService.getMembershipType(this.membershipTypeId);;
+
+    this.loading = true;
+
+    this.bHttp.get('Destiny2/' + membershipType + '/Profile/' + membershipId + '/', false, { components: '100,200' })
+      .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
+        console.log(res.Response);
+        this.loading = false;
+      });
   }
 
 }

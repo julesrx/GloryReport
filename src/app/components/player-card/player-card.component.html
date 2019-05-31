@@ -1,7 +1,9 @@
 <div class="player">
-  <span class="displayname-count">
+  <span class="displayname-count" (click)="this.select.emit(null)">
     {{ encounter.displayName }} : {{ encounter.count }}
   </span>
 
-  <span class="plus">+</span>
+  <span class="plus" (click)="getStats()">+</span>
+
+  <span *ngIf="loading">loading...</span>
 </div>
