@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
-import { PostGameCarnageReport } from 'src/app/interfaces/post-game-carnage-report';
+import { Encounter } from 'src/app/interfaces/encounter';
 
 @Component({
   selector: 'report-details',
@@ -9,20 +9,18 @@ import { PostGameCarnageReport } from 'src/app/interfaces/post-game-carnage-repo
 })
 export class DetailsComponent implements OnInit, OnDestroy {
 
-  @Input() displayName: string;
-  @Input() pgcrs: PostGameCarnageReport[];
+  @Input() encounter: Encounter;
 
   constructor() { }
 
   ngOnInit() {
-    this.pgcrs.sort((a, b) => {
+    this.encounter.pgcrs.sort((a, b) => {
       return a.period < b.period ? 1 : -1;
     });
   }
 
   ngOnDestroy() {
-    this.displayName = '';
-    this.pgcrs = [];
+    this.encounter = null;
   }
 
 }

@@ -1,6 +1,6 @@
-<span>{{ displayName }}</span>
+<span>{{ encounter.displayName }}</span>
 <ul>
-  <li *ngFor="let pgcr of pgcrs">
+  <li *ngFor="let pgcr of encounter.pgcrs">
     {{ pgcr.period }}
   </li>
 </ul>

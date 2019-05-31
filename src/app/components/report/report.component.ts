@@ -40,8 +40,7 @@ export class ReportComponent implements OnInit {
   public report: Report;
   public encounters: Encounter[];
 
-  public targetedDisplayName: string;
-  public targetedPGCRs: PostGameCarnageReport[];
+  public selection: Encounter;
 
   constructor(
     private bHttp: BungieHttpService,
@@ -55,7 +54,6 @@ export class ReportComponent implements OnInit {
     this.activities = [];
     this.fetched = 0;
     this.encounters = [];
-    this.targetedPGCRs = [];
 
     this.route.params.subscribe((params: Params) => {
       if (params['membershipTypeId']) {
@@ -128,26 +126,30 @@ export class ReportComponent implements OnInit {
           pgcr.entries.push(entry);
         });
 
-        this.getEncounters(pgcr.entries);
+        this.getEncounters(pgcr);
         this.report.pgcrs.push(pgcr);
       });
   }
 
-  getEncounters(entries: PostGameCarnageReportEntry[]) {
-    entries.forEach((entry: PostGameCarnageReportEntry) => {
+  getEncounters(pgcr: PostGameCarnageReport) {
+    pgcr.entries.forEach((entry: PostGameCarnageReportEntry) => {
       if (entry.player.displayName !== this.displayName) { // TODO: Compare membershipId instead
         let enc: Encounter = this.encounters.find((e: Encounter) => {
           return e.membershipId == entry.player.membershipId
         });
         if (enc != null && enc.count) {
+          // TODO: remove pgcrs from encounters to improve performances and memory usage
+          enc.pgcrs.push(pgcr);
           enc.count++;
         } else {
           let encounter: Encounter = {
             membershipId: entry.player.membershipId,
             membershipType: entry.player.membershipType,
             displayName: entry.player.displayName,
+            pgcrs: [],
             count: 1
           };
+          encounter.pgcrs.push(pgcr);
           this.encounters.push(encounter);
         }
 
@@ -160,13 +162,8 @@ export class ReportComponent implements OnInit {
     });
   }
 
-  getTargetedPGCRs(membershipId: string, displayName: string) { // TODO: Improve
-    this.targetedPGCRs = this.report.pgcrs.filter(p => {
-      return p.entries.find(e => e.player.membershipId == membershipId) != null;
-    });
-    this.targetedDisplayName = displayName;
-    console.error('Use a custom interface instead');
-    console.error('Subscribe to elements instead to update targets while requests are being made');
+  selectPlayer(encounter: Encounter) {
+    this.selection = encounter;
   }
 
 }

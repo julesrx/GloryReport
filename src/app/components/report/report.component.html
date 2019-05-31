@@ -16,11 +16,11 @@
   <div class="encounters">
     <p>Encounters :</p>
     <ul>
-      <li *ngFor="let enc of encounters | slice:0:100; let i = index" class="encounter" (click)="getTargetedPGCRs(enc.membershipId, enc.displayName)">
+      <li *ngFor="let enc of encounters | slice:0:100; let i = index" class="encounter" (click)="selectPlayer(enc)">
         {{ enc.displayName }} : {{ enc.count }}
       </li>
     </ul>
   </div>
 
-  <report-details [pgcrs]="targetedPGCRs" [displayName]="targetedDisplayName" *ngIf="targetedPGCRs.length"></report-details>
+  <report-details [encounter]="selection" *ngIf="selection != null"></report-details>
 </div>
