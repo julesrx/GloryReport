@@ -1,6 +1,7 @@
 <span>{{ encounter.displayName }}</span>
 <ul>
-  <li *ngFor="let pgcr of encounter.pgcrs">
-    {{ pgcr.period }}
+  <!-- TODO: Add sort pipe -->
+  <li *ngFor="let act of encounter.activities">
+    {{ act.period }}
   </li>
 </ul>

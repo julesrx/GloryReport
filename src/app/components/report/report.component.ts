@@ -20,6 +20,7 @@ import { PostGameCarnageReportEntry } from 'src/app/interfaces/post-game-carnage
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { Encounter } from 'src/app/interfaces/encounter';
+import { ActivityShort } from 'src/app/interfaces/activity-short';
 
 @Component({
   selector: 'app-report',
@@ -137,19 +138,27 @@ export class ReportComponent implements OnInit {
         let enc: Encounter = this.encounters.find((e: Encounter) => {
           return e.membershipId == entry.player.membershipId
         });
+
+        let act: ActivityShort = {
+          instanceId: pgcr.activityDetails.instanceId,
+          period: pgcr.period
+        };
+
         if (enc != null && enc.count) {
           // TODO: remove pgcrs from encounters to improve performances and memory usage
-          enc.pgcrs.push(pgcr);
+          enc.activities.push(act);
           enc.count++;
+          this.sortActs(enc.activities); // TODO: Remove
         } else {
           let encounter: Encounter = {
             membershipId: entry.player.membershipId,
             membershipType: entry.player.membershipType,
             displayName: entry.player.displayName,
-            pgcrs: [],
+            activities: [],
             count: 1
           };
-          encounter.pgcrs.push(pgcr);
+          encounter.activities.push(act);
+          this.sortActs(encounter.activities); // TODO: Remove
           this.encounters.push(encounter);
         }
 
@@ -164,6 +173,12 @@ export class ReportComponent implements OnInit {
 
   selectPlayer(encounter: Encounter) {
     this.selection = encounter;
+  }
+
+  sortActs(activities: ActivityShort[]) {
+    activities.sort((a, b) => {
+      return a.period < b.period ? 1 : -1;
+    });
   }
 
 }

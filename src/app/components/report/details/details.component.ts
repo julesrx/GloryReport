@@ -13,11 +13,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
 
   constructor() { }
 
-  ngOnInit() {
-    this.encounter.pgcrs.sort((a, b) => {
-      return a.period < b.period ? 1 : -1;
-    });
-  }
+  ngOnInit() { }
 
   ngOnDestroy() {
     this.encounter = null;

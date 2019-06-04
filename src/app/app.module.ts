@@ -13,6 +13,7 @@ import { SearchComponent } from './components/search/search.component';
 import { ReportComponent } from './components/report/report.component';
 import { DetailsComponent } from './components/report/details/details.component';
 import { PlayerCardComponent } from './components/player-card/player-card.component';
+import { SortByPipe } from './pipes/sort-by.pipe';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { PlayerCardComponent } from './components/player-card/player-card.compon
     SearchComponent,
     ReportComponent,
     DetailsComponent,
-    PlayerCardComponent
+    PlayerCardComponent,
+    SortByPipe
   ],
   imports: [
     BrowserModule,

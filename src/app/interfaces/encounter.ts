@@ -1,9 +1,9 @@
-import { PostGameCarnageReport } from './post-game-carnage-report';
+import { ActivityShort } from './activity-short';
 
 export interface Encounter {
   membershipType: number;
   membershipId: string;
   displayName: string;
-  pgcrs: PostGameCarnageReport[];
+  activities: ActivityShort[];
   count: number;
 }
