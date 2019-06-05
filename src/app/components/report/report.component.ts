@@ -43,12 +43,12 @@ export class ReportComponent implements OnInit {
 
   public selection: Encounter;
 
-  public search: string;
+  public filter: string;
   // TODO: improve computed property => bad performances
   get filteredEncounters() {
-    if (this.search === '') return this.encounters;
+    if (this.filter === '') return this.encounters;
     return this.encounters.filter(occ => {
-      return occ.displayName.toLowerCase().indexOf(this.search.toLowerCase()) !== -1;
+      return occ.displayName.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1;
     });
   }
 
@@ -64,7 +64,7 @@ export class ReportComponent implements OnInit {
     this.activities = [];
     this.fetched = 0;
     this.encounters = [];
-    this.search = '';
+    this.filter = '';
 
     this.route.params.subscribe((params: Params) => {
       if (params['membershipTypeId']) {
