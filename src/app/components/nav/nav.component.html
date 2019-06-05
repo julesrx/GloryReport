@@ -3,15 +3,21 @@
     <a [routerLink]="[ '/' ]">GloryReport</a>
   </h1>
 
+  <div class="links">
+    <!-- <a [routerLink]="[ '/faq' ]">FAQ</a>
+    <span class="s">|</span>
+    <a [routerLink]="[ '/faq' ]">FAQ</a>
+    <span class="s">|</span> -->
+    <a href="https://github.com/julesrx/GloryReport" target="_blank">GitHub</a>
+  </div>
+
+  <div class="alerts" *ngIf="globalAlerts.length">
+    <span *ngFor="let alert of globalAlerts">{{ alert.AlertHtml }}</span>
+  </div>
+
   <form (submit)="search()">
     <input type="text" name="gamertag" [(ngModel)]="gamertag" placeholder="Gamertag" required autofocus>
 
     <button type="submit">Search</button>
   </form>
-
-  <p *ngFor="let alert of globalAlerts" class="alert">
-    {{ alert.AlertHtml }}
-  </p>
-
-  <hr>
 </nav>

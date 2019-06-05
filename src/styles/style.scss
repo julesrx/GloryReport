@@ -1,6 +1,7 @@
 @charset "utf-8";
 
 @import "./variables";
+@import "./normalize";
 
 body {
   font-family: $font-family-sans-serif;
