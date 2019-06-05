@@ -14,6 +14,7 @@ import { ReportComponent } from './components/report/report.component';
 import { DetailsComponent } from './components/report/details/details.component';
 import { PlayerCardComponent } from './components/player-card/player-card.component';
 import { SortByPipe } from './pipes/sort-by.pipe';
+import { FaqComponent } from './components/faq/faq.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { SortByPipe } from './pipes/sort-by.pipe';
     ReportComponent,
     DetailsComponent,
     PlayerCardComponent,
-    SortByPipe
+    SortByPipe,
+    FaqComponent
   ],
   imports: [
     BrowserModule,
