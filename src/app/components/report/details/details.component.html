@@ -2,6 +2,8 @@
 <ul>
   <!-- TODO: Add sort pipe -->
   <li *ngFor="let act of encounter.activities">
-    {{ act.period }}
+    <a [href]="'https://guardian.gg/2/pgcr/' + act.instanceId" target="_blank">
+      {{ act.period }}
+    </a>
   </li>
 </ul>
