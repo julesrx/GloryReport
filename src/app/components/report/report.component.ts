@@ -43,6 +43,15 @@ export class ReportComponent implements OnInit {
 
   public selection: Encounter;
 
+  public search: string;
+  // TODO: improve computed property => bad performances
+  get filteredEncounters() {
+    if (this.search === '') return this.encounters;
+    return this.encounters.filter(occ => {
+      return occ.displayName.toLowerCase().indexOf(this.search.toLowerCase()) !== -1;
+    });
+  }
+
   constructor(
     private bHttp: BungieHttpService,
     private route: ActivatedRoute,
@@ -55,6 +64,7 @@ export class ReportComponent implements OnInit {
     this.activities = [];
     this.fetched = 0;
     this.encounters = [];
+    this.search = '';
 
     this.route.params.subscribe((params: Params) => {
       if (params['membershipTypeId']) {

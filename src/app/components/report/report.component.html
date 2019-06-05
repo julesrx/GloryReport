@@ -14,9 +14,14 @@
 
 <div class="flex">
   <div class="encounters">
-    <p>Encounters :</p>
+    <h3>Encounters</h3>
+    <label for="search">Search a player
+      <input type="text" name="search" id="search" [(ngModel)]="search">
+    </label>
+    <hr>
+
     <div class="players">
-      <app-player-card *ngFor="let enc of encounters | slice:0:100; let i = index" [encounter]="enc" [membershipTypeId]="typeIdService.combine(enc.membershipType, enc.membershipId)" (select)="selectPlayer(enc)"></app-player-card>
+      <app-player-card *ngFor="let enc of filteredEncounters | slice:0:100; let i = index" [encounter]="enc" [membershipTypeId]="typeIdService.combine(enc.membershipType, enc.membershipId)" (select)="selectPlayer(enc)"></app-player-card>
     </div>
   </div>
 
