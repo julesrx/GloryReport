@@ -11,7 +11,7 @@
     <a href="https://github.com/julesrx/GloryReport" target="_blank">GitHub</a>
   </div>
 
-  <div class="alerts" *ngIf="globalAlerts.length">
+  <div class="alerts" *ngIf="globalAlerts && globalAlerts.length">
     <span *ngFor="let alert of globalAlerts">{{ alert.AlertHtml }}</span>
   </div>
 

@@ -2,10 +2,11 @@ $margin-section: 10px 0;
 
 nav {
   text-align: center;
+  margin: $margin-section;
 
   h1 {
     font-size: 2em;
-    margin: $margin-section;
+    margin: 0 0 10px;
 
     a {
       color: inherit;
