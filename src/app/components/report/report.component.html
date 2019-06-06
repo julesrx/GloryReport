@@ -1,20 +1,10 @@
 <h2>{{ displayName }}</h2>
-
-<p>Characters :</p>
-<ul>
-  <li *ngFor="let c of characters">
-    <img [src]="'https://www.bungie.net' + c.emblemBackgroundPath" [alt]="c.characterId">
-  </li>
-</ul>
-
-<p>Activities entered : {{ activities.length }}
-  <br>
-  <small>fetched {{ fetched }}/{{ activities.length }}</small>
-</p>
+<p>You encountered a total of {{ encounters.length }} players over the course of {{ fetched }}/{{ activities.length }} PvP games.</p>
 
 <div class="flex">
   <div class="encounters">
     <h3>Encounters</h3>
+    <p>Only the top 100 are displayed.</p>
     <label for="filter">Search a player
       <input type="text" name="filter" id="filter" [(ngModel)]="filter">
     </label>
@@ -25,5 +15,5 @@
     </div>
   </div>
 
-  <report-details [encounter]="selection" *ngIf="selection != null"></report-details>
+  <report-details [encounter]="selection" *ngIf="selection != null" (close)="selection = null"></report-details>
 </div>

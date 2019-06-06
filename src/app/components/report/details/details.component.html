@@ -1,9 +1,11 @@
-<span>{{ encounter.displayName }}</span>
-<ul>
+<h3>{{ encounter.displayName }}</h3>
+<span class="close" (click)="close.emit(null)">&times;</span>
+
+<ul class="activities">
   <!-- TODO: Add sort pipe -->
   <li *ngFor="let act of encounter.activities">
     <a [href]="'https://guardian.gg/2/pgcr/' + act.instanceId" target="_blank">
-      {{ act.period }}
+      {{ getDate(act.period) }}
     </a>
   </li>
 </ul>

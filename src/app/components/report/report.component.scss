@@ -1,8 +1,18 @@
-.flex {
-  display: flex;
-  justify-content: space-around;
+h3 {
+  margin: 0 0 1em;
 }
 
-.encounter {
-  cursor: pointer;
+.flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.encounters {
+  p {
+    margin-bottom: 5px;
+  }
+
+  .encounter {
+    cursor: pointer;
+  }
 }
