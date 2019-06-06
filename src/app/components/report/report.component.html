@@ -1,7 +1,7 @@
 <h2>{{ displayName }}</h2>
-<p>You encountered a total of {{ encounters.length }} players over the course of {{ fetched }}/{{ activities.length }} PvP games.</p>
+<p *ngIf="displayName && displayName.length">You encountered a total of {{ encounters.length }} players over the course of {{ fetched }}/{{ activities.length }} PvP games.</p>
 
-<div class="flex">
+<div *ngIf="displayName && displayName.length" class="flex">
   <div class="encounters">
     <h3>Encounters</h3>
     <p>Only the top 100 are displayed.</p>

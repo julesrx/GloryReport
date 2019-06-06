@@ -76,6 +76,7 @@ export class ReportComponent implements OnInit {
       let membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
       let membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
 
+      // TODO: Add private profile support => res.Response.profile.privacy == ComponentPrivacySetting.Private
       this.bHttp.get('Destiny2/' + membershipType + '/Profile/' + membershipId + '/', false, { components: '100,200' })
         .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
           this.profile = res.Response.profile.data;
