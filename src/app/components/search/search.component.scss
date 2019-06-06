@@ -1,0 +1,16 @@
+.results {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+
+  a {
+    margin: 0 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    * {
+      margin: 0 2px;
+    }
+  }
+}
