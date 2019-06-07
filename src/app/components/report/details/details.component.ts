@@ -24,7 +24,7 @@ export class DetailsComponent implements OnInit, OnDestroy {
   }
 
   getDate(period: string): string {
-    return moment(period).format('MM/DD/YYYY HH:mm:ss');
+    return moment(period).format('DD/MM/YYYY HH:mm:ss');
   }
 
 }
