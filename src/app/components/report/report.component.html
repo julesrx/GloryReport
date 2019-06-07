@@ -1,7 +1,7 @@
 <h2>{{ displayName }}</h2>
 <p *ngIf="displayName && displayName.length">You encountered a total of {{ encounters.length }} players over the course of {{ fetched }}/{{ activities.length }} PvP games.</p>
 
-<div *ngIf="displayName && displayName.length" class="flex">
+<div *ngIf="!private && displayName && displayName.length" class="flex">
   <div class="encounters">
     <h3>Encounters</h3>
     <p>Only the top 100 are displayed.</p>
@@ -17,3 +17,5 @@
 
   <report-details [encounter]="selection" *ngIf="selection != null" (close)="selection = null"></report-details>
 </div>
+
+<p *ngIf="private && !encounters.length">{{ message }}</p>

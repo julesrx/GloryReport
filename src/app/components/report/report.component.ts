@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { ServerResponse } from 'bungie-api-ts/common';
+import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 import {
   DestinyProfileResponse,
   DestinyProfileComponent,
@@ -34,6 +34,9 @@ export class ReportComponent implements OnInit {
   public profile: DestinyProfileComponent;
   public characters: DestinyCharacterComponent[];
   public displayName: string;
+
+  public private: boolean;
+  public message: string;
 
   public activities: DestinyHistoricalStatsPeriodGroup[];
   public fetched: number;
@@ -75,8 +78,8 @@ export class ReportComponent implements OnInit {
     this.membershipTypeId.subscribe((membershipTypeId: string) => {
       let membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
       let membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
+      this.private = false;
 
-      // TODO: Add private profile support => res.Response.profile.privacy == ComponentPrivacySetting.Private or res.ErrorCode == PlatformErrorCodes.
       this.bHttp.get('Destiny2/' + membershipType + '/Profile/' + membershipId + '/', false, { components: '100,200' })
         .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
           this.profile = res.Response.profile.data;
@@ -95,26 +98,34 @@ export class ReportComponent implements OnInit {
           };
 
           this.characters.forEach((c: DestinyCharacterComponent) => {
-            this.getActivities(c, DestinyActivityModeType.AllPvP);
+            this.getActivities(c, [DestinyActivityModeType.AllPvP, DestinyActivityModeType.PrivateMatchesAll]);
           })
         });
     });
   }
 
-  getActivities(c: DestinyCharacterComponent, mode: DestinyActivityModeType, page: number = 0, count: number = 100) {
-    this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, {
-      count: 100,
-      mode: mode, // TODO: add PrivateMatchesAll, mode[]
-      page: page
-    }).subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-      if (res.Response.activities && res.Response.activities.length) {
-        res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-          this.activities.push(act);
-          this.getPGCR(act.activityDetails.instanceId);
-        });
+  getActivities(c: DestinyCharacterComponent, modes: DestinyActivityModeType[], page: number = 0, count: number = 100) {
+    modes.forEach((mode: DestinyActivityModeType) => {
+      this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, {
+        count: 100,
+        mode: mode,
+        page: page
+      }).subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
+        if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+          if (res.Response.activities && res.Response.activities.length) {
+            res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+              this.activities.push(act);
+              this.getPGCR(act.activityDetails.instanceId);
+            });
 
-        this.getActivities(c, mode, page += 1, count);
-      }
+            this.getActivities(c, modes, page += 1, count);
+          }
+        } else {
+          // TODO: Fix error handling, does not enter subscribe when error in response (500)
+          this.private = true;
+          this.message = res.ErrorStatus;
+        }
+      });
     });
   }
 
