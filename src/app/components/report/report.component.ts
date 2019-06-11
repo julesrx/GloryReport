@@ -117,33 +117,35 @@ export class ReportComponent implements OnInit, OnDestroy {
   }
 
   getActivities(c: DestinyCharacterComponent, modes: DestinyActivityModeType[], page: number = 0, count: number = 100) {
-    modes.forEach((mode: DestinyActivityModeType) => {
-      let options: any = {
-        count: 100,
-        mode: mode,
-        page: page
-      };
+    // modes.forEach((mode: DestinyActivityModeType) => { // FIXME: Infinite loop when error ?
+    let mode = modes[0];
 
-      this.subs.push(
-        this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, options)
-          .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-            if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
-              if (res.Response.activities && res.Response.activities.length) {
-                res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-                  this.activities.push(act);
-                  this.getPGCR(act.activityDetails.instanceId);
-                });
+    let options: any = {
+      count: 100,
+      mode: mode,
+      page: page
+    };
 
-                this.getActivities(c, modes, page += 1, count);
-              }
-            } else {
-              // TODO: Fix error handling, does not enter subscribe when error in response (500)
-              this.private = true;
-              this.message = res.ErrorStatus;
+    this.subs.push(
+      this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, options)
+        .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
+          if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+            if (res.Response.activities && res.Response.activities.length) {
+              res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+                this.activities.push(act);
+                this.getPGCR(act.activityDetails.instanceId);
+              });
+
+              this.getActivities(c, modes, page += 1, count);
             }
-          })
-      );
-    });
+          } else {
+            // TODO: Fix error handling, does not enter subscribe when error in response (500)
+            this.private = true;
+            this.message = res.ErrorStatus;
+          }
+        })
+    );
+    // });
   }
 
   getPGCR(instanceId: string) {
