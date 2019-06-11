@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2019-06-11
+### Added
+- version number in document title
+
+### Updated
+- theme color for mobile users
+- summary image for previsualization
+
+### Fixed
+- app no longer continues to make api requests when the user change pages
+
 ## [0.5.0] - 2019-06-11
 In this version, the app was started from scratch to improve organisation and add some minor performance improvements.
 ### Added
@@ -41,6 +52,7 @@ Preparation for app rework.
 - FAQ page
 - Changelog page
 
+[0.6.0]: https://github.com/julesrx/gloryreport/releases/tag/0.6.0
 [0.5.0]: https://github.com/julesrx/gloryreport/releases/tag/0.5.0
 [0.3.0]: https://github.com/julesrx/gloryreport/releases/tag/0.3.0
 [0.2.0]: https://github.com/julesrx/gloryreport/releases/tag/0.2.0

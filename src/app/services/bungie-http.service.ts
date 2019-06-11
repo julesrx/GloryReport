@@ -36,9 +36,10 @@ export class BungieHttpService {
     ];
   }
 
-  get(url: string, stats: boolean = false, params: any = {}): Observable<ServerResponse<any>> {
+  get(url: string, stats: boolean = false, params: any = {}, headers: any = {}): Observable<ServerResponse<any>> {
     const options = {
       headers: new HttpHeaders({
+        ...headers,
         'x-api-key': this._apiKey
       }),
       params: new HttpParams({
