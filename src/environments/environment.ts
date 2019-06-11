@@ -1,7 +1,5 @@
-declare var require: any
+import { environment as defaultEnv } from './environment.all';
 
 export const environment = {
-  production: false,
-  appName: 'GloryReport',
-  VERSION: require('../../package.json').version
+  ...defaultEnv
 };

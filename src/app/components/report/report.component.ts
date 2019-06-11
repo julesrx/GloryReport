@@ -14,6 +14,7 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 import { BehaviorSubject } from 'rxjs';
 
+import { environment } from 'src/environments/environment';
 import { Report } from 'src/app/interfaces/report';
 import { PostGameCarnageReport } from 'src/app/interfaces/post-game-carnage-report';
 import { PostGameCarnageReportEntry } from 'src/app/interfaces/post-game-carnage-report-entry';
@@ -96,7 +97,7 @@ export class ReportComponent implements OnInit {
           this.report = {
             key: membershipTypeId,
             updated_at: new Date().getTime().toString(),
-            version_at: '0.0.0', // TODO: get version number
+            version_at: environment.VERSION,
             destinyUserInfo: this.profile.userInfo,
             pgcrs: []
           };
