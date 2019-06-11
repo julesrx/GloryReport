@@ -1,7 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+
+import { MarkdownModule } from 'ngx-markdown';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -35,7 +37,8 @@ import { ChangelogComponent } from './components/changelog/changelog.component';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    RoutesModule
+    RoutesModule,
+    MarkdownModule.forRoot({ loader: HttpClient })
   ],
   providers: [
     BungieHttpService

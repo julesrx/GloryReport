@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-changelog',
@@ -8,21 +7,16 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ChangelogComponent implements OnInit {
 
-  public changelog: string;
+  public error: string;
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
   ngOnInit() {
-    let unavailable: string = '<p>Changelog unavailable...</p>';
+    this.error = '';
+  }
 
-    try {
-      this.http.get('https://raw.githubusercontent.com/JulesRx/GloryReport/master/CHANGELOG.md')
-        .subscribe((res: string) => {
-          this.changelog = res || res.length ? res : unavailable;
-        });
-    } catch (e) {
-      this.changelog = unavailable;
-    }
+  onError(e: Event) {
+    this.error = '<p>Changelog unavailable...</p>';
   }
 
 }
