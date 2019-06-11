@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.5.0] - 2019
+## [0.5.0] - 2019-06-11
 In this version, the app was started from scratch to improve organisation and add some minor performance improvements.
 ### Added
 - Get team composition : check how many times with played with or against someone (WiP)
