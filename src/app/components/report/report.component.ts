@@ -34,6 +34,8 @@ export class ReportComponent implements OnInit, OnDestroy {
   // Does not work properly
   @ViewChild(DetailsComponent) childRef: DetailsComponent;
 
+  private subs: Subscription[];
+
   public membershipTypeId: BehaviorSubject<string>;
 
   public profile: DestinyProfileComponent;
@@ -60,8 +62,6 @@ export class ReportComponent implements OnInit, OnDestroy {
     });
   }
 
-  private subs: Subscription[];
-
   constructor(
     private bHttp: BungieHttpService,
     private route: ActivatedRoute,
@@ -84,6 +84,7 @@ export class ReportComponent implements OnInit, OnDestroy {
       }
     });
 
+    // TODO: Add different modes for different types of connection => slow (wait and add seconds before next request) or fast
     this.membershipTypeId.subscribe((membershipTypeId: string) => {
       let membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
       let membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);

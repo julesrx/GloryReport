@@ -3,7 +3,7 @@ import { Component, OnInit, Input, OnDestroy, Output, EventEmitter, /*DoCheck, I
 import * as moment from 'moment';
 import { ServerResponse } from 'bungie-api-ts/common';
 import { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2/interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 import { Encounter } from 'src/app/interfaces/encounter';
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
@@ -21,11 +21,12 @@ export class DetailsComponent implements OnInit, /*DoCheck,*/ OnDestroy {
 
   @Output() close: EventEmitter<any> = new EventEmitter();
 
+  private subs: Subscription[];
+  // private differ: any;
+
   public displayTeams: boolean;
   public ally: number;
   public adv: number;
-
-  // private differ: any;
 
   constructor(
     private typeIdServive: MembershipTypeIdService,
@@ -36,6 +37,8 @@ export class DetailsComponent implements OnInit, /*DoCheck,*/ OnDestroy {
   }
 
   ngOnInit() {
+    this.subs = [];
+
     this.displayTeams = false;
     this.ally = 0;
     this.adv = 0;
@@ -59,14 +62,16 @@ export class DetailsComponent implements OnInit, /*DoCheck,*/ OnDestroy {
       let membershipId: string = this.typeIdServive.getMembershipId(mti);
 
       this.encounter.activities.forEach(a => {
-        this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + a.instanceId + '/', true)
-          .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-            // TODO: Can be rumble, i.e: no teams, so errors
-            playerTeamId = res.Response.entries.find(e => e.player.destinyUserInfo.membershipId == membershipId).values['team'].basic.value;
-            encounterTeamId = res.Response.entries.find(e => e.player.destinyUserInfo.membershipId == this.encounter.membershipId).values['team'].basic.value;
+        this.subs.push(
+          this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + a.instanceId + '/', true)
+            .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+              // TODO: Can be rumble, i.e: no teams, so errors
+              playerTeamId = res.Response.entries.find(e => e.player.destinyUserInfo.membershipId == membershipId).values['team'].basic.value;
+              encounterTeamId = res.Response.entries.find(e => e.player.destinyUserInfo.membershipId == this.encounter.membershipId).values['team'].basic.value;
 
-            playerTeamId == encounterTeamId ? this.ally++ : this.adv++;
-          });
+              playerTeamId == encounterTeamId ? this.ally++ : this.adv++;
+            })
+        );
       });
     });
   }
@@ -77,6 +82,7 @@ export class DetailsComponent implements OnInit, /*DoCheck,*/ OnDestroy {
 
   ngOnDestroy() {
     this.encounter = null;
+    this.subs.forEach(s => s.unsubscribe());
   }
 
 }
