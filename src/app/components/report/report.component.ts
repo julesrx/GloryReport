@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
@@ -21,6 +21,7 @@ import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { Encounter } from 'src/app/interfaces/encounter';
 import { ActivityShort } from 'src/app/interfaces/activity-short';
+import { DetailsComponent } from './details/details.component';
 
 @Component({
   selector: 'app-report',
@@ -28,6 +29,9 @@ import { ActivityShort } from 'src/app/interfaces/activity-short';
   styleUrls: ['./report.component.scss']
 })
 export class ReportComponent implements OnInit {
+
+  // Does not work properly
+  @ViewChild(DetailsComponent) childRef: DetailsComponent;
 
   public membershipTypeId: BehaviorSubject<string>;
 
@@ -194,6 +198,11 @@ export class ReportComponent implements OnInit {
   }
 
   selectPlayer(encounter: Encounter) {
+    // TODO: Improve details component destruction
+    if (this.childRef) {
+      console.log('yes')
+      this.childRef.ngOnDestroy();
+    }
     this.selection = encounter;
   }
 

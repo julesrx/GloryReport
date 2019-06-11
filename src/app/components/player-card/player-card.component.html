@@ -3,7 +3,7 @@
     {{ encounter.displayName }} : {{ encounter.count }}
   </span>
 
-  <span class="plus" (click)="getStats()">+</span>
+  <span class="plus" (click)="getStats()" [ngStyle]="{'display': 'none'}">+</span>
 
   <span *ngIf="loading">loading...</span>
 </div>

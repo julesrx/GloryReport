@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <report-details [encounter]="selection" *ngIf="selection != null" (close)="selection = null"></report-details>
+  <report-details [membershipTypeId]="membershipTypeId" [encounter]="selection" *ngIf="selection != null" (close)="selection = null"></report-details>
 </div>
 
 <p *ngIf="private && !encounters.length">{{ message }}</p>
