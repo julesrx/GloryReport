@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
@@ -12,7 +12,7 @@ import {
   DestinyPostGameCarnageReportData,
   DestinyPostGameCarnageReportEntry
 } from 'bungie-api-ts/destiny2/interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { Report } from 'src/app/interfaces/report';
@@ -29,7 +29,7 @@ import { DetailsComponent } from './details/details.component';
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.scss']
 })
-export class ReportComponent implements OnInit {
+export class ReportComponent implements OnInit, OnDestroy {
 
   // Does not work properly
   @ViewChild(DetailsComponent) childRef: DetailsComponent;
@@ -60,6 +60,8 @@ export class ReportComponent implements OnInit {
     });
   }
 
+  private subs: Subscription[];
+
   constructor(
     private bHttp: BungieHttpService,
     private route: ActivatedRoute,
@@ -67,6 +69,8 @@ export class ReportComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.subs = [];
+
     this.membershipTypeId = new BehaviorSubject('');
     this.characters = [];
     this.activities = [];
@@ -85,78 +89,87 @@ export class ReportComponent implements OnInit {
       let membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
       this.private = false;
 
-      this.bHttp.get('Destiny2/' + membershipType + '/Profile/' + membershipId + '/', false, { components: '100,200' })
-        .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
-          this.profile = res.Response.profile.data;
-          Object.keys(res.Response.characters.data).forEach(key => {
-            this.characters.push(res.Response.characters.data[key]);
-          });
+      this.subs.push(
+        this.bHttp.get('Destiny2/' + membershipType + '/Profile/' + membershipId + '/', false, { components: '100,200' })
+          .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
+            this.profile = res.Response.profile.data;
+            Object.keys(res.Response.characters.data).forEach(key => {
+              this.characters.push(res.Response.characters.data[key]);
+            });
 
-          this.displayName = this.profile.userInfo.displayName;
+            this.displayName = this.profile.userInfo.displayName;
 
-          this.report = {
-            key: membershipTypeId,
-            updated_at: new Date().getTime().toString(),
-            version_at: environment.VERSION,
-            destinyUserInfo: this.profile.userInfo,
-            pgcrs: []
-          };
+            this.report = {
+              key: membershipTypeId,
+              updated_at: new Date().getTime().toString(),
+              version_at: environment.VERSION,
+              destinyUserInfo: this.profile.userInfo,
+              pgcrs: []
+            };
 
-          this.characters.forEach((c: DestinyCharacterComponent) => {
-            this.getActivities(c, [DestinyActivityModeType.AllPvP, DestinyActivityModeType.PrivateMatchesAll]);
+            this.characters.forEach((c: DestinyCharacterComponent) => {
+              this.getActivities(c, [DestinyActivityModeType.AllPvP, DestinyActivityModeType.PrivateMatchesAll]);
+            })
           })
-        });
+      );
     });
   }
 
   getActivities(c: DestinyCharacterComponent, modes: DestinyActivityModeType[], page: number = 0, count: number = 100) {
     modes.forEach((mode: DestinyActivityModeType) => {
-      this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, {
+      let options: any = {
         count: 100,
         mode: mode,
         page: page
-      }).subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-        if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
-          if (res.Response.activities && res.Response.activities.length) {
-            res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-              this.activities.push(act);
-              this.getPGCR(act.activityDetails.instanceId);
-            });
+      };
 
-            this.getActivities(c, modes, page += 1, count);
-          }
-        } else {
-          // TODO: Fix error handling, does not enter subscribe when error in response (500)
-          this.private = true;
-          this.message = res.ErrorStatus;
-        }
-      });
+      this.subs.push(
+        this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, options)
+          .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
+            if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+              if (res.Response.activities && res.Response.activities.length) {
+                res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+                  this.activities.push(act);
+                  this.getPGCR(act.activityDetails.instanceId);
+                });
+
+                this.getActivities(c, modes, page += 1, count);
+              }
+            } else {
+              // TODO: Fix error handling, does not enter subscribe when error in response (500)
+              this.private = true;
+              this.message = res.ErrorStatus;
+            }
+          })
+      );
     });
   }
 
   getPGCR(instanceId: string) {
-    this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + instanceId + '/', true)
-      .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-        let pgcr: PostGameCarnageReport = {
-          period: res.Response.period,
-          activityDetails: res.Response.activityDetails,
-          entries: []
-        };
-
-        res.Response.entries.forEach((ent: DestinyPostGameCarnageReportEntry) => {
-          let entry: PostGameCarnageReportEntry = {
-            characterClass: ent.player.characterClass,
-            characterId: ent.characterId,
-            player: ent.player.destinyUserInfo,
-            standing: ent.standing
+    this.subs.push(
+      this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + instanceId + '/', true)
+        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+          let pgcr: PostGameCarnageReport = {
+            period: res.Response.period,
+            activityDetails: res.Response.activityDetails,
+            entries: []
           };
 
-          pgcr.entries.push(entry);
-        });
+          res.Response.entries.forEach((ent: DestinyPostGameCarnageReportEntry) => {
+            let entry: PostGameCarnageReportEntry = {
+              characterClass: ent.player.characterClass,
+              characterId: ent.characterId,
+              player: ent.player.destinyUserInfo,
+              standing: ent.standing
+            };
 
-        this.getEncounters(pgcr);
-        this.report.pgcrs.push(pgcr);
-      });
+            pgcr.entries.push(entry);
+          });
+
+          this.getEncounters(pgcr);
+          this.report.pgcrs.push(pgcr);
+        })
+    );
   }
 
   getEncounters(pgcr: PostGameCarnageReport) {
@@ -211,6 +224,13 @@ export class ReportComponent implements OnInit {
     activities.sort((a, b) => {
       return a.period < b.period ? 1 : -1;
     });
+  }
+
+  ngOnDestroy() {
+    this.membershipTypeId.unsubscribe();
+
+    // This stops requests when changing component
+    this.subs.forEach(s => s.unsubscribe());
   }
 
 }
