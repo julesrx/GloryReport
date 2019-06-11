@@ -1,53 +1,44 @@
-import { BrowserModule, Title } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
-import { MarkdownModule, MarkedOptions } from 'ngx-markdown';
+import { MarkdownModule } from 'ngx-markdown';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BungieHttpService } from './services/bungie-http.service';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { RoutesModule } from './routes/routes.module';
-import { SearchComponent } from './search/search.component';
-import { HomeComponent } from './home/home.component';
-import { FooterComponent } from './footer/footer.component';
-import { NavComponent } from './nav/nav.component';
-import { ReportComponent } from './report/report.component';
-import { FaqComponent } from './faq/faq.component';
-import { ChangelogComponent } from './changelog/changelog.component';
-import { LoadingReducePipe } from './pipes/loading-reduce.pipe';
-import { PlayerComponent } from './report/player/player.component';
-import { DetailedComponent } from './report/detailed/detailed.component';
+import { HomeComponent } from './components/home/home.component';
+import { NavComponent } from './components/nav/nav.component';
+import { SearchComponent } from './components/search/search.component';
+import { ReportComponent } from './components/report/report.component';
+import { DetailsComponent } from './components/report/details/details.component';
+import { PlayerCardComponent } from './components/player-card/player-card.component';
+import { SortByPipe } from './pipes/sort-by.pipe';
+import { FaqComponent } from './components/faq/faq.component';
+import { ChangelogComponent } from './components/changelog/changelog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SearchComponent,
     HomeComponent,
-    FooterComponent,
     NavComponent,
+    SearchComponent,
     ReportComponent,
+    DetailsComponent,
+    PlayerCardComponent,
+    SortByPipe,
     FaqComponent,
-    ChangelogComponent,
-    LoadingReducePipe,
-    PlayerComponent,
-    DetailedComponent
+    ChangelogComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
     RoutesModule,
-    MarkdownModule.forRoot({
-      loader: HttpClient,
-      markedOptions: {
-        provide: MarkedOptions
-      }
-    }),
+    MarkdownModule.forRoot({ loader: HttpClient })
   ],
   providers: [
     BungieHttpService
