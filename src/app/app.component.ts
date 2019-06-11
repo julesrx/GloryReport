@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
-import { environment } from 'src/environments/environment';
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,6 +11,8 @@ export class AppComponent implements OnInit {
   public constructor(private titleService: Title) { }
 
   ngOnInit() {
-    this.titleService.setTitle(environment.appTitle + ' v' + environment.VERSION);
+    // TODO: Add custom title servive to get version
+    this.titleService.setTitle('GloryReport 0.5.0');
   }
+
 }

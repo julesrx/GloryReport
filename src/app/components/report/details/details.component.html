@@ -1,0 +1,18 @@
+<h3>{{ encounter.displayName }}</h3>
+<span class="close" (click)="close.emit(null)">&times;</span>
+
+<button *ngIf="!displayTeams" (click)="getTeams()" [ngStyle]="{'display': 'block'}">Get teams</button>
+<div *ngIf="displayTeams">
+  <span>Same team : {{ ally }}</span>
+  <br>
+  <span>Opposing team : {{ adv }}</span>
+</div>
+
+<ul class="activities">
+  <!-- TODO: Add sort pipe -->
+  <li *ngFor="let act of encounter.activities">
+    <a [href]="'https://guardian.gg/2/pgcr/' + act.instanceId" target="_blank">
+      {{ getDate(act.period) }}
+    </a>
+  </li>
+</ul>
