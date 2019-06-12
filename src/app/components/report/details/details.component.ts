@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, Output, EventEmitter, /*DoCheck, IterableDiffers*/ } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
 
 import * as moment from 'moment';
 import { ServerResponse } from 'bungie-api-ts/common';
@@ -8,13 +8,14 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { Encounter } from 'src/app/interfaces/encounter';
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
+import { ActivityShort } from 'src/app/interfaces/activity-short';
 
 @Component({
   selector: 'report-details',
   templateUrl: './details.component.html',
   styleUrls: ['./details.component.scss']
 })
-export class DetailsComponent implements OnInit, /*DoCheck,*/ OnDestroy {
+export class DetailsComponent implements OnInit, OnDestroy {
 
   @Input() membershipTypeId: BehaviorSubject<string>;
   @Input() encounter: Encounter;
@@ -22,19 +23,32 @@ export class DetailsComponent implements OnInit, /*DoCheck,*/ OnDestroy {
   @Output() close: EventEmitter<any> = new EventEmitter();
 
   private subs: Subscription[];
-  // private differ: any;
 
   public displayTeams: boolean;
   public ally: number;
   public adv: number;
 
+  public allys: string[];
+  public advs: string[];
+
+  public filter: string;
+  get filteredActs(): ActivityShort[] {
+    switch (this.filter) {
+      case 'ally':
+        return this.encounter.activities.filter(a => this.allys.indexOf(a.instanceId) > 1);
+
+      case 'adv':
+        return this.encounter.activities.filter(a => this.advs.indexOf(a.instanceId) > 1);
+
+      default:
+        return this.encounter.activities;
+    }
+  }
+
   constructor(
     private typeIdServive: MembershipTypeIdService,
-    private bHttp: BungieHttpService,
-    // private differs: IterableDiffers
-  ) {
-    // this.differ = differs.find([]).create(null);
-  }
+    private bHttp: BungieHttpService
+  ) { }
 
   ngOnInit() {
     this.subs = [];
@@ -42,11 +56,7 @@ export class DetailsComponent implements OnInit, /*DoCheck,*/ OnDestroy {
     this.displayTeams = false;
     this.ally = 0;
     this.adv = 0;
-  }
-
-  ngDoCheck() {
-    // const change = this.differ.diff(this.encounter.activities);
-    // console.log(change);
+    this.filter = 'all';
   }
 
   // TODO: Do this in report component with entries
@@ -54,6 +64,8 @@ export class DetailsComponent implements OnInit, /*DoCheck,*/ OnDestroy {
     this.displayTeams = true;
     this.ally = 0;
     this.adv = 0;
+    this.allys = [];
+    this.advs = [];
 
     let playerTeamId: number;
     let encounterTeamId: number;
@@ -66,10 +78,21 @@ export class DetailsComponent implements OnInit, /*DoCheck,*/ OnDestroy {
           this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + a.instanceId + '/', true)
             .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
               // TODO: Can be rumble, i.e: no teams, so errors
-              playerTeamId = res.Response.entries.find(e => e.player.destinyUserInfo.membershipId == membershipId).values['team'].basic.value;
-              encounterTeamId = res.Response.entries.find(e => e.player.destinyUserInfo.membershipId == this.encounter.membershipId).values['team'].basic.value;
+              try {
+                playerTeamId = res.Response.entries.find(e => e.player.destinyUserInfo.membershipId == membershipId).values['team'].basic.value;
+                encounterTeamId = res.Response.entries.find(e => e.player.destinyUserInfo.membershipId == this.encounter.membershipId).values['team'].basic.value;
 
-              playerTeamId == encounterTeamId ? this.ally++ : this.adv++;
+                if (playerTeamId == encounterTeamId) {
+                  this.ally++;
+                  this.allys.push(res.Response.activityDetails.instanceId);
+                } else {
+                  this.adv++;
+                  this.advs.push(res.Response.activityDetails.instanceId);
+                }
+              } catch (e) {
+                this.adv++;
+                this.advs.push(res.Response.activityDetails.instanceId);
+              }
             })
         );
       });
