@@ -1,5 +1,6 @@
 <h2>{{ displayName }}</h2>
 <p *ngIf="displayName && displayName.length">You encountered a total of {{ encounters.length }} players over the course of {{ fetched }}/{{ activities.length }} PvP games.</p>
+<!-- <button type="button" (click)="clearStorage()" *ngIf="1 == 2">Clear Storage</button> -->
 
 <div *ngIf="!private && displayName && displayName.length" class="flex">
   <div class="encounters">
