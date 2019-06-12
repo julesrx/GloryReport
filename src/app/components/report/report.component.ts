@@ -121,44 +121,42 @@ export class ReportComponent implements OnInit, OnDestroy {
             };
 
             this.characters.forEach((c: DestinyCharacterComponent) => {
-              this.getActivities(c, [DestinyActivityModeType.AllPvP], new Date(this.report.updated_at));
+              this.getActivities(c, DestinyActivityModeType.AllPvP, new Date(this.report.updated_at));
             });
           })
       );
     });
   }
 
-  getActivities(c: DestinyCharacterComponent, modes: DestinyActivityModeType[], date: Date = null, page: number = 0, count: number = 100) {
-    modes.forEach((mode: DestinyActivityModeType) => {
-      let options: any = {
-        count: 100,
-        mode: mode,
-        page: page
-      };
+  getActivities(c: DestinyCharacterComponent, mode: DestinyActivityModeType, date: Date = null, page: number = 0, count: number = 100) {
+    let options: any = {
+      count: 100,
+      mode: mode,
+      page: page
+    };
 
-      this.subs.push(
-        this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, options)
-          .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-            if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
-              if (res.Response.activities && res.Response.activities.length) {
-                res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-                  this.activities.push(act);
-                  this.getPGCR(act.activityDetails.instanceId);
+    this.subs.push(
+      this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, options)
+        .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
+          if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+            if (res.Response.activities && res.Response.activities.length) {
+              res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+                this.activities.push(act);
+                this.getPGCR(act.activityDetails.instanceId);
 
-                  // TODO: Check the last update
-                  // this.localReportService.saveActivity(act, this.typeIdService.combine(c.membershipType, c.membershipId));
-                });
+                // TODO: Check the last update
+                // this.localReportService.saveActivity(act, this.typeIdService.combine(c.membershipType, c.membershipId));
+              });
 
-                this.getActivities(c, modes, date, page += 1, count);
-              }
-            } else {
-              // TODO: Fix error handling, does not enter subscribe when error in response (500)
-              this.private = true;
-              this.message = res.ErrorStatus;
+              this.getActivities(c, mode, date, page += 1, count);
             }
-          })
-      );
-    });
+          } else {
+            // TODO: Fix error handling, does not enter subscribe when error in response (500)
+            this.private = true;
+            this.message = res.ErrorStatus;
+          }
+        })
+    );
   }
 
   getPGCR(instanceId: string) {
