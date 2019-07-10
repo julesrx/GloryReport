@@ -10,11 +10,11 @@ import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
 })
 export class BungieHttpService {
 
-  public error: BehaviorSubject<ServerResponse<any>>;
-  public membershipTypes: any[];
-
   private _origin: string;
   private _apiKey: string;
+
+  public error: BehaviorSubject<ServerResponse<any>>;
+  public membershipTypes: any[];
 
   constructor(private http: HttpClient) {
     this.error = new BehaviorSubject(null);

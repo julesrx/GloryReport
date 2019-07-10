@@ -1,16 +1,21 @@
 <h3>{{ encounter.displayName }}</h3>
 <span class="close" (click)="close.emit(null)">&times;</span>
 
-<button *ngIf="!displayTeams" (click)="getTeams()" [ngStyle]="{'display': 'block'}">Get teams</button>
+<button (click)="getTeams()" [ngStyle]="{'display': 'block'}">Get teams</button>
 <div *ngIf="displayTeams">
   <span>Same team : {{ ally }}</span>
   <br>
   <span>Opposing team : {{ adv }}</span>
 </div>
+<!-- <select name="sort" id="sort" *ngIf="displayTeams" [(ngModel)]="filter">
+  <option value="all" selected>All</option>
+  <option value="ally">Ally</option>
+  <option value="adv">Adv</option>
+</select> -->
 
 <ul class="activities">
   <!-- TODO: Add sort pipe -->
-  <li *ngFor="let act of encounter.activities">
+  <li *ngFor="let act of filteredActs">
     <a [href]="'https://guardian.gg/2/pgcr/' + act.instanceId" target="_blank">
       {{ getDate(act.period) }}
     </a>
