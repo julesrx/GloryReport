@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.6.1] - 2019-07-10
+### Added
+- calculating team composition (WIP)
+- meta tags
+
+### Fixed
+- infinite loop when fetching activities
+
 ## [0.6.0] - 2019-06-11
 ### Added
 - version number in document title
@@ -52,6 +60,7 @@ Preparation for app rework.
 - FAQ page
 - Changelog page
 
+[0.6.1]: https://github.com/julesrx/gloryreport/releases/tag/0.6.1
 [0.6.0]: https://github.com/julesrx/gloryreport/releases/tag/0.6.0
 [0.5.0]: https://github.com/julesrx/gloryreport/releases/tag/0.5.0
 [0.3.0]: https://github.com/julesrx/gloryreport/releases/tag/0.3.0
