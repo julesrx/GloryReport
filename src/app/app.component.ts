@@ -13,6 +13,7 @@ export class AppComponent implements OnInit {
   public constructor(private titleService: Title) { }
 
   ngOnInit() {
-    this.titleService.setTitle(environment.appTitle + ' v' + environment.VERSION);
+    this.titleService.setTitle(environment.APP_NAME + ' ' + environment.VERSION);
   }
+
 }

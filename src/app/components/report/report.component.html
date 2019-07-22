@@ -1,0 +1,22 @@
+<h2>{{ displayName }}</h2>
+<p *ngIf="displayName && displayName.length">You encountered a total of {{ encounters.length }} players over the course of {{ fetched }}/{{ activities.length }} PvP games.</p>
+<!-- <button type="button" (click)="clearStorage()" *ngIf="1 == 2">Clear Storage</button> -->
+
+<div *ngIf="!private && displayName && displayName.length" class="flex">
+  <div class="encounters">
+    <h3>Encounters</h3>
+    <p>Only the top 100 are displayed.</p>
+    <label for="filter">Search a player
+      <input type="text" name="filter" id="filter" [(ngModel)]="filter">
+    </label>
+    <hr>
+
+    <div class="players">
+      <app-player-card *ngFor="let enc of filteredEncounters | slice:0:100; let i = index" [encounter]="enc" [membershipTypeId]="typeIdService.combine(enc.membershipType, enc.membershipId)" (select)="selectPlayer(enc)"></app-player-card>
+    </div>
+  </div>
+
+  <report-details [membershipTypeId]="membershipTypeId" [encounter]="selection" *ngIf="selection != null" (close)="selection = null"></report-details>
+</div>
+
+<p *ngIf="private && !encounters.length">{{ message }}</p>

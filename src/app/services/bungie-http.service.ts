@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -10,14 +10,11 @@ import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
 })
 export class BungieHttpService {
 
-  public error: BehaviorSubject<ServerResponse<any>>;
-  public membershipTypes: any[];
-
-  public bungiePlatformEndpoint: string;
-  public statsPlatformEndpoint: string;
-
   private _origin: string;
   private _apiKey: string;
+
+  public error: BehaviorSubject<ServerResponse<any>>;
+  public membershipTypes: any[];
 
   constructor(private http: HttpClient) {
     this.error = new BehaviorSubject(null);
@@ -32,9 +29,6 @@ export class BungieHttpService {
         break;
     }
 
-    this.bungiePlatformEndpoint = 'https://www.bungie.net/Platform/';
-    this.statsPlatformEndpoint = 'https://stats.bungie.net/Platform/';
-
     this.membershipTypes = [
       { title: 'Xbox', icon: 'fab fa-xbox', value: BungieMembershipType.TigerXbox },
       { title: 'Playstation', icon: 'fab fa-playstation', value: BungieMembershipType.TigerPsn },
@@ -42,13 +36,19 @@ export class BungieHttpService {
     ];
   }
 
-  get(url: string): Observable<ServerResponse<any>> {
-    const httpOptions = {
+  get(url: string, stats: boolean = false, params: any = {}, headers: any = {}): Observable<ServerResponse<any>> {
+    const options = {
       headers: new HttpHeaders({
+        ...headers,
         'x-api-key': this._apiKey
+      }),
+      params: new HttpParams({
+        fromObject: params
       })
     };
 
-    return this.http.get<ServerResponse<any>>(url, httpOptions);
+    const endpoint: string = 'https://' + (stats ? 'stats' : 'www') + '.bungie.net/Platform/';
+    return this.http.get<ServerResponse<any>>(endpoint + url, options);
   }
+
 }
