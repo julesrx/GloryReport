@@ -18,6 +18,7 @@ import { PlayerCardComponent } from './components/player-card/player-card.compon
 import { SortByPipe } from './pipes/sort-by.pipe';
 import { FaqComponent } from './components/faq/faq.component';
 import { ChangelogComponent } from './components/changelog/changelog.component';
+import { ClansComponent } from './components/clans/clans.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { ChangelogComponent } from './components/changelog/changelog.component';
     PlayerCardComponent,
     SortByPipe,
     FaqComponent,
-    ChangelogComponent
+    ChangelogComponent,
+    ClansComponent
   ],
   imports: [
     BrowserModule,

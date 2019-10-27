@@ -1,0 +1,29 @@
+<h2>Clan search</h2>
+
+<form class="criterias" (submit)="addName()">
+  <label for="name">Add a clan name : </label>
+  <input type="text" [(ngModel)]="name" name="name">
+
+  <button type="submit">Add</button>
+
+  <ul>
+    <li *ngFor="let name of names">{{ name }}</li>
+  </ul>
+</form>
+
+<div class="search-results">
+  <button type="button" (click)="searchClans()">Search clans</button>
+
+  <ul>
+    <li *ngFor="let clan of clans">
+      <b>{{ clan.name }}</b> :
+
+      <a *ngIf="clan.found" [href]="'https://www.bungie.net/en/ClanV2/Index?groupId=' + clan.id" target="_blank">
+       found.
+      </a>
+      <span *ngIf="!clan.found">
+       not found.
+      </span>
+    </li>
+  </ul>
+</div>
