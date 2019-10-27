@@ -1,0 +1,20 @@
+<h2>Clan search</h2>
+
+<div class="criterias">
+  <label for="name">Add a clan name : </label>
+  <input type="text" [(ngModel)]="name" name="name">
+
+  <button type="button" (click)="addName()">Add</button>
+
+  <ul>
+    <li *ngFor="let name of names">{{ name }}</li>
+  </ul>
+</div>
+
+<div class="search-results">
+  <button type="button" (click)="searchClans()">Search clans</button>
+<!--
+  <ul>
+    <li></li>
+  </ul> -->
+</div>
