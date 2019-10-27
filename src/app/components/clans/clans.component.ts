@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { GroupType, GroupResponse } from 'bungie-api-ts/groupv2/interfaces';
+import { GroupType, GroupResponse, GroupV2 } from 'bungie-api-ts/groupv2/interfaces';
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { ServerResponse } from 'bungie-api-ts/common';
 
@@ -18,6 +18,8 @@ export class ClansComponent implements OnInit {
   public name: string;
   public names: string[];
 
+  public clans: object[];
+
   constructor(
     private http: HttpClient,
     private bHttp: BungieHttpService,
@@ -27,18 +29,23 @@ export class ClansComponent implements OnInit {
   ngOnInit() {
     this.name = '';
     this.names = [];
+    this.clans = [];
   }
 
   searchClans(): void {
+    if (this.clans.length) this.clans = [];
+
     if (this.names.length) {
       this.names.forEach(name => {
         this.bHttp.get('/GroupV2/Name/' + name + '/' + GroupType.Clan + '/')
           .subscribe(
             (res: ServerResponse<GroupResponse>) => {
-              console.log('Clan found : ' + res.Response.detail.motto);
+              let group: GroupV2 = res.Response.detail;
+
+              this.addClan(group.name, true, group.groupId);
             },
             (err: HttpErrorResponse) => {
-              console.log('clan not found');
+              this.addClan(name, false);
             });
       });
     }
@@ -47,5 +54,17 @@ export class ClansComponent implements OnInit {
   addName(): void {
     this.names.push(this.name);
     this.name = '';
+  }
+
+  addClan(name: string, found: boolean, id: string = null): void {
+    this.clans.push({
+      name: name,
+      found: found,
+      id: id
+    });
+
+    this.clans.sort((a, b) => {
+      return a['name'] > b['name'] ? 1 : -1;
+    });
   }
 }
