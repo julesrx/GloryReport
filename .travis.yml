@@ -5,10 +5,6 @@ node_js:
 dist: trusty
 sudo: required
 
-# branches:
-#   only:
-#   - master
-
 before_script:
   - npm install -g @angular/cli
 
@@ -24,5 +20,5 @@ deploy:
   keep_history: true
   local_dir: dist/GloryReport
   on:
-    branch: master
+    branch: feature/travis-ci
   name: Travis CI
