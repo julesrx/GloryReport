@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2019-11-12
+Now deploying with Travis CI.
+
 ## [0.6.1] - 2019-07-10
 ### Added
 - calculating team composition (WIP)
@@ -60,6 +63,7 @@ Preparation for app rework.
 - FAQ page
 - Changelog page
 
+[0.7.0]: https://github.com/julesrx/gloryreport/releases/tag/0.7.0
 [0.6.1]: https://github.com/julesrx/gloryreport/releases/tag/0.6.1
 [0.6.0]: https://github.com/julesrx/gloryreport/releases/tag/0.6.0
 [0.5.0]: https://github.com/julesrx/gloryreport/releases/tag/0.5.0

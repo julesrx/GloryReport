@@ -1,7 +1,7 @@
 {
   "name": "glory.report",
   "description": "Destiny 2 PvP encounters, ordered and classified. GloryReport is a Destiny fan-made site.",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "homepage": "https://glory.report",
   "author": {
     "name": "julesrx",
@@ -21,11 +21,10 @@
     "ng": "ng",
     "start": "ng serve --host dev.glory.report",
     "build": "ng build",
-    "prod": "ng build --prod",
+    "prod": "ng build --prod && cp dist/GloryReport/index.html dist/GloryReport/404.html && cp CNAME dist/GloryReport/CNAME",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "ngh": "ng build --prod && cp dist/GloryReport/index.html dist/GloryReport/404.html && cp CNAME dist/GloryReport/CNAME && ngh --dir dist/GloryReport"
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
