@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - "9"
+
+dist: trusty
+sudo: required
+
+before_script:
+  - npm install -g @angular/cli
+
+script:
+# - npm run test
+# - npm run e2e
+- ng build --prod && cp dist/GloryReport/index.html dist/GloryReport/404.html && cp CNAME dist/GloryReport/CNAME
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  local_dir: dist/GloryReport
+  on:
+    branch: master
