@@ -12,13 +12,18 @@
   </li>
 </ul> -->
 
-<p>Last sessions :</p>
+<p *ngIf="sessions.length">Last sessions :</p>
 <ul *ngIf="sessions.length">
   <ng-container *ngFor="let sess of sessions">
-    <li *ngIf="sess.Activities.length">
-      <span (click)="getPGCRs(sess)">{{ sess.Day }} :</span>
+    <li *ngIf="sess.activities.length">
+      <span (click)="getPGCRs(sess)">{{ formatPeriod(sess.day, 'LL') }} :</span>
+      <ul *ngIf="sess.weapons.length">
+        <li *ngFor="let weapon of sess.weapons" style="color:red">
+          {{ weapon.referenceId }} : {{ weapon.uniqueWeaponKills }} kills
+        </li>
+      </ul>
       <ul>
-        <li *ngFor="let act of sess.Activities">
+        <li *ngFor="let act of sess.activities">
           {{ formatPeriod(act.period, 'HH:mm:ss') }} : {{ act.activityDetails.instanceId }}
         </li>
       </ul>

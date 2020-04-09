@@ -11,7 +11,8 @@ import {
   DestinyActivityModeType,
   DestinyActivityHistoryResults,
   DestinyHistoricalStatsPeriodGroup,
-  DestinyPostGameCarnageReportData
+  DestinyPostGameCarnageReportData,
+  DestinyPostGameCarnageReportEntry
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 
@@ -107,8 +108,9 @@ export class ReportComponent implements OnInit {
 
     let typedGroups = _.map(groups, (group: DestinyHistoricalStatsPeriodGroup[], day: string) => {
       let t: GameSession = {
-        Day: day,
-        Activities: group
+        day: day,
+        activities: group,
+        weapons: []
       };
 
       return t;
@@ -120,14 +122,35 @@ export class ReportComponent implements OnInit {
   }
 
   getPGCRs(session: GameSession): void {
-    session.Activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+    session.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
       this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
         .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-          console.log(res.Response);
+          let pgcr: DestinyPostGameCarnageReportData = res.Response;
+
+          pgcr.entries.filter(e => e.characterId == this.selectedCharacter.characterId).forEach(e => {
+            e.extended.weapons.forEach(weapon => {
+              if (session.weapons.some(w => w.referenceId == weapon.referenceId)) {
+                let stat = session.weapons.find(w => w.referenceId == weapon.referenceId);
+                stat.uniqueWeaponKills += weapon.values['uniqueWeaponKills'].basic.value;
+                stat.uniqueWeaponPrecisionKills += weapon.values['uniqueWeaponPrecisionKills'].basic.value;
+                stat.uniqueWeaponKillsPrecisionKills += weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value;
+              } else {
+                session.weapons.push({
+                  referenceId: weapon.referenceId,
+                  uniqueWeaponKills: weapon.values['uniqueWeaponKills'].basic.value,
+                  uniqueWeaponPrecisionKills: weapon.values['uniqueWeaponPrecisionKills'].basic.value,
+                  uniqueWeaponKillsPrecisionKills: weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value
+                });
+              }
+            });
+          });
+
+          console.log(session.weapons);
         });
     });
   }
 
+  // TODO: add locale support
   formatPeriod(period: string, format: string): string {
     return moment(period).format(format);
   }
