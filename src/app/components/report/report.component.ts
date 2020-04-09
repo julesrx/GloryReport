@@ -68,16 +68,16 @@ export class ReportComponent implements OnInit {
           });
           this.selectedCharacter = this.characters[0];
 
-          this.getActivities();
+          this.getActivities(100, 0);
         });
     });
   }
 
-  getActivities(): void {
+  getActivities(count: number, page: number): void {
     let options: any = {
-      count: 100,
-      mode: DestinyActivityModeType.AllPvP,
-      page: 0
+      count: count,
+      page: page,
+      mode: DestinyActivityModeType.AllPvP
     };
 
     this.bHttp.get(
@@ -87,14 +87,14 @@ export class ReportComponent implements OnInit {
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
         if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
           if (res.Response.activities && res.Response.activities.length) {
-            this.activities = res.Response.activities;
-            // this.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-            //   this.getPGCR(act.activityDetails.instanceId);
-            // });
+            this.activities = _.concat(this.activities, res.Response.activities);
 
-            this.getSessions(this.activities);
+            this.getSessions(res.Response.activities);
+            if (page < 4) {
+              this.getActivities(count, page += 1);
+            }
           }
-        } else { console.log('Profile in private'); }
+        } else { console.error('Profile in private'); }
       });
   }
 
@@ -103,14 +103,17 @@ export class ReportComponent implements OnInit {
     let groups: _.Dictionary<DestinyHistoricalStatsPeriodGroup[]> = _.groupBy(activities, (act: DestinyHistoricalStatsPeriodGroup) => {
       return moment(act.period).startOf('day').format();
     });
-    this.sessions = _.map(groups, function (group, day) {
+
+    let typedGroups = _.map(groups, (group: DestinyHistoricalStatsPeriodGroup[], day: string) => {
       return {
         day: moment(day).format('dddd, MMMM Do YYYY'),
         activities: group
       }
     });
 
-    console.log(this.sessions);
+    // default js concat not working ?
+    // no need to order for the moment
+    this.sessions = _.concat(this.sessions, typedGroups)
   }
 
   getPGCR(instanceId: string): void {
