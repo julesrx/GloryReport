@@ -1,0 +1,25 @@
+<div class="alerts" *ngIf="globalAlerts && globalAlerts.length">
+  <span *ngFor="let alert of globalAlerts">{{ alert.AlertHtml }}</span>
+</div>
+
+<nav>
+  <form [formGroup]="searchForm" (submit)="search(searchForm.value)">
+    <label for="gamertag">Search Guardian</label>
+    <br>
+    <input type="text" id="gamertag" formControlName="gamertag" required autofocus>
+    <button type="submit">Search</button>
+  </form>
+
+  <ul *ngIf="users.length">
+    <li *ngFor="let user of users" (click)="selectUser(user)">
+      <img [src]="'http://www.bungie.net' + user.iconPath" alt="">
+      {{ user.displayName }}
+    </li>
+  </ul>
+
+  <ul *ngIf="characters.length">
+    <li *ngFor="let char of characters" (click)="selectCharacter(char)">
+      <img [src]="'http://www.bungie.net' + char.emblemPath" [alt]="'Character ' + char.characterId">
+    </li>
+  </ul>
+</nav>
