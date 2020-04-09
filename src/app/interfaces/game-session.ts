@@ -6,4 +6,5 @@ export interface GameSession {
   day: string;
   activities: DestinyHistoricalStatsPeriodGroup[];
   weapons: GameSessionWeapon[];
+  fetched: boolean;
 }

@@ -110,7 +110,8 @@ export class ReportComponent implements OnInit {
       let t: GameSession = {
         day: day,
         activities: group,
-        weapons: []
+        weapons: [],
+        fetched: false
       };
 
       return t;
@@ -121,33 +122,39 @@ export class ReportComponent implements OnInit {
     this.sessions = _.concat(this.sessions, typedGroups)
   }
 
+  // TODO: display medals and 'medalMatchMostDamage' in priority
   getPGCRs(session: GameSession): void {
-    session.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-      this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
-        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-          let pgcr: DestinyPostGameCarnageReportData = res.Response;
+    if (!session.fetched) {
+      session.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+        this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
+          .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+            let pgcr: DestinyPostGameCarnageReportData = res.Response;
 
-          pgcr.entries.filter(e => e.characterId == this.selectedCharacter.characterId).forEach(e => {
-            e.extended.weapons.forEach(weapon => {
-              if (session.weapons.some(w => w.referenceId == weapon.referenceId)) {
-                let stat = session.weapons.find(w => w.referenceId == weapon.referenceId);
-                stat.uniqueWeaponKills += weapon.values['uniqueWeaponKills'].basic.value;
-                stat.uniqueWeaponPrecisionKills += weapon.values['uniqueWeaponPrecisionKills'].basic.value;
-                stat.uniqueWeaponKillsPrecisionKills += weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value;
-              } else {
-                session.weapons.push({
-                  referenceId: weapon.referenceId,
-                  uniqueWeaponKills: weapon.values['uniqueWeaponKills'].basic.value,
-                  uniqueWeaponPrecisionKills: weapon.values['uniqueWeaponPrecisionKills'].basic.value,
-                  uniqueWeaponKillsPrecisionKills: weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value
+            pgcr.entries.filter(e => e.characterId == this.selectedCharacter.characterId).forEach(e => {
+              // e.extended.weapons is undefined if the player has 0 kills 😥
+              if (e.extended.weapons) {
+                e.extended.weapons.forEach(weapon => {
+                  if (session.weapons.some(w => w.referenceId == weapon.referenceId)) {
+                    let stat = session.weapons.find(w => w.referenceId == weapon.referenceId);
+                    stat.uniqueWeaponKills += weapon.values['uniqueWeaponKills'].basic.value;
+                    stat.uniqueWeaponPrecisionKills += weapon.values['uniqueWeaponPrecisionKills'].basic.value;
+                    stat.uniqueWeaponKillsPrecisionKills += weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value;
+                  } else {
+                    session.weapons.push({
+                      referenceId: weapon.referenceId,
+                      uniqueWeaponKills: weapon.values['uniqueWeaponKills'].basic.value,
+                      uniqueWeaponPrecisionKills: weapon.values['uniqueWeaponPrecisionKills'].basic.value,
+                      uniqueWeaponKillsPrecisionKills: weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value
+                    });
+                  }
                 });
               }
             });
           });
+      });
 
-          console.log(session.weapons);
-        });
-    });
+      session.fetched = true;
+    }
   }
 
   // TODO: add locale support
