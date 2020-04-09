@@ -17,6 +17,7 @@ import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
+import { GameSession } from 'src/app/interfaces/game-session';
 
 @Component({
   selector: 'app-report',
@@ -35,7 +36,7 @@ export class ReportComponent implements OnInit {
 
   public selectedCharacter: DestinyCharacterComponent;
   public activities: DestinyHistoricalStatsPeriodGroup[];
-  public sessions: any;
+  public sessions: GameSession[];
 
   constructor(
     private bHttp: BungieHttpService,
@@ -105,10 +106,12 @@ export class ReportComponent implements OnInit {
     });
 
     let typedGroups = _.map(groups, (group: DestinyHistoricalStatsPeriodGroup[], day: string) => {
-      return {
-        day: moment(day).format('dddd, MMMM Do YYYY'),
-        activities: group
-      }
+      let t: GameSession = {
+        Day: day,
+        Activities: group
+      };
+
+      return t;
     });
 
     // default js concat not working ?
@@ -116,9 +119,13 @@ export class ReportComponent implements OnInit {
     this.sessions = _.concat(this.sessions, typedGroups)
   }
 
-  getPGCR(instanceId: string): void {
-    this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + instanceId + '/', true)
-      .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => { });
+  getPGCRs(session: GameSession): void {
+    session.Activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+      this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
+        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+          console.log(res.Response);
+        });
+    });
   }
 
   formatPeriod(period: string, format: string): string {

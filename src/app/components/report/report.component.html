@@ -15,10 +15,10 @@
 <p>Last sessions :</p>
 <ul *ngIf="sessions.length">
   <ng-container *ngFor="let sess of sessions">
-    <li *ngIf="sess.activities.length">
-      {{ sess.day }} :
+    <li *ngIf="sess.Activities.length">
+      <span (click)="getPGCRs(sess)">{{ sess.Day }} :</span>
       <ul>
-        <li *ngFor="let act of sess.activities">
+        <li *ngFor="let act of sess.Activities">
           {{ formatPeriod(act.period, 'HH:mm:ss') }} : {{ act.activityDetails.instanceId }}
         </li>
       </ul>
