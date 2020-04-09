@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Params, ActivatedRoute } from '@angular/router';
 
-import { BehaviorSubject, Subscription } from 'rxjs';
+import * as _ from 'lodash';
+import * as moment from 'moment';
+import { BehaviorSubject } from 'rxjs';
 import {
   DestinyProfileResponse,
   DestinyProfileComponent,
@@ -33,6 +35,7 @@ export class ReportComponent implements OnInit {
 
   public selectedCharacter: DestinyCharacterComponent;
   public activities: DestinyHistoricalStatsPeriodGroup[];
+  public sessions: any;
 
   constructor(
     private bHttp: BungieHttpService,
@@ -43,6 +46,7 @@ export class ReportComponent implements OnInit {
   ngOnInit(): void {
     this.characters = [];
     this.activities = [];
+    this.sessions = [];
 
     this.membershipTypeId = new BehaviorSubject('');
 
@@ -84,16 +88,37 @@ export class ReportComponent implements OnInit {
         if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
           if (res.Response.activities && res.Response.activities.length) {
             this.activities = res.Response.activities;
-            this.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-              this.getPGCR(act.activityDetails.instanceId);
-            });
+            // this.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+            //   this.getPGCR(act.activityDetails.instanceId);
+            // });
+
+            this.getSessions(this.activities);
           }
         } else { console.log('Profile in private'); }
       });
   }
 
+  getSessions(activities: DestinyHistoricalStatsPeriodGroup[]): void {
+    // TODO: group by date difference (1h)
+    let groups: _.Dictionary<DestinyHistoricalStatsPeriodGroup[]> = _.groupBy(activities, (act: DestinyHistoricalStatsPeriodGroup) => {
+      return moment(act.period).startOf('day').format();
+    });
+    this.sessions = _.map(groups, function (group, day) {
+      return {
+        day: moment(day).format('dddd, MMMM Do YYYY'),
+        activities: group
+      }
+    });
+
+    console.log(this.sessions);
+  }
+
   getPGCR(instanceId: string): void {
     this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + instanceId + '/', true)
       .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => { });
+  }
+
+  formatPeriod(period: string, format: string): string {
+    return moment(period).format(format);
   }
 }

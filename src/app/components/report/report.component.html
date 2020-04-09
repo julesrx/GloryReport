@@ -6,8 +6,22 @@
   </li>
 </ul>
 
-<ul *ngIf="activities.length">
+<!-- <ul *ngIf="activities.length">
   <li *ngFor="let act of activities">
-    {{ act.activityDetails.instanceId }}
+    {{ act.period }} : {{ act.activityDetails.instanceId }}
   </li>
+</ul> -->
+
+<p>Last sessions :</p>
+<ul *ngIf="sessions.length">
+  <ng-container *ngFor="let sess of sessions">
+    <li *ngIf="sess.activities.length">
+      {{ sess.day }} :
+      <ul>
+        <li *ngFor="let act of sess.activities">
+          {{ formatPeriod(act.period, 'HH:mm:ss') }} : {{ act.activityDetails.instanceId }}
+        </li>
+      </ul>
+    </li>
+  </ng-container>
 </ul>
