@@ -11,8 +11,7 @@ import {
   DestinyActivityModeType,
   DestinyActivityHistoryResults,
   DestinyHistoricalStatsPeriodGroup,
-  DestinyPostGameCarnageReportData,
-  DestinyPostGameCarnageReportEntry
+  DestinyPostGameCarnageReportData
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 
@@ -92,6 +91,8 @@ export class ReportComponent implements OnInit {
             this.activities = _.concat(this.activities, res.Response.activities);
 
             this.getSessions(res.Response.activities);
+            this.sessions.slice(0, 3).forEach(s => this.getPGCRs(s));
+
             if (page < 4) {
               this.getActivities(count, page += 1);
             }
@@ -102,11 +103,11 @@ export class ReportComponent implements OnInit {
 
   getSessions(activities: DestinyHistoricalStatsPeriodGroup[]): void {
     // TODO: group by date difference (1h)
-    let groups: _.Dictionary<DestinyHistoricalStatsPeriodGroup[]> = _.groupBy(activities, (act: DestinyHistoricalStatsPeriodGroup) => {
+    let groups: _.Dictionary<DestinyHistoricalStatsPeriodGroup[]> = _.groupBy(activities, act => {
       return moment(act.period).startOf('day').format();
     });
 
-    let typedGroups = _.map(groups, (group: DestinyHistoricalStatsPeriodGroup[], day: string) => {
+    let typedGroups = _.map(groups, (group, day) => {
       let t: GameSession = {
         day: day,
         activities: group,
@@ -125,7 +126,7 @@ export class ReportComponent implements OnInit {
   // TODO: display medals and 'medalMatchMostDamage' in priority
   getPGCRs(session: GameSession): void {
     if (!session.fetched) {
-      session.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+      session.activities.forEach(act => {
         this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
           .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
             let pgcr: DestinyPostGameCarnageReportData = res.Response;
