@@ -11,15 +11,11 @@
   </form>
 
   <ul *ngIf="users.length">
-    <li *ngFor="let user of users" (click)="selectUser(user)">
-      <img [src]="'http://www.bungie.net' + user.iconPath" alt="">
-      {{ user.displayName }}
-    </li>
-  </ul>
-
-  <ul *ngIf="characters.length">
-    <li *ngFor="let char of characters" (click)="selectCharacter(char)">
-      <img [src]="'http://www.bungie.net' + char.emblemPath" [alt]="'Character ' + char.characterId">
+    <li *ngFor="let user of users">
+      <a [routerLink]="'/report/' + getMembershipTypeId(user)">
+        <img [src]="'http://www.bungie.net' + user.iconPath" alt="">
+        {{ user.displayName }}
+      </a>
     </li>
   </ul>
 </nav>

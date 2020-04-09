@@ -1,1 +1,13 @@
-<p>report works!</p>
+<h1 *ngIf="profile">{{ profile.userInfo.displayName }}</h1>
+
+<ul *ngIf="characters.length">
+  <li *ngFor="let char of characters">
+    <img [src]="'https://www.bungie.net' + char.emblemPath" alt="">
+  </li>
+</ul>
+
+<ul *ngIf="activities.length">
+  <li *ngFor="let act of activities">
+    {{ act.activityDetails.instanceId }}
+  </li>
+</ul>
