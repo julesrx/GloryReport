@@ -14,7 +14,10 @@ import { BungieHttpService } from './bungie-http.service';
 })
 export class ManifestService {
 
-  public state: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  public state: ManifestServiceState = {
+    loaded: false
+  };
+  public state$ = new BehaviorSubject<ManifestServiceState>(this.state);
 
   public InventoryItem?: {
     get(hash: number): DestinyInventoryItemDefinition;
@@ -69,8 +72,14 @@ export class ManifestService {
             return manifest[hash];
           }
         }
+
+        this.loaded = true;
       })
     ).subscribe(); // need 114-155 ?
+  }
+
+  set loaded(loaded: boolean) {
+    this.setState({ loaded });
   }
 
   private async saveToDB(manifest: object, version: string) {
@@ -82,4 +91,15 @@ export class ManifestService {
       console.error('Error saving manifest file', e);
     }
   }
+
+  private setState(newState: Partial<ManifestServiceState>) {
+    this.state = { ...this.state, ...newState };
+    this.state$.next(this.state);
+  }
+}
+
+export interface ManifestServiceState {
+  loaded: boolean;
+  // error?: Error;
+  // statusText?: string;
 }
