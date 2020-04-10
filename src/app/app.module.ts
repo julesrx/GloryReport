@@ -8,12 +8,14 @@ import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { ReportComponent } from './components/report/report.component';
 import { ManifestService } from './services/manifest.service';
+import { DestinyItemHashPipe } from './pipes/destiny-item-hash.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    ReportComponent
+    ReportComponent,
+    DestinyItemHashPipe
   ],
   imports: [
     BrowserModule,

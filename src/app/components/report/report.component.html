@@ -19,7 +19,7 @@
       <span (click)="getPGCRs(sess)">{{ formatPeriod(sess.day, 'LL') }} :</span>
       <ul *ngIf="sess.weapons.length">
         <li *ngFor="let weapon of sess.weapons" style="color:red">
-          {{ weapon.referenceId }} : {{ weapon.uniqueWeaponKills }} kills
+          {{ weapon.referenceId | destinyItemHash | async }} : {{ weapon.uniqueWeaponKills }} kills
         </li>
       </ul>
       <ul>

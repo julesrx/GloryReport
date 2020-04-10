@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { BehaviorSubject } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
-import { DestinyManifest } from 'bungie-api-ts/destiny2/interfaces';
+import { DestinyManifest, DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse } from 'bungie-api-ts/common';
 import { get, set } from 'idb-keyval'; // TODO: use classic db instead https://github.com/axemclion/IndexedDBShim
 
@@ -13,6 +13,12 @@ import { BungieHttpService } from './bungie-http.service';
   providedIn: 'root'
 })
 export class ManifestService {
+
+  public state: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+
+  public InventoryItem?: {
+    get(hash: number): DestinyInventoryItemDefinition;
+  }
 
   private definitions: BehaviorSubject<any>;
 
@@ -55,6 +61,13 @@ export class ManifestService {
                 return manifest;
               })
             );
+        }
+      }),
+      map(manifest => {
+        this.InventoryItem = {
+          get(hash: number): DestinyInventoryItemDefinition {
+            return manifest[hash];
+          }
         }
       })
     ).subscribe(); // need 114-155 ?
