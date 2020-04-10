@@ -7,6 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { ReportComponent } from './components/report/report.component';
+import { ManifestService } from './services/manifest.service';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,9 @@ import { ReportComponent } from './components/report/report.component';
     FormsModule, ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    ManifestService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
