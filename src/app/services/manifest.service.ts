@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { BehaviorSubject } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { BehaviorSubject, empty } from 'rxjs';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import {
   DestinyManifest,
   DestinyInventoryItemDefinition,
   DestinyActivityDefinition,
-  DestinyActivityModeDefinition,
   DestinyClassDefinition
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse } from 'bungie-api-ts/common';
@@ -26,16 +25,13 @@ export class ManifestService {
   };
   public state$ = new BehaviorSubject<ManifestServiceState>(this.state);
 
-  public tables: string[] = ['Activity', 'InventoryItem', 'ActivityMode', 'Class'];
+  public tables: string[] = ['InventoryItem', 'Activity', 'Class'];
   public defs: {
-    Activity?: {
-      get(hash: number): DestinyActivityDefinition;
-    },
     InventoryItem?: {
       get(hash: number): DestinyInventoryItemDefinition;
     },
-    ActivityMode?: {
-      get(hash: number): DestinyActivityModeDefinition;
+    Activity?: {
+      get(hash: number): DestinyActivityDefinition;
     },
     Class?: {
       get(hash: number): DestinyClassDefinition;
@@ -45,6 +41,7 @@ export class ManifestService {
   private store: LocalForage;
   private definitions: BehaviorSubject<any>;
 
+  private localManifestTables: string = 'd2-manifest-tables';
   private localManifestVersion: string = 'd2-manifest-version';
   private localManifestData: string = 'd2-manifest';
 
@@ -71,8 +68,10 @@ export class ManifestService {
             const path: string = res.Response.jsonWorldContentPaths['en'];
             const version: string = path;
 
+            const currentTables: string[] = JSON.parse(localStorage.getItem(this.localManifestTables) || '[]');
+
             try {
-              if (currentVersion === version) {
+              if (currentVersion === version && this.arrayAreEqual(currentTables, this.tables)) {
                 const manifest: Promise<object> = this.store.getItem<object>(this.localManifestData);
 
                 if (!manifest) {
@@ -99,14 +98,27 @@ export class ManifestService {
           }),
           map(manifest => {
             this.tables.forEach(tableShort => {
+              const table: string = `Destiny${tableShort}Definition`;
               this.defs[tableShort] = {
                 get(hash: number) {
-                  return manifest[`Destiny${tableShort}Definition`][hash];
+                  const db = manifest[table];
+                  if (!db) {
+                    throw new Error(`Table ${table} does not exist in the manifest`);
+                  }
+
+                  return db[hash];
                 }
               };
             });
 
             this.loaded = true;
+          }),
+          catchError((err) => {
+            console.error(err.message || err);
+            this.store.removeItem(this.localManifestData);
+            this.store.removeItem(this.localManifestVersion);
+
+            return empty();
           })
         ).subscribe(); // need 114-155 ?
       });
@@ -122,6 +134,7 @@ export class ManifestService {
         .then(() => {
           console.log(`Sucessfully stored manifest file.`);
           this.store.setItem(this.localManifestVersion, version);
+          localStorage.setItem(this.localManifestTables, JSON.stringify(this.tables));
         });
     } catch (e) {
       console.error('Error saving manifest file', e);
@@ -131,6 +144,10 @@ export class ManifestService {
   private setState(newState: Partial<ManifestServiceState>) {
     this.state = { ...this.state, ...newState };
     this.state$.next(this.state);
+  }
+
+  private arrayAreEqual(array1: string[], array2: string[]): boolean {
+    return _.isEqual(_.sortBy(array1), _.sortBy(array2));
   }
 }
 

@@ -18,9 +18,7 @@ export class CharacterCardComponent implements OnInit {
 
   @Output('selected') selected = new EventEmitter<DestinyCharacterComponent>();
 
-  ngOnInit(): void {
-    console.log(this.character);
-  }
+  ngOnInit(): void { }
 
   select(character: DestinyCharacterComponent): void {
     this.selected.emit(character);
@@ -31,6 +29,6 @@ export class CharacterCardComponent implements OnInit {
   }
 
   getCharacterDescription(character: DestinyCharacterComponent): string {
-    return this.manifestService.defs.Class.get(character.classHash).displayProperties.name;
+    return this.manifestService.defs.Class?.get(character.classHash).displayProperties.name;
   }
 }
