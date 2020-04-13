@@ -12,5 +12,5 @@ export class AppComponent {
   // injecting manifest service to load definitions on page load
   constructor(private manifestService: ManifestService) { }
 
-  title = 'glory-report';
+  title = 'Glory.report';
 }

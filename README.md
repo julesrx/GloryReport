@@ -1,4 +1,4 @@
-# GloryReport
+# Glory.report
 
 [![Build Status](https://travis-ci.com/julesrx/glory.report.svg?branch=master)](https://travis-ci.com/julesrx/glory.report)
 
