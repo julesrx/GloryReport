@@ -19,7 +19,7 @@
 <ul *ngIf="sessions.length">
   <ng-container *ngFor="let sess of sessions">
     <li *ngIf="sess.activities.length">
-      <span (click)="getPGCRs(sess)">{{ formatPeriod(sess.day, 'LL') }} :</span>
+      <span (click)="getPGCRs(selectedCharacterInfos, sess)" style="cursor: pointer;">{{ formatPeriod(sess.day, 'LL') }} :</span>
       <ul *ngIf="sess.weapons.length">
         <li *ngFor="let weapon of sess.weapons" style="color:red">
           <img [src]="weapon.referenceId | destinyItemHash: 'icon' | async"
