@@ -17,9 +17,10 @@
           :</span>
         <ul *ngIf="sess.weapons.length">
           <li *ngFor="let weapon of sess.weapons" style="color:red">
-            <img [src]="weapon.referenceId | destinyItemHash: 'icon' | async"
-              [alt]=" weapon.referenceId | destinyItemHash: 'name' | async">
-            {{ weapon.referenceId | destinyItemHash: 'name' | async }} : {{ weapon.uniqueWeaponKills }} kills
+            <img [src]="weapon.referenceId | destinyItemHash: 'InventoryItem':'icon' | async"
+              [alt]=" weapon.referenceId | destinyItemHash: 'InventoryItem':'name' | async">
+            {{ weapon.referenceId | destinyItemHash: 'InventoryItem':'name' | async }} : {{ weapon.uniqueWeaponKills }}
+            kills
           </li>
         </ul>
         <ul>

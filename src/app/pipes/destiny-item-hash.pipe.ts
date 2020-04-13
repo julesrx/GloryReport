@@ -14,17 +14,23 @@ export class DestinyItemHashPipe implements PipeTransform {
 
   constructor(private manifestService: ManifestService) { }
 
-  transform(hash: number, type?: string): Observable<string> {
+  transform(hash: number, table?: string, type?: string): Observable<string> {
     return this.manifestService.state$
       .pipe(
         map(state => {
           if (state.loaded) {
-            switch (type) {
-              case 'name':
-                return this.manifestService.InventoryItem.get(hash).displayProperties.name;
+            switch (table) {
+              case 'InventoryItem':
+                switch (type) {
+                  case 'name':
+                    return this.manifestService.defs.InventoryItem.get(hash).displayProperties.name;
 
-              case 'icon':
-                return this.baseUrl + this.manifestService.InventoryItem.get(hash).displayProperties.icon;
+                  case 'icon':
+                    return this.baseUrl + this.manifestService.defs.InventoryItem.get(hash).displayProperties.icon;
+
+                  default:
+                    return '';
+                }
 
               default:
                 return '';

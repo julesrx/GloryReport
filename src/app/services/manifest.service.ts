@@ -3,9 +3,16 @@ import { HttpClient } from '@angular/common/http';
 
 import { BehaviorSubject } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
-import { DestinyManifest, DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
+import {
+  DestinyManifest,
+  DestinyInventoryItemDefinition,
+  DestinyActivityDefinition,
+  DestinyActivityModeDefinition,
+  DestinyClassDefinition
+} from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse } from 'bungie-api-ts/common';
 import * as localForage from 'localforage';
+import * as _ from 'lodash';
 
 import { BungieHttpService } from './bungie-http.service';
 
@@ -19,8 +26,20 @@ export class ManifestService {
   };
   public state$ = new BehaviorSubject<ManifestServiceState>(this.state);
 
-  public InventoryItem?: {
-    get(hash: number): DestinyInventoryItemDefinition;
+  public tables: string[] = ['Activity', 'InventoryItem', 'ActivityMode', 'Class'];
+  public defs: {
+    Activity?: {
+      get(hash: number): DestinyActivityDefinition;
+    },
+    InventoryItem?: {
+      get(hash: number): DestinyInventoryItemDefinition;
+    },
+    ActivityMode?: {
+      get(hash: number): DestinyActivityModeDefinition;
+    },
+    Class?: {
+      get(hash: number): DestinyClassDefinition;
+    }
   }
 
   private store: LocalForage;
@@ -33,6 +52,7 @@ export class ManifestService {
     private http: HttpClient,
     private bHttp: BungieHttpService
   ) {
+    this.defs = {};
     this.store = localForage.createInstance({
       name: 'Glory.report',
       storeName: 'glory-report',
@@ -47,7 +67,8 @@ export class ManifestService {
             return this.bHttp.get('Destiny2/Manifest/');
           }),
           switchMap((res: ServerResponse<DestinyManifest>) => {
-            const path: string = res.Response.jsonWorldComponentContentPaths['en']['DestinyInventoryItemLiteDefinition'];
+            // TODO: add language support
+            const path: string = res.Response.jsonWorldContentPaths['en'];
             const version: string = path;
 
             try {
@@ -64,19 +85,26 @@ export class ManifestService {
             } catch (e) {
               return this.http.get(`https://www.bungie.net${path}`)
                 .pipe(
-                  map(manifest => {
+                  map(response => {
+                    const manifest = _.pick(
+                      response,
+                      ...this.tables.map(t => `Destiny${t}Definition`)
+                    );
+
                     this.saveToDB(manifest, version);
-                    return manifest;
+                    return response;
                   })
                 );
             }
           }),
           map(manifest => {
-            this.InventoryItem = {
-              get(hash: number): DestinyInventoryItemDefinition {
-                return manifest[hash];
-              }
-            }
+            this.tables.forEach(tableShort => {
+              this.defs[tableShort] = {
+                get(hash: number) {
+                  return manifest[`Destiny${tableShort}Definition`][hash];
+                }
+              };
+            });
 
             this.loaded = true;
           })
