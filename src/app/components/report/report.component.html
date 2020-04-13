@@ -2,7 +2,10 @@
 
 <ul *ngIf="characters.length">
   <li *ngFor="let char of characters">
-    <img [src]="'https://www.bungie.net' + char.emblemPath" alt="">
+    <img [src]="'https://www.bungie.net' + char.emblemPath"
+      alt=""
+      (click)="selectCharacter(char)"
+      [style]="selectedCharacterInfos && selectedCharacterInfos.characterId === char.characterId ? 'border: 3px solid red' : ''">
   </li>
 </ul>
 

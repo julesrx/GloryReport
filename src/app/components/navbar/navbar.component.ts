@@ -40,6 +40,8 @@ export class NavbarComponent implements OnInit {
 
   search(formData: { gamertag: string }): void {
     if (formData.gamertag.length) {
+      this.users = [];
+
       this.bHttp.get(`Destiny2/SearchDestinyPlayer/${BungieMembershipType.All}/${encodeURIComponent(formData.gamertag)}/`)
         .subscribe((res: ServerResponse<UserInfoCard[]>) => {
           this.users = res.Response;

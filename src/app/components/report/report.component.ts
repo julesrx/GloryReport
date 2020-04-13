@@ -30,11 +30,12 @@ export class ReportComponent implements OnInit {
   // private subs: Subscription[];
 
   public membershipTypeId: BehaviorSubject<string>;
+  public selectedCharacter: BehaviorSubject<DestinyCharacterComponent>;
 
   public profile: DestinyProfileComponent;
   public characters: DestinyCharacterComponent[];
+  public selectedCharacterInfos: DestinyCharacterComponent;
 
-  public selectedCharacter: DestinyCharacterComponent;
   public activities: DestinyHistoricalStatsPeriodGroup[];
   public sessions: GameSession[];
 
@@ -45,11 +46,8 @@ export class ReportComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.characters = [];
-    this.activities = [];
-    this.sessions = [];
-
     this.membershipTypeId = new BehaviorSubject('');
+    this.selectedCharacter = new BehaviorSubject(null);
 
     this.route.params.subscribe((params: Params) => {
       if (params['membershipTypeId']) {
@@ -58,6 +56,9 @@ export class ReportComponent implements OnInit {
     });
 
     this.membershipTypeId.subscribe((membershipTypeId: string) => {
+      this.initSessions();
+      this.characters = [];
+
       let membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
       let membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
 
@@ -67,14 +68,20 @@ export class ReportComponent implements OnInit {
           Object.keys(res.Response.characters.data).forEach(key => {
             this.characters.push(res.Response.characters.data[key]);
           });
-          this.selectedCharacter = this.characters[0];
 
-          this.getActivities(100, 0);
+          this.selectedCharacter.next(this.characters[0]);
+          this.selectedCharacter.subscribe((char: DestinyCharacterComponent) => {
+            // TODO: abort current requests if selectedCharacter is changed
+            this.selectedCharacterInfos = char;
+            this.initSessions();
+
+            this.getActivities(char, 100, 0);
+          });
         });
     });
   }
 
-  getActivities(count: number, page: number): void {
+  getActivities(character: DestinyCharacterComponent, count: number, page: number): void {
     let options: any = {
       count: count,
       page: page,
@@ -82,7 +89,7 @@ export class ReportComponent implements OnInit {
     };
 
     this.bHttp.get(
-      `/Destiny2/${this.selectedCharacter.membershipType}/Account/${this.selectedCharacter.membershipId}/Character/${this.selectedCharacter.characterId}/Stats/Activities/`,
+      `/Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
       false,
       options)
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
@@ -91,10 +98,10 @@ export class ReportComponent implements OnInit {
             this.activities = _.concat(this.activities, res.Response.activities);
 
             this.getSessions(res.Response.activities);
-            this.sessions.slice(0, 3).forEach(s => this.getPGCRs(s));
+            this.sessions.slice(0, 3).forEach(s => this.getPGCRs(character, s));
 
             if (page < 4) {
-              this.getActivities(count, page += 1);
+              this.getActivities(character, count, page += 1);
             }
           }
         } else { console.error('Profile in private'); }
@@ -124,14 +131,14 @@ export class ReportComponent implements OnInit {
   }
 
   // TODO: display medals and 'medalMatchMostDamage' in priority
-  getPGCRs(session: GameSession): void {
+  getPGCRs(character: DestinyCharacterComponent, session: GameSession): void {
     if (!session.fetched) {
       session.activities.forEach(act => {
         this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
           .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
             let pgcr: DestinyPostGameCarnageReportData = res.Response;
 
-            pgcr.entries.filter(e => e.characterId == this.selectedCharacter.characterId).forEach(e => {
+            pgcr.entries.filter(e => e.characterId == character.characterId).forEach(e => {
               // e.extended.weapons is undefined if the player has 0 kills 😥
               if (e.extended.weapons) {
                 e.extended.weapons.forEach(weapon => {
@@ -156,6 +163,15 @@ export class ReportComponent implements OnInit {
 
       session.fetched = true;
     }
+  }
+
+  selectCharacter(character: DestinyCharacterComponent): void {
+    this.selectedCharacter.next(character);
+  }
+
+  initSessions(): void {
+    this.activities = [];
+    this.sessions = [];
   }
 
   // TODO: add locale support
