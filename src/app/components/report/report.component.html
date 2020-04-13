@@ -15,6 +15,8 @@
   </li>
 </ul> -->
 
+<button *ngIf="more" type="button" (click)="loadMore()">Load more</button>
+
 <p *ngIf="sessions.length">Last sessions :</p>
 <ul *ngIf="sessions.length">
   <ng-container *ngFor="let sess of sessions">

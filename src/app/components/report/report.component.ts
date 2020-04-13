@@ -39,6 +39,10 @@ export class ReportComponent implements OnInit {
   public activities: DestinyHistoricalStatsPeriodGroup[];
   public sessions: GameSession[];
 
+  // TODO: add loading object array with loading type (activities, characters, pgcrs...)
+  public more: boolean = true;
+  public searchOptions: ReportSearchOptions;
+
   constructor(
     private bHttp: BungieHttpService,
     private route: ActivatedRoute,
@@ -76,19 +80,20 @@ export class ReportComponent implements OnInit {
           this.selectedCharacter.subscribe((char: DestinyCharacterComponent) => {
             // TODO: abort current requests if selectedCharacter is changed
             this.selectedCharacterInfos = char;
+            this.searchOptions = this.initSearchOptions();
             this.initSessions();
 
-            this.getActivities(char, 100, 0);
+            this.getActivities(char);
           });
         });
     });
   }
 
-  getActivities(character: DestinyCharacterComponent, count: number, page: number): void {
+  getActivities(character: DestinyCharacterComponent): void {
     let options: any = {
-      count: count,
-      page: page,
-      mode: DestinyActivityModeType.AllPvP
+      count: this.searchOptions.count,
+      page: this.searchOptions.page,
+      mode: this.searchOptions.mode
     };
 
     this.bHttp.get(
@@ -98,13 +103,16 @@ export class ReportComponent implements OnInit {
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
         if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
           if (res.Response.activities && res.Response.activities.length) {
+            this.more = res.Response.activities.length >= options.count;
+
             this.activities = _.concat(this.activities, res.Response.activities);
 
             this.getSessions(res.Response.activities);
             this.sessions.slice(0, 3).forEach(s => this.getPGCRs(character, s));
 
-            if (page < 4) {
-              this.getActivities(character, count, page += 1);
+            if (options.page < 4) {
+              this.searchOptions.page += 1;
+              this.getActivities(character);
             }
           }
         } else { console.error('Profile in private'); }
@@ -113,24 +121,34 @@ export class ReportComponent implements OnInit {
 
   getSessions(activities: DestinyHistoricalStatsPeriodGroup[]): void {
     // TODO: group by date difference (1h)
+    // no need to order for the moment
     let groups: _.Dictionary<DestinyHistoricalStatsPeriodGroup[]> = _.groupBy(activities, act => {
       return moment(act.period).startOf('day').format();
     });
 
-    let typedGroups = _.map(groups, (group, day) => {
-      let t: GameSession = {
+    let sessions: GameSession[] = _.map(groups, (group, day) => {
+      return {
         day: day,
         activities: group,
         weapons: [],
         fetched: false
       };
-
-      return t;
     });
 
-    // default js concat not working ?
-    // no need to order for the moment
-    this.sessions = _.concat(this.sessions, typedGroups)
+    sessions.forEach((session: GameSession) => {
+      let sess = this.sessions.find(s => s.day == session.day);
+      if (sess) {
+        // TODO: check if session complete
+        // if fetched, get pgcrs (with lodash debounce)
+        sess.activities = _.concat(sess.activities, session.activities);
+        if (sess.fetched) {
+          // TODO: reload PGCRs on session
+          // this.getPGCRs(character, sess);
+        }
+      } else {
+        this.sessions.push(session);
+      }
+    });
   }
 
   // TODO: display medals and 'medalMatchMostDamage' in priority
@@ -172,13 +190,32 @@ export class ReportComponent implements OnInit {
     this.selectedCharacter.next(character);
   }
 
+  loadMore(): void {
+    this.searchOptions.page += 1;
+    this.getActivities(this.selectedCharacterInfos);
+  }
+
   initSessions(): void {
     this.activities = [];
     this.sessions = [];
+  }
+
+  initSearchOptions(): ReportSearchOptions {
+    return {
+      count: 100,
+      page: 0,
+      mode: DestinyActivityModeType.AllPvP
+    };
   }
 
   // TODO: add locale support
   formatPeriod(period: string, format: string): string {
     return moment(period).format(format);
   }
+}
+
+export interface ReportSearchOptions {
+  count: number;
+  page: number;
+  mode: DestinyActivityModeType;
 }
