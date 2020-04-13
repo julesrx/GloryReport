@@ -9,7 +9,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { ReportComponent } from './components/report/report.component';
 import { ManifestService } from './services/manifest.service';
 import { DestinyItemHashPipe } from './pipes/destiny-item-hash.pipe';
-import { CharacterCardComponent } from './components/ui/character-card/character-card.component';
+import { CharacterCardComponent } from './components/character-card/character-card.component';
 
 @NgModule({
   declarations: [
