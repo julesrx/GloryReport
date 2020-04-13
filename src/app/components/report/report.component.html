@@ -1,39 +1,33 @@
 <h1 *ngIf="profile">{{ profile.userInfo.displayName }}</h1>
 
-<ul *ngIf="characters.length">
-  <li *ngFor="let char of characters">
-    <img [src]="'https://www.bungie.net' + char.emblemPath"
-      alt=""
-      (click)="selectCharacter(char)"
-      [style]="selectedCharacterInfos && selectedCharacterInfos.characterId === char.characterId ? 'border: 3px solid red' : ''">
-  </li>
-</ul>
-
-<!-- <ul *ngIf="activities.length">
-  <li *ngFor="let act of activities">
-    {{ act.period }} : {{ act.activityDetails.instanceId }}
-  </li>
-</ul> -->
+<app-character-card *ngFor="let char of characters"
+  [char]="char"
+  [current]="selectedCharacterInfos && selectedCharacterInfos.characterId === char.characterId"
+  (selected)="onCharacterSelect($event)"></app-character-card>
 
 <button *ngIf="more" type="button" (click)="loadMore()">Load more</button>
 
-<p *ngIf="sessions.length">Last sessions :</p>
-<ul *ngIf="sessions.length">
-  <ng-container *ngFor="let sess of sessions">
-    <li *ngIf="sess.activities.length">
-      <span (click)="getPGCRs(selectedCharacterInfos, sess)" style="cursor: pointer;">{{ formatPeriod(sess.day, 'LL') }} :</span>
-      <ul *ngIf="sess.weapons.length">
-        <li *ngFor="let weapon of sess.weapons" style="color:red">
-          <img [src]="weapon.referenceId | destinyItemHash: 'icon' | async"
-            [alt]=" weapon.referenceId | destinyItemHash: 'name' | async">
-          {{ weapon.referenceId | destinyItemHash: 'name' | async }} : {{ weapon.uniqueWeaponKills }} kills
-        </li>
-      </ul>
-      <ul>
-        <li *ngFor="let act of sess.activities">
-          {{ formatPeriod(act.period, 'HH:mm:ss') }} : {{ act.activityDetails.instanceId }}
-        </li>
-      </ul>
-    </li>
-  </ng-container>
-</ul>
+<div *ngIf="sessions.length">
+  <p>Last sessions :</p>
+  <ul>
+    <ng-container *ngFor="let sess of sessions">
+      <li *ngIf="sess.activities.length">
+        <span (click)="getPGCRs(selectedCharacterInfos, sess)"
+          style="cursor: pointer;">{{ formatPeriod(sess.day, 'LL') }}
+          :</span>
+        <ul *ngIf="sess.weapons.length">
+          <li *ngFor="let weapon of sess.weapons" style="color:red">
+            <img [src]="weapon.referenceId | destinyItemHash: 'icon' | async"
+              [alt]=" weapon.referenceId | destinyItemHash: 'name' | async">
+            {{ weapon.referenceId | destinyItemHash: 'name' | async }} : {{ weapon.uniqueWeaponKills }} kills
+          </li>
+        </ul>
+        <ul>
+          <li *ngFor="let act of sess.activities">
+            {{ formatPeriod(act.period, 'HH:mm:ss') }} : {{ act.activityDetails.instanceId }}
+          </li>
+        </ul>
+      </li>
+    </ng-container>
+  </ul>
+</div>

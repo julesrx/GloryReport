@@ -185,7 +185,7 @@ export class ReportComponent implements OnInit {
     }
   }
 
-  selectCharacter(character: DestinyCharacterComponent): void {
+  onCharacterSelect(character: DestinyCharacterComponent): void {
     this.selectedCharacter.next(character);
   }
 
@@ -201,7 +201,7 @@ export class ReportComponent implements OnInit {
 
   initSearchOptions(): ReportSearchOptions {
     return {
-      count: 2,
+      count: 100,
       page: 0,
       mode: DestinyActivityModeType.AllPvP
     };
