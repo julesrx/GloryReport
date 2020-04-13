@@ -139,10 +139,9 @@ export class ReportComponent implements OnInit {
       let sess = this.sessions.find(s => s.day == session.day);
       if (sess) {
         // TODO: check if session complete
-        // if fetched, get pgcrs (with lodash debounce)
         sess.activities = _.concat(sess.activities, session.activities);
         if (sess.fetched) {
-          // TODO: reload PGCRs on session
+          // TODO: if loadmore is clicked and is fetched, get pgcrs (with lodash debounce), reload PGCRs on session
           // this.getPGCRs(character, sess);
         }
       } else {
@@ -202,7 +201,7 @@ export class ReportComponent implements OnInit {
 
   initSearchOptions(): ReportSearchOptions {
     return {
-      count: 100,
+      count: 2,
       page: 0,
       mode: DestinyActivityModeType.AllPvP
     };
