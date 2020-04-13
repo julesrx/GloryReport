@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { DestinyManifest, DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse } from 'bungie-api-ts/common';
-import { get, set } from 'idb-keyval'; // TODO: use classic db instead https://github.com/axemclion/IndexedDBShim
+import * as localForage from 'localforage';
 
 import { BungieHttpService } from './bungie-http.service';
 
@@ -23,6 +23,7 @@ export class ManifestService {
     get(hash: number): DestinyInventoryItemDefinition;
   }
 
+  private store: LocalForage;
   private definitions: BehaviorSubject<any>;
 
   private localManifestVersion: string = 'd2-manifest-version';
@@ -32,50 +33,55 @@ export class ManifestService {
     private http: HttpClient,
     private bHttp: BungieHttpService
   ) {
-    this.definitions = new BehaviorSubject(null);
-    this.definitions.pipe(
-      switchMap(() => {
-        return this.bHttp.get('Destiny2/Manifest/');
-      }),
-      switchMap((res: ServerResponse<DestinyManifest>) => {
-        const path: string = res.Response.jsonWorldComponentContentPaths['en']['DestinyInventoryItemLiteDefinition'];
-        const version: string = path;
+    this.store = localForage.createInstance({
+      name: 'Glory.report',
+      storeName: 'glory-report',
+      description: `Glory.report's database`
+    });
 
-        try {
-          const currentVersion: string = localStorage.getItem(this.localManifestVersion);
+    this.store.getItem<string>(this.localManifestVersion)
+      .then((currentVersion: string) => {
+        this.definitions = new BehaviorSubject(null);
+        this.definitions.pipe(
+          switchMap(() => {
+            return this.bHttp.get('Destiny2/Manifest/');
+          }),
+          switchMap((res: ServerResponse<DestinyManifest>) => {
+            const path: string = res.Response.jsonWorldComponentContentPaths['en']['DestinyInventoryItemLiteDefinition'];
+            const version: string = path;
 
-          if (currentVersion === version) {
-            const manifest: Promise<object> = get<object>(this.localManifestData);
+            try {
+              if (currentVersion === version) {
+                const manifest: Promise<object> = this.store.getItem<object>(this.localManifestData);
 
-            if (!manifest) {
-              throw new Error('Empty cached manifest file');
-            }
-            return manifest;
-          } else {
-            throw new Error(`version mismatch`);
-          }
-        } catch (e) {
-          return this.http.get(`https://www.bungie.net${path}`)
-            .pipe(
-              map(manifest => {
-                this.saveToDB(manifest, version);
-                // this.newManifest$.next();
-
+                if (!manifest) {
+                  throw new Error('Empty cached manifest file');
+                }
                 return manifest;
-              })
-            );
-        }
-      }),
-      map(manifest => {
-        this.InventoryItem = {
-          get(hash: number): DestinyInventoryItemDefinition {
-            return manifest[hash];
-          }
-        }
+              } else {
+                throw new Error(`version mismatch`);
+              }
+            } catch (e) {
+              return this.http.get(`https://www.bungie.net${path}`)
+                .pipe(
+                  map(manifest => {
+                    this.saveToDB(manifest, version);
+                    return manifest;
+                  })
+                );
+            }
+          }),
+          map(manifest => {
+            this.InventoryItem = {
+              get(hash: number): DestinyInventoryItemDefinition {
+                return manifest[hash];
+              }
+            }
 
-        this.loaded = true;
-      })
-    ).subscribe(); // need 114-155 ?
+            this.loaded = true;
+          })
+        ).subscribe(); // need 114-155 ?
+      });
   }
 
   set loaded(loaded: boolean) {
@@ -84,9 +90,11 @@ export class ManifestService {
 
   private async saveToDB(manifest: object, version: string) {
     try {
-      await set(this.localManifestData, manifest);
-      console.log(`Sucessfully stored manifest file.`);
-      localStorage.setItem(this.localManifestVersion, version);
+      await this.store.setItem(this.localManifestData, manifest)
+        .then(() => {
+          console.log(`Sucessfully stored manifest file.`);
+          this.store.setItem(this.localManifestVersion, version);
+        });
     } catch (e) {
       console.error('Error saving manifest file', e);
     }
