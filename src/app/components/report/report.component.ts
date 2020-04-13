@@ -65,10 +65,13 @@ export class ReportComponent implements OnInit {
       this.bHttp.get(`Destiny2/${membershipType}/Profile/${membershipId}/`, false, { components: '100,200' })
         .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
           this.profile = res.Response.profile.data;
+
           Object.keys(res.Response.characters.data).forEach(key => {
             this.characters.push(res.Response.characters.data[key]);
           });
+          this.characters.sort((a, b) => a.dateLastPlayed < b.dateLastPlayed ? 1 : -1)
 
+          // TODO: add to settings
           this.selectedCharacter.next(this.characters[0]);
           this.selectedCharacter.subscribe((char: DestinyCharacterComponent) => {
             // TODO: abort current requests if selectedCharacter is changed
