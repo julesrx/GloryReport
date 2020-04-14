@@ -10,6 +10,7 @@ import { ReportComponent } from './components/report/report.component';
 import { ManifestService } from './services/manifest.service';
 import { DestinyItemHashPipe } from './pipes/destiny-item-hash.pipe';
 import { CharacterCardComponent } from './components/character-card/character-card.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { CharacterCardComponent } from './components/character-card/character-ca
     NavbarComponent,
     ReportComponent,
     DestinyItemHashPipe,
-    CharacterCardComponent
+    CharacterCardComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

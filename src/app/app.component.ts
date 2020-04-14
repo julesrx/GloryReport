@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { ManifestService } from './services/manifest.service';
 
@@ -10,7 +11,10 @@ import { ManifestService } from './services/manifest.service';
 export class AppComponent {
 
   // injecting manifest service to load definitions on page load
-  constructor(private manifestService: ManifestService) { }
+  constructor(
+    private manifestService: ManifestService,
+    private router: Router
+  ) { }
 
   title = 'Glory.report';
 }
