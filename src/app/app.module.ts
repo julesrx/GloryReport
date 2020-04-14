@@ -12,6 +12,7 @@ import { DestinyItemHashPipe } from './pipes/destiny-item-hash.pipe';
 import { CharacterCardComponent } from './components/character-card/character-card.component';
 import { HomeComponent } from './components/home/home.component';
 import { BungieAlertsComponent } from './components/bungie-alerts/bungie-alerts.component';
+import { HomeFooterComponent } from './components/home/home-footer/home-footer.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { BungieAlertsComponent } from './components/bungie-alerts/bungie-alerts.
     DestinyItemHashPipe,
     CharacterCardComponent,
     HomeComponent,
-    BungieAlertsComponent
+    BungieAlertsComponent,
+    HomeFooterComponent
   ],
   imports: [
     BrowserModule,
