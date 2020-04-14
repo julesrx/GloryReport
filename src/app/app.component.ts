@@ -10,11 +10,14 @@ import { ManifestService } from './services/manifest.service';
 })
 export class AppComponent {
 
+  public isHome: boolean;
+
   // injecting manifest service to load definitions on page load
   constructor(
     private manifestService: ManifestService,
     private router: Router
-  ) { }
+  ) {
+    this.isHome = this.router.url === '/';
+  }
 
-  title = 'Glory.report';
 }

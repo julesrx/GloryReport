@@ -11,6 +11,7 @@ import { ManifestService } from './services/manifest.service';
 import { DestinyItemHashPipe } from './pipes/destiny-item-hash.pipe';
 import { CharacterCardComponent } from './components/character-card/character-card.component';
 import { HomeComponent } from './components/home/home.component';
+import { BungieAlertsComponent } from './components/bungie-alerts/bungie-alerts.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { HomeComponent } from './components/home/home.component';
     ReportComponent,
     DestinyItemHashPipe,
     CharacterCardComponent,
-    HomeComponent
+    HomeComponent,
+    BungieAlertsComponent
   ],
   imports: [
     BrowserModule,
