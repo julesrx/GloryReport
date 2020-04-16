@@ -1,8 +1,7 @@
 {
   "name": "glory.report",
-  "author": "julesrx <me@julesrx.fr> (https://julesrx.fr)",
   "version": "1.0.0-beta",
-  "description": "...",
+  "author": "julesrx <me@julesrx.fr> (https://julesrx.fr)",
   "homepage": "https://glory.report",
   "private": true,
   "scripts": {
