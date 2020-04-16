@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
-import { Subscription, BehaviorSubject, empty } from 'rxjs';
+import { Subscription, BehaviorSubject, EMPTY } from 'rxjs';
 import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 
@@ -15,7 +15,7 @@ import { MembershipTypeIdService } from 'src/app/services/membership-type-id.ser
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
-  public title: string = 'Glory.report';
+  public title = 'Glory.report';
 
   public gamertag: BehaviorSubject<string>;
   public users: UserInfoCard[];
@@ -37,8 +37,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         switchMap((value: string) => {
           if (value) {
             this.users = [];
-            return this.bHttp.get(`Destiny2/SearchDestinyPlayer/${BungieMembershipType.All}/${encodeURIComponent(value)}/`)
-          } else { return empty(); }
+            return this.bHttp.get(`Destiny2/SearchDestinyPlayer/${BungieMembershipType.All}/${encodeURIComponent(value)}/`);
+          } else { return EMPTY; }
         })
       )
       .subscribe((res: ServerResponse<UserInfoCard[]>) => {
@@ -63,8 +63,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.response)
+    if (this.response) {
       this.response.unsubscribe();
+    }
   }
 
 }

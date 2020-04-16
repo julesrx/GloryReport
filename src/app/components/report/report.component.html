@@ -1,7 +1,7 @@
 <h1 *ngIf="profile">{{ profile.userInfo.displayName }}</h1>
 
 <app-character-card *ngFor="let char of characters"
-  [char]="char"
+  [character]="char"
   [current]="selectedCharacterInfos && selectedCharacterInfos.characterId === char.characterId"
   (selected)="onCharacterSelect($event)"></app-character-card>
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { BehaviorSubject, empty } from 'rxjs';
+import { BehaviorSubject, EMPTY } from 'rxjs';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import {
   DestinyManifest,
@@ -36,14 +36,14 @@ export class ManifestService {
     Class?: {
       get(hash: number): DestinyClassDefinition;
     }
-  }
+  };
 
   private store: LocalForage;
   private definitions: BehaviorSubject<any>;
 
-  private localManifestTables: string = 'd2-manifest-tables';
-  private localManifestVersion: string = 'd2-manifest-version';
-  private localManifestData: string = 'd2-manifest';
+  private localManifestTables = 'd2-manifest-tables';
+  private localManifestVersion = 'd2-manifest-version';
+  private localManifestData = 'd2-manifest';
 
   constructor(
     private http: HttpClient,
@@ -98,7 +98,7 @@ export class ManifestService {
           }),
           map(manifest => {
             this.tables.forEach(tableShort => {
-              const table: string = `Destiny${tableShort}Definition`;
+              const table = `Destiny${tableShort}Definition`;
               this.defs[tableShort] = {
                 get(hash: number) {
                   const db = manifest[table];
@@ -118,7 +118,7 @@ export class ManifestService {
             this.store.removeItem(this.localManifestData);
             this.store.removeItem(this.localManifestVersion);
 
-            return empty();
+            return EMPTY;
           })
         ).subscribe(); // need 114-155 ?
       });

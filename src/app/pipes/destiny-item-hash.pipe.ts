@@ -10,7 +10,7 @@ import { ManifestService } from '../services/manifest.service';
 })
 export class DestinyItemHashPipe implements PipeTransform {
 
-  private baseUrl: string = 'https://www.bungie.net';
+  private baseUrl = 'https://www.bungie.net';
 
   constructor(private manifestService: ManifestService) { }
 

@@ -40,7 +40,7 @@ export class ReportComponent implements OnInit {
   public sessions: GameSession[];
 
   // TODO: add loading object array with loading type (activities, characters, pgcrs...)
-  public more: boolean = true;
+  public more = true;
   public searchOptions: ReportSearchOptions;
 
   constructor(
@@ -54,8 +54,8 @@ export class ReportComponent implements OnInit {
     this.selectedCharacter = new BehaviorSubject(null);
 
     this.route.params.subscribe((params: Params) => {
-      if (params['membershipTypeId']) {
-        this.membershipTypeId.next(params['membershipTypeId']);
+      if (params.membershipTypeId) {
+        this.membershipTypeId.next(params.membershipTypeId);
       }
     });
 
@@ -63,8 +63,8 @@ export class ReportComponent implements OnInit {
       this.initSessions();
       this.characters = [];
 
-      let membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
-      let membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
+      const membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
+      const membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
 
       this.bHttp.get(`Destiny2/${membershipType}/Profile/${membershipId}/`, false, { components: '100,200' })
         .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
@@ -73,7 +73,7 @@ export class ReportComponent implements OnInit {
           Object.keys(res.Response.characters.data).forEach(key => {
             this.characters.push(res.Response.characters.data[key]);
           });
-          this.characters.sort((a, b) => a.dateLastPlayed < b.dateLastPlayed ? 1 : -1)
+          this.characters.sort((a, b) => a.dateLastPlayed < b.dateLastPlayed ? 1 : -1);
 
           // TODO: add to settings
           this.selectedCharacter.next(this.characters[0]);
@@ -90,7 +90,7 @@ export class ReportComponent implements OnInit {
   }
 
   getActivities(character: DestinyCharacterComponent): void {
-    let options: any = {
+    const options: any = {
       count: this.searchOptions.count,
       page: this.searchOptions.page,
       mode: this.searchOptions.mode
@@ -101,7 +101,7 @@ export class ReportComponent implements OnInit {
       false,
       options)
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-        if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+        if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
           if (res.Response.activities && res.Response.activities.length) {
             this.more = res.Response.activities.length >= options.count;
 
@@ -122,13 +122,13 @@ export class ReportComponent implements OnInit {
   getSessions(activities: DestinyHistoricalStatsPeriodGroup[]): void {
     // TODO: group by date difference (1h)
     // no need to order for the moment
-    let groups: _.Dictionary<DestinyHistoricalStatsPeriodGroup[]> = _.groupBy(activities, act => {
+    const groups: _.Dictionary<DestinyHistoricalStatsPeriodGroup[]> = _.groupBy(activities, act => {
       return moment(act.period).startOf('day').format();
     });
 
-    let sessions: GameSession[] = _.map(groups, (group, day) => {
+    const sessions: GameSession[] = _.map(groups, (group, day) => {
       return {
-        day: day,
+        day,
         activities: group,
         weapons: [],
         fetched: false
@@ -136,7 +136,7 @@ export class ReportComponent implements OnInit {
     });
 
     sessions.forEach((session: GameSession) => {
-      let sess = this.sessions.find(s => s.day == session.day);
+      const sess = this.sessions.find(s => s.day === session.day);
       if (sess) {
         // TODO: check if session complete
         sess.activities = _.concat(sess.activities, session.activities);
@@ -156,14 +156,14 @@ export class ReportComponent implements OnInit {
       session.activities.forEach(act => {
         this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
           .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-            let pgcr: DestinyPostGameCarnageReportData = res.Response;
+            const pgcr: DestinyPostGameCarnageReportData = res.Response;
 
-            pgcr.entries.filter(e => e.characterId == character.characterId).forEach(e => {
+            pgcr.entries.filter(e => e.characterId === character.characterId).forEach(e => {
               // e.extended.weapons is undefined if the player has 0 kills 😥
               if (e.extended.weapons) {
                 e.extended.weapons.forEach(weapon => {
-                  if (session.weapons.some(w => w.referenceId == weapon.referenceId)) {
-                    let stat = session.weapons.find(w => w.referenceId == weapon.referenceId);
+                  if (session.weapons.some(w => w.referenceId === weapon.referenceId)) {
+                    const stat = session.weapons.find(w => w.referenceId === weapon.referenceId);
                     stat.uniqueWeaponKills += weapon.values['uniqueWeaponKills'].basic.value;
                     stat.uniqueWeaponPrecisionKills += weapon.values['uniqueWeaponPrecisionKills'].basic.value;
                     stat.uniqueWeaponKillsPrecisionKills += weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value;

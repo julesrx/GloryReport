@@ -13,10 +13,10 @@ export class CharacterCardComponent implements OnInit {
 
   constructor(private manifestService: ManifestService) { }
 
-  @Input('char') character: DestinyCharacterComponent;
-  @Input('current') current: boolean;
+  @Input() character: DestinyCharacterComponent;
+  @Input() current: boolean;
 
-  @Output('selected') selected = new EventEmitter<DestinyCharacterComponent>();
+  @Output() selected = new EventEmitter<DestinyCharacterComponent>();
 
   ngOnInit(): void { }
 

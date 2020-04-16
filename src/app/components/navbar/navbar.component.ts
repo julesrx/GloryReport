@@ -26,7 +26,7 @@ export class NavbarComponent implements OnInit {
   ) {
     this.searchForm = this.formBuilder.group({
       gamertag: ''
-    })
+    });
   }
 
   ngOnInit(): void {

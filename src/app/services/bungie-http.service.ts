@@ -10,21 +10,21 @@ import { ServerResponse } from 'bungie-api-ts/common';
 })
 export class BungieHttpService {
 
-  private _origin: string;
-  private _apiKey: string;
+  private origin: string;
+  private key: string;
 
   public error: BehaviorSubject<ServerResponse<any>>;
 
   constructor(private http: HttpClient) {
     this.error = new BehaviorSubject(null);
-    this._origin = window.location.protocol + '//' + window.location.hostname;
-    switch (this._origin) {
+    this.origin = window.location.protocol + '//' + window.location.hostname;
+    switch (this.origin) {
       case 'http://dev.glory.report':
-        this._apiKey = 'ecc34e9250b34803ae6e09405568df82';
+        this.key = 'ecc34e9250b34803ae6e09405568df82';
         break;
 
       case 'https://glory.report':
-        this._apiKey = '457b1436a98a4390be099a140c42fd3d';
+        this.key = '457b1436a98a4390be099a140c42fd3d';
         break;
     }
   }
@@ -33,14 +33,14 @@ export class BungieHttpService {
     const options = {
       headers: new HttpHeaders({
         ...headers,
-        'x-api-key': this._apiKey
+        'x-api-key': this.key
       }),
       params: new HttpParams({
         fromObject: params
       })
     };
 
-    const endpoint: string = `https://${(stats ? 'stats' : 'www')}.bungie.net/Platform/`;
+    const endpoint = `https://${(stats ? 'stats' : 'www')}.bungie.net/Platform/`;
     return this.http.get<ServerResponse<any>>(endpoint + url, options);
   }
 }
