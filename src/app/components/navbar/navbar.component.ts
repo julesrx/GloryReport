@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, Form, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
@@ -14,7 +14,6 @@ import { MembershipTypeIdService } from 'src/app/services/membership-type-id.ser
 })
 export class NavbarComponent implements OnInit {
 
-  public globalAlerts: any[];
   public users: UserInfoCard[];
 
   public searchForm: FormGroup;
@@ -31,11 +30,6 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.users = [];
-
-    this.bHttp.get('GlobalAlerts/')
-      .subscribe((res: ServerResponse<any>) => {
-        this.globalAlerts = res.Response;
-      });
   }
 
   search(formData: { gamertag: string }): void {
@@ -52,4 +46,5 @@ export class NavbarComponent implements OnInit {
   getMembershipTypeId(user: UserInfoCard): string {
     return this.typeIdService.combine(user.membershipType, user.membershipId);
   }
+
 }

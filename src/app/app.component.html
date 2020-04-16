@@ -1,2 +1,6 @@
-<app-navbar *ngIf="navbar"></app-navbar>
-<router-outlet></router-outlet>
+<app-navbar *ngIf="!home"></app-navbar>
+
+<div [ngClass]="['container mx-auto', home ? 'max-w-3xl px-2 text-center' : '']">
+  <app-global-alerts></app-global-alerts>
+  <router-outlet></router-outlet>
+</div>

@@ -1,29 +1,25 @@
-<div class="container mx-auto max-w-3xl px-2 text-center">
-  <app-bungie-alerts></app-bungie-alerts>
+<app-bungie-alerts></app-bungie-alerts>
 
-  <div class="flex flex-wrap justify-center items-end my-8">
-    <img src="assets/img/legend-icon.png" [alt]="title + 'Logo'" class="h-24">
-    <h1 class="text-3xl">
-      <span class="text-5xl font-semibold">{{ name }}</span>.{{ extention }}
-    </h1>
-  </div>
-
-  <input type="text"
-    id="search-box"
-    (keyup)="search($event)"
-    class="border border-gray-300 text-lg py-1 px-2 rounded shadow"
-    placeholder="Guardian..."
-    autofocus>
-
-  <div class="flex justify-center mt-5" *ngIf="users.length">
-    <a [routerLink]="'/report/' + getMembershipTypeId(user)" class="mx-2 flex align-middle" *ngFor="let user of users">
-      <img [src]="'http://www.bungie.net' + user.iconPath"
-        [alt]="user.displayName"
-        class="h-6 w-6 mr-1"
-        [class]="user.iconPath.indexOf('steam') !== -1 ? 'bg-gray-900 rounded-full' : ''">
-      <span>{{ user.displayName }}</span>
-    </a>
-  </div>
+<div class="flex flex-wrap justify-center items-end my-8">
+  <img src="assets/img/legend-icon.png" alt="Glory.report" class="h-24">
+  <h1 class="text-3xl">
+    <span class="text-5xl font-semibold">Glory</span>.report
+  </h1>
 </div>
 
-<!-- <app-home-footer></app-home-footer> -->
+<input type="text"
+  id="search-box"
+  (keyup)="search($event)"
+  class="border border-gray-300 text-lg py-1 px-2 rounded shadow"
+  placeholder="Guardian..."
+  autofocus>
+
+<div class="flex justify-center mt-5" *ngIf="users.length">
+  <a [routerLink]="['/report', getMembershipTypeId(user)]" class="mx-2 flex align-middle" *ngFor="let user of users">
+    <img [src]="'http://www.bungie.net' + user.iconPath"
+      [alt]="user.displayName"
+      class="h-6 w-6 mr-1"
+      [class]="user.iconPath.indexOf('steam') !== -1 ? 'bg-gray-900 rounded-full' : ''">
+    <span>{{ user.displayName }}</span>
+  </a>
+</div>

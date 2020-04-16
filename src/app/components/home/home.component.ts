@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Subscription, BehaviorSubject, EMPTY } from 'rxjs';
 import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
@@ -14,8 +14,6 @@ import { MembershipTypeIdService } from 'src/app/services/membership-type-id.ser
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
-
-  public title = 'Glory.report';
 
   public gamertag: BehaviorSubject<string>;
   public users: UserInfoCard[];
@@ -44,14 +42,6 @@ export class HomeComponent implements OnInit, OnDestroy {
       .subscribe((res: ServerResponse<UserInfoCard[]>) => {
         this.users = res.Response;
       });
-  }
-
-  get name(): string {
-    return this.title.split('.')[0];
-  }
-
-  get extention(): string {
-    return this.title.split('.')[1];
   }
 
   search(event: any): void {

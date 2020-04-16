@@ -1,21 +1,26 @@
-<div class="alerts" *ngIf="globalAlerts && globalAlerts.length">
-  <span *ngFor="let alert of globalAlerts">{{ alert.AlertHtml }}</span>
-</div>
+<nav class="flex justify-between items-center py-2 px-4">
+  <a [routerLink]="'/'" class="flex justify-center items-center">
+    <img src="assets/img/legend-icon.png" alt="Glory.report" class="h-12">
+    <h1 class="text-lg">
+      <span class="font-semibold">Glory</span>.report
+    </h1>
+  </a>
 
-<nav>
   <form [formGroup]="searchForm" (submit)="search(searchForm.value)">
-    <label for="gamertag">Search Guardian</label>
-    <br>
-    <input type="text" id="gamertag" formControlName="gamertag" required autofocus>
-    <button type="submit">Search</button>
-  </form>
+    <input type="text"
+      id="gamertag"
+      class="border border-gray-300 text-md rounded shadow max-w-sm py-1 px-2"
+      formControlName="gamertag"
+      placeholder="Guardian..."
+      required autofocus>
 
-  <ul *ngIf="users.length">
-    <li *ngFor="let user of users">
-      <a [routerLink]="'/report/' + getMembershipTypeId(user)">
-        <img [src]="'http://www.bungie.net' + user.iconPath" alt="">
-        {{ user.displayName }}
-      </a>
-    </li>
-  </ul>
+    <ul *ngIf="users.length">
+      <li *ngFor="let user of users">
+        <a [routerLink]="['/report', getMembershipTypeId(user)]">
+          <img [src]="'http://www.bungie.net' + user.iconPath" alt="">
+          {{ user.displayName }}
+        </a>
+      </li>
+    </ul>
+  </form>
 </nav>

@@ -13,7 +13,7 @@ import { ManifestService } from './services/manifest.service';
 })
 export class AppComponent implements OnDestroy {
 
-  public navbar: boolean;
+  public home: boolean;
 
   private routeChanges: Subscription;
 
@@ -28,7 +28,7 @@ export class AppComponent implements OnDestroy {
         distinctUntilChanged((prev: RouterEvent, curr: RouterEvent) => prev.url === curr.url)
       )
       .subscribe((e: RouterEvent) => {
-        this.navbar = e.url !== '/';
+        this.home = e.url === '/';
       });
   }
 
