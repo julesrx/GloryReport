@@ -11,7 +11,6 @@ import { ManifestService } from './services/manifest.service';
 import { DestinyItemHashPipe } from './pipes/destiny-item-hash.pipe';
 import { CharacterCardComponent } from './components/character-card/character-card.component';
 import { HomeComponent } from './components/home/home.component';
-import { BungieAlertsComponent } from './components/bungie-alerts/bungie-alerts.component';
 import { GlobalAlertsComponent } from './components/global-alerts/global-alerts.component';
 
 @NgModule({
@@ -22,7 +21,6 @@ import { GlobalAlertsComponent } from './components/global-alerts/global-alerts.
     DestinyItemHashPipe,
     CharacterCardComponent,
     HomeComponent,
-    BungieAlertsComponent,
     GlobalAlertsComponent
   ],
   imports: [
