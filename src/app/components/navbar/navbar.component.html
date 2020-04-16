@@ -1,26 +1,24 @@
-<nav class="flex justify-between items-center py-2 px-4">
+<nav class="flex flex-col md:flex-row justify-between items-center py-2 px-4 fixed w-full bg-white text-lg">
   <a [routerLink]="'/'" class="flex justify-center items-center">
     <img src="assets/img/legend-icon.png" alt="Glory.report" class="h-12">
-    <h1 class="text-lg">
+    <h1>
       <span class="font-semibold">Glory</span>.report
     </h1>
   </a>
 
-  <form [formGroup]="searchForm" (submit)="search(searchForm.value)">
+  <!-- FIXME: Not centered -->
+  <div class="flex justify-center items-center" *ngIf="currentUser">
+    <img [src]="'https://www.bungie.net' + currentUser.emblemPath"
+      [alt]="currentUser.displayName"
+      class="h-12 rounded">
+    <span class="ml-2 font-semibold">{{ currentUser.displayName }}</span>
+  </div>
+
+  <form>
     <input type="text"
       id="gamertag"
       class="border border-gray-300 text-md rounded shadow max-w-sm py-1 px-2"
-      formControlName="gamertag"
       placeholder="Guardian..."
       required autofocus>
-
-    <ul *ngIf="users.length">
-      <li *ngFor="let user of users">
-        <a [routerLink]="['/report', getMembershipTypeId(user)]">
-          <img [src]="'http://www.bungie.net' + user.iconPath" alt="">
-          {{ user.displayName }}
-        </a>
-      </li>
-    </ul>
   </form>
 </nav>

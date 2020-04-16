@@ -1,50 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnDestroy } from '@angular/core';
 
-import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
-import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
-import { BungieHttpService } from 'src/app/services/bungie-http.service';
-import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
+import { CurrentUserService, CurrentUser } from 'src/app/services/current-user.service';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnDestroy {
 
-  public users: UserInfoCard[];
+  private currentUser$: Subscription;
+  public currentUser: CurrentUser;
 
-  public searchForm: FormGroup;
-
-  constructor(
-    private bHttp: BungieHttpService,
-    private formBuilder: FormBuilder,
-    private typeIdService: MembershipTypeIdService
-  ) {
-    this.searchForm = this.formBuilder.group({
-      gamertag: ''
-    });
+  constructor(private currentUserService: CurrentUserService) {
+    this.currentUser$ = this.currentUserService.state
+      .pipe(
+        distinctUntilChanged()
+      )
+      .subscribe((currentUser: CurrentUser) => {
+        this.currentUser = currentUser;
+      })
   }
 
-  ngOnInit(): void {
-    this.users = [];
-  }
-
-  search(formData: { gamertag: string }): void {
-    if (formData.gamertag.length) {
-      this.users = [];
-
-      this.bHttp.get(`Destiny2/SearchDestinyPlayer/${BungieMembershipType.All}/${encodeURIComponent(formData.gamertag)}/`)
-        .subscribe((res: ServerResponse<UserInfoCard[]>) => {
-          this.users = res.Response;
-        });
-    }
-  }
-
-  getMembershipTypeId(user: UserInfoCard): string {
-    return this.typeIdService.combine(user.membershipType, user.membershipId);
+  ngOnDestroy(): void {
+    this.currentUser$.unsubscribe();
   }
 
 }

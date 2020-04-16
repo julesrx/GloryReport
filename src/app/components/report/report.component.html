@@ -2,7 +2,7 @@
 
 <app-character-card *ngFor="let char of characters"
   [character]="char"
-  [current]="selectedCharacterInfos && selectedCharacterInfos.characterId === char.characterId"
+  [current]="selectedCharacter && selectedCharacter.characterId === char.characterId"
   (selected)="onCharacterSelect($event)"></app-character-card>
 
 <button *ngIf="more" type="button" (click)="loadMore()">Load more</button>
@@ -12,7 +12,7 @@
   <ul>
     <ng-container *ngFor="let sess of sessions">
       <li *ngIf="sess.activities.length">
-        <span (click)="getPGCRs(selectedCharacterInfos, sess)"
+        <span (click)="getPGCRs(selectedCharacter, sess)"
           style="cursor: pointer;">{{ formatPeriod(sess.day, 'LL') }}
           :</span>
         <ul *ngIf="sess.weapons.length">

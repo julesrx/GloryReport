@@ -1,6 +1,6 @@
 <app-navbar *ngIf="!home"></app-navbar>
 
-<main [ngClass]="['container mx-auto px-2', home ? 'max-w-3xl text-center' : '']">
+<main [ngClass]="['container mx-auto px-2', home ? 'max-w-3xl text-center' : 'pt-20']">
   <app-global-alerts></app-global-alerts>
   <router-outlet></router-outlet>
 </main>

@@ -18,6 +18,7 @@ import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { GameSession } from 'src/app/interfaces/game-session';
+import { CurrentUserService } from 'src/app/services/current-user.service';
 
 @Component({
   selector: 'app-report',
@@ -29,12 +30,12 @@ export class ReportComponent implements OnInit {
   // TODO: add all to this array and unsub on destroy
   // private subs: Subscription[];
 
-  public membershipTypeId: BehaviorSubject<string>;
-  public selectedCharacter: BehaviorSubject<DestinyCharacterComponent>;
+  private membershipTypeId: BehaviorSubject<string>;
+  private selectedCharacter$: BehaviorSubject<DestinyCharacterComponent>;
 
   public profile: DestinyProfileComponent;
   public characters: DestinyCharacterComponent[];
-  public selectedCharacterInfos: DestinyCharacterComponent;
+  public selectedCharacter: DestinyCharacterComponent;
 
   public activities: DestinyHistoricalStatsPeriodGroup[];
   public sessions: GameSession[];
@@ -47,11 +48,12 @@ export class ReportComponent implements OnInit {
     private bHttp: BungieHttpService,
     private route: ActivatedRoute,
     private typeIdService: MembershipTypeIdService,
+    private currentUserService: CurrentUserService
   ) { }
 
   ngOnInit(): void {
     this.membershipTypeId = new BehaviorSubject('');
-    this.selectedCharacter = new BehaviorSubject(null);
+    this.selectedCharacter$ = new BehaviorSubject(null);
 
     this.route.params.subscribe((params: Params) => {
       if (params.membershipTypeId) {
@@ -69,6 +71,7 @@ export class ReportComponent implements OnInit {
       this.bHttp.get(`Destiny2/${membershipType}/Profile/${membershipId}/`, false, { components: '100,200' })
         .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
           this.profile = res.Response.profile.data;
+          this.currentUserService.updateDisplayName(this.profile.userInfo.displayName);
 
           Object.keys(res.Response.characters.data).forEach(key => {
             this.characters.push(res.Response.characters.data[key]);
@@ -76,12 +79,14 @@ export class ReportComponent implements OnInit {
           this.characters.sort((a, b) => a.dateLastPlayed < b.dateLastPlayed ? 1 : -1);
 
           // TODO: add to settings
-          this.selectedCharacter.next(this.characters[0]);
-          this.selectedCharacter.subscribe((char: DestinyCharacterComponent) => {
+          this.selectedCharacter$.next(this.characters[0]);
+          this.selectedCharacter$.subscribe((char: DestinyCharacterComponent) => {
             // TODO: abort current requests if selectedCharacter is changed
-            this.selectedCharacterInfos = char;
+            this.selectedCharacter = char;
             this.searchOptions = this.initSearchOptions();
             this.initSessions();
+
+            this.currentUserService.updateEmblemPath(char.emblemPath);
 
             this.getActivities(char);
           });
@@ -186,12 +191,12 @@ export class ReportComponent implements OnInit {
   }
 
   onCharacterSelect(character: DestinyCharacterComponent): void {
-    this.selectedCharacter.next(character);
+    this.selectedCharacter$.next(character);
   }
 
   loadMore(): void {
     this.searchOptions.page += 1;
-    this.getActivities(this.selectedCharacterInfos);
+    this.getActivities(this.selectedCharacter);
   }
 
   initSessions(): void {
