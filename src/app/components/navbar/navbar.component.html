@@ -23,11 +23,11 @@
 
   <span class="ml-4">
     <a [href]="social.url"
-      [class]="i===0 ? '' : 'ml-2'"
+      [class]="i===0 ? '' : 'ml-1'"
       target="_blank"
       rel="noopener noreferrer"
       *ngFor="let social of socials;index as i">
-      <fa-icon [icon]="['fab', social.name]" size="lg"></fa-icon>
+      <fa-icon [icon]="['fab', social.name]" size="lg" [fixedWidth]="true"></fa-icon>
     </a>
   </span>
 </nav>
