@@ -1,24 +1,23 @@
-<nav class="flex flex-col md:flex-row justify-between items-center py-2 px-4 fixed w-full bg-white text-lg">
-  <a [routerLink]="'/'" class="flex justify-center items-center">
+<nav class="flex items-center fixed w-full bg-white text-lg py-2 px-4">
+  <a [routerLink]="'/'" class="flex items-center">
     <img src="assets/img/legend-icon.png" alt="Glory.report" class="h-12">
     <h1>
       <span class="font-semibold">Glory</span>.report
     </h1>
   </a>
 
-  <!-- FIXME: Not centered -->
-  <div class="flex justify-center items-center" *ngIf="currentUser">
+  <div class="flex-1"></div>
+
+  <input type="text"
+    id="gamertag"
+    class="border border-gray-300 text-md rounded shadow max-w-sm py-1 px-2"
+    placeholder="Guardian..."
+    required autofocus>
+
+  <div class="flex items-center ml-4" *ngIf="currentUser">
     <img [src]="'https://www.bungie.net' + currentUser.emblemPath"
       [alt]="currentUser.displayName"
       class="h-12 rounded">
     <span class="ml-2 font-semibold">{{ currentUser.displayName }}</span>
   </div>
-
-  <form>
-    <input type="text"
-      id="gamertag"
-      class="border border-gray-300 text-md rounded shadow max-w-sm py-1 px-2"
-      placeholder="Guardian..."
-      required autofocus>
-  </form>
 </nav>
