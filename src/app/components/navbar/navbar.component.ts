@@ -15,6 +15,11 @@ export class NavbarComponent implements OnDestroy {
   private currentUser$: Subscription;
   public currentUser: CurrentUser;
 
+  public socials = [
+    { name: 'twitter', url: 'https://twitter.com/myjulot' },
+    { name: 'github', url: 'https://github.com/julesrx/glory.report' }
+  ]
+
   constructor(private currentUserService: CurrentUserService) {
     this.currentUser$ = this.currentUserService.state
       .pipe(
