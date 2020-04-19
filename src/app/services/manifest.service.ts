@@ -7,7 +7,8 @@ import {
   DestinyManifest,
   DestinyInventoryItemDefinition,
   DestinyActivityDefinition,
-  DestinyClassDefinition
+  DestinyClassDefinition,
+  DestinyRaceDefinition
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse } from 'bungie-api-ts/common';
 import * as localForage from 'localforage';
@@ -25,7 +26,7 @@ export class ManifestService {
   };
   public state$ = new BehaviorSubject<ManifestServiceState>(this.state);
 
-  public tables: string[] = ['InventoryItem', 'Activity', 'Class'];
+  public tables: string[] = ['InventoryItem', 'Activity', 'Class', 'Race'];
   public defs: {
     InventoryItem?: {
       get(hash: number): DestinyInventoryItemDefinition;
@@ -35,6 +36,9 @@ export class ManifestService {
     },
     Class?: {
       get(hash: number): DestinyClassDefinition;
+    },
+    Race?: {
+      get(hash: number): DestinyRaceDefinition;
     }
   };
 

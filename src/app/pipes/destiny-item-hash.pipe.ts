@@ -30,6 +30,12 @@ export class DestinyItemHashPipe implements PipeTransform {
                 // cannot find some activities
                 return this.manifestService.defs.Activity.get(hash)?.displayProperties.name;
 
+              case 'className':
+                return this.manifestService.defs.Class.get(hash)?.displayProperties.name;
+
+              case 'raceName':
+                return this.manifestService.defs.Race.get(hash)?.displayProperties.name;
+
               default:
                 return '';
             }
