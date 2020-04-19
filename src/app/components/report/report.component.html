@@ -3,6 +3,4 @@
   [currentCharacterId]="selectedCharacter ? selectedCharacter.characterId : null"
   (selectedCharacter)="onCharacterSelect($event)"></app-report-header>
 
-<button *ngIf="more" type="button" (click)="loadMore()">Load more</button>
-
 <app-report-session [session]="sess" *ngFor="let sess of sessions"></app-report-session>

@@ -4,17 +4,7 @@
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 col-gap-1 mb-10 pb-2 border-b border-gray-300">
-  <div>
-    <p>Weapons used</p>
-    <ul *ngIf="session.weapons.length">
-      <li *ngFor="let weapon of session.weapons" style="color:red">
-        <img [src]="weapon.referenceId | destinyItemHash: 'itemIcon' | async"
-          [alt]=" weapon.referenceId | destinyItemHash: 'itemName' | async">
-        {{ weapon.referenceId | destinyItemHash: 'itemName' | async }} : {{ weapon.uniqueWeaponKills }}
-        kills
-      </li>
-    </ul>
-  </div>
+    <app-report-session-details [session]="session"></app-report-session-details>
 
   <div>
     <div class="flex" *ngFor="let act of session.activities">

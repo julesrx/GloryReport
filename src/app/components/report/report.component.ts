@@ -41,7 +41,7 @@ export class ReportComponent implements OnInit {
   public sessions: GameSession[];
 
   // TODO: add loading object array with loading type (activities, characters, pgcrs...)
-  public more = true;
+  // TODO: add loadMore button
   public searchOptions: ReportSearchOptions;
 
   constructor(
@@ -108,8 +108,6 @@ export class ReportComponent implements OnInit {
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
         if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
           if (res.Response.activities && res.Response.activities.length) {
-            this.more = res.Response.activities.length >= options.count;
-
             this.activities = _.concat(this.activities, res.Response.activities);
 
             this.getSessions(res.Response.activities);
@@ -192,11 +190,6 @@ export class ReportComponent implements OnInit {
 
   onCharacterSelect(character: DestinyCharacterComponent): void {
     this.selectedCharacter$.next(character);
-  }
-
-  loadMore(): void {
-    this.searchOptions.page += 1;
-    this.getActivities(this.selectedCharacter);
   }
 
   initSessions(): void {

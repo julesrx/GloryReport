@@ -17,6 +17,8 @@ import { HomeComponent } from './components/home/home.component';
 import { GlobalAlertsComponent } from './components/global-alerts/global-alerts.component';
 import { ReportHeaderComponent } from './components/report/report-header/report-header.component';
 import { ReportSessionComponent } from './components/report/report-session/report-session.component';
+import { ReportSessionWeaponComponent } from './components/report/report-session-details/report-session-weapon/report-session-weapon.component';
+import { ReportSessionDetailsComponent } from './components/report/report-session-details/report-session-details.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { ReportSessionComponent } from './components/report/report-session/repor
     HomeComponent,
     GlobalAlertsComponent,
     ReportHeaderComponent,
-    ReportSessionComponent
+    ReportSessionComponent,
+    ReportSessionWeaponComponent,
+    ReportSessionDetailsComponent
   ],
   imports: [
     BrowserModule,
