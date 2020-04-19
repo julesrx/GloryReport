@@ -5,33 +5,4 @@
 
 <button *ngIf="more" type="button" (click)="loadMore()">Load more</button>
 
-<div *ngIf="sessions.length">
-  <p>Last sessions :</p>
-  <ul>
-    <ng-container *ngFor="let sess of sessions">
-      <li *ngIf="sess.activities.length">
-        <span (click)="getPGCRs(selectedCharacter, sess)"
-          style="cursor: pointer;">{{ formatPeriod(sess.day, 'LL') }}
-          :</span>
-        <ul *ngIf="sess.weapons.length">
-          <li *ngFor="let weapon of sess.weapons" style="color:red">
-            <img [src]="weapon.referenceId | destinyItemHash: 'itemIcon' | async"
-              [alt]=" weapon.referenceId | destinyItemHash: 'itemName' | async">
-            {{ weapon.referenceId | destinyItemHash: 'itemName' | async }} : {{ weapon.uniqueWeaponKills }}
-            kills
-          </li>
-        </ul>
-        <ul>
-          <li *ngFor="let act of sess.activities">
-            {{ formatPeriod(act.period, 'HH:mm:ss') }} : {{ act.activityDetails.instanceId }}
-            {{ act.activityDetails.directorActivityHash }} =>
-            {{ act.activityDetails.directorActivityHash | destinyItemHash: 'activityName' | async }}
-            on
-            {{ act.activityDetails.referenceId }} =>
-            {{ act.activityDetails.referenceId | destinyItemHash: 'activityName' | async }}
-          </li>
-        </ul>
-      </li>
-    </ng-container>
-  </ul>
-</div>
+<app-report-session [session]="sess" *ngFor="let sess of sessions"></app-report-session>

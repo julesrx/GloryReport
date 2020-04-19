@@ -212,10 +212,6 @@ export class ReportComponent implements OnInit {
     };
   }
 
-  // TODO: add locale support
-  formatPeriod(period: string, format: string): string {
-    return moment(period).format(format);
-  }
 }
 
 export interface ReportSearchOptions {

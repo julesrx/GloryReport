@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faGithub, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +16,7 @@ import { DestinyItemHashPipe } from './pipes/destiny-item-hash.pipe';
 import { HomeComponent } from './components/home/home.component';
 import { GlobalAlertsComponent } from './components/global-alerts/global-alerts.component';
 import { ReportHeaderComponent } from './components/report/report-header/report-header.component';
+import { ReportSessionComponent } from './components/report/report-session/report-session.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import { ReportHeaderComponent } from './components/report/report-header/report-
     DestinyItemHashPipe,
     HomeComponent,
     GlobalAlertsComponent,
-    ReportHeaderComponent
+    ReportHeaderComponent,
+    ReportSessionComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +44,7 @@ import { ReportHeaderComponent } from './components/report/report-header/report-
 export class AppModule {
 
   constructor(private library: FaIconLibrary) {
-    library.addIcons(faGithub, faTwitter);
+    library.addIcons(faGithub, faTwitter, faPlus);
   }
 
 }
