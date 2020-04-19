@@ -72,6 +72,7 @@ export class ReportComponent implements OnInit {
         .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
           this.profile = res.Response.profile.data;
           this.currentUserService.updateDisplayName(this.profile.userInfo.displayName);
+          this.currentUserService.updateMembershipTypeId(this.profile.userInfo.membershipId, this.profile.userInfo.membershipType);
 
           Object.keys(res.Response.characters.data).forEach(key => {
             this.characters.push(res.Response.characters.data[key]);
