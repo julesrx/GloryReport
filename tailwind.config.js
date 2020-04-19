@@ -5,7 +5,7 @@ module.exports = {
     },
     extend: {
       colors: {
-        brand: '#c51611'
+        main: '#c51611'
       },
       spacing: {
         'char': '96px',
