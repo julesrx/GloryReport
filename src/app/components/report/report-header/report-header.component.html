@@ -1,0 +1,21 @@
+<div class="flex justify-center items-center">
+
+  <div class="flex">
+    <div [ngStyle]="getCharacterStyle(char)"
+      [ngClass]="[isCharacterActive(char) ? 'w-char-lg' : 'w-char', 'flex h-char cursor-pointer text-white bg-black']"
+      *ngFor="let char of characters"
+      (click)="selectCharacter(char)">
+      <img [src]="'https://www.bungie.net' + char.emblemPath"
+        alt=""
+        class="w-char h-char">
+      <ng-container *ngIf="isCharacterActive(char)">
+        <div class="flex flex-col justify-center ml-2">
+          <h1 class="text-2xl font-semibold">{{ profile.userInfo.displayName }}</h1>
+          <p class="-mt-1">{{ getCharacterInfos(char) }}</p>
+        </div>
+        <div class="flex-1"></div>
+        <p class="m-2 text-xl text-yellow-400 leading-none">{{ char.light }}</p>
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -6,6 +6,10 @@ module.exports = {
     extend: {
       colors: {
         brand: '#c51611'
+      },
+      spacing: {
+        'char': '96px',
+        'char-lg': '474px'
       }
     }
   },

@@ -1,9 +1,7 @@
-<h1 *ngIf="profile">{{ profile.userInfo.displayName }}</h1>
-
-<app-character-card *ngFor="let char of characters"
-  [character]="char"
-  [current]="selectedCharacter && selectedCharacter.characterId === char.characterId"
-  (selected)="onCharacterSelect($event)"></app-character-card>
+<app-report-header [profile]="profile"
+  [characters]="characters"
+  [currentCharacterId]="selectedCharacter ? selectedCharacter.characterId : null"
+  (selectedCharacter)="onCharacterSelect($event)"></app-report-header>
 
 <button *ngIf="more" type="button" (click)="loadMore()">Load more</button>
 
@@ -26,9 +24,11 @@
         <ul>
           <li *ngFor="let act of sess.activities">
             {{ formatPeriod(act.period, 'HH:mm:ss') }} : {{ act.activityDetails.instanceId }}
-            {{ act.activityDetails.directorActivityHash }} => {{ act.activityDetails.directorActivityHash | destinyItemHash: 'activityName' | async }}
+            {{ act.activityDetails.directorActivityHash }} =>
+            {{ act.activityDetails.directorActivityHash | destinyItemHash: 'activityName' | async }}
             on
-            {{ act.activityDetails.referenceId }} => {{ act.activityDetails.referenceId | destinyItemHash: 'activityName' | async }}
+            {{ act.activityDetails.referenceId }} =>
+            {{ act.activityDetails.referenceId | destinyItemHash: 'activityName' | async }}
           </li>
         </ul>
       </li>

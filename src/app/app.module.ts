@@ -12,9 +12,9 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { ReportComponent } from './components/report/report.component';
 import { ManifestService } from './services/manifest.service';
 import { DestinyItemHashPipe } from './pipes/destiny-item-hash.pipe';
-import { CharacterCardComponent } from './components/character-card/character-card.component';
 import { HomeComponent } from './components/home/home.component';
 import { GlobalAlertsComponent } from './components/global-alerts/global-alerts.component';
+import { ReportHeaderComponent } from './components/report/report-header/report-header.component';
 
 @NgModule({
   declarations: [
@@ -22,9 +22,9 @@ import { GlobalAlertsComponent } from './components/global-alerts/global-alerts.
     NavbarComponent,
     ReportComponent,
     DestinyItemHashPipe,
-    CharacterCardComponent,
     HomeComponent,
-    GlobalAlertsComponent
+    GlobalAlertsComponent,
+    ReportHeaderComponent
   ],
   imports: [
     BrowserModule,
