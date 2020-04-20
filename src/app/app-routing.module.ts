@@ -7,7 +7,7 @@ import { HomeComponent } from './components/home/home.component';
 const routes: Routes = [
   { path: 'report/:membershipTypeId', component: ReportComponent },
   { path: '', component: HomeComponent },
-  { path: '**', redirectTo: '', pathMatch: 'full' }
+  { path: '**', pathMatch: 'full', redirectTo: '' }
 ];
 
 @NgModule({
