@@ -18,6 +18,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   public gamertag: BehaviorSubject<string>;
   public users: UserInfoCard[];
 
+  public loading: boolean;
+  public noMatch: boolean;
+
   private response: Subscription;
 
   constructor(
@@ -35,12 +38,16 @@ export class HomeComponent implements OnInit, OnDestroy {
         switchMap((value: string) => {
           if (value) {
             this.users = [];
+            this.loading = true;
             return this.bHttp.get(`Destiny2/SearchDestinyPlayer/${BungieMembershipType.All}/${encodeURIComponent(value)}/`);
           } else { return EMPTY; }
         })
       )
       .subscribe((res: ServerResponse<UserInfoCard[]>) => {
         this.users = res.Response;
+        this.loading = false;
+
+        this.noMatch = !this.users.length;
       });
   }
 

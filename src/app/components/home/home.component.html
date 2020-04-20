@@ -8,11 +8,18 @@
 <input type="text"
   id="search-box"
   (keyup)="search($event)"
-  class="border border-gray-300 text-lg py-1 px-2 rounded shadow"
+  class="border border-gray-300 text-lg py-1 px-2 rounded shadow mb-5"
   placeholder="Guardian..."
   autofocus>
 
-<div class="flex justify-center mt-5" *ngIf="users.length">
+<fa-icon [icon]="['fas', 'circle-notch']"
+  size="lg"
+  [fixedWidth]="true"
+  [spin]="true"
+  class="block"
+  *ngIf="loading"></fa-icon>
+
+<div class="flex justify-center" *ngIf="!loading && users.length">
   <a [routerLink]="['/report', getMembershipTypeId(user)]" class="mx-2 flex align-middle" *ngFor="let user of users">
     <img [src]="'http://www.bungie.net' + user.iconPath"
       [alt]="user.displayName"
@@ -21,3 +28,5 @@
     <span>{{ user.displayName }}</span>
   </a>
 </div>
+
+<p *ngIf="!loading && noMatch">No player found</p>

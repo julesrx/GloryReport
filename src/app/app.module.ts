@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faGithub, faTwitter } from '@fortawesome/free-brands-svg-icons';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -48,7 +48,7 @@ import { ReportSessionDetailsComponent } from './components/report/report-sessio
 export class AppModule {
 
   constructor(private library: FaIconLibrary) {
-    library.addIcons(faGithub, faTwitter, faPlus);
+    library.addIcons(faGithub, faTwitter, faPlus, faCircleNotch);
   }
 
 }
