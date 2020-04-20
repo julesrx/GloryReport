@@ -18,11 +18,11 @@ export class CurrentUserService {
   }
 
   updateDisplayName(displayName: string): void {
-    this.updateState({ ...this.currentUser, displayName: displayName });
+    this.updateState({ ...this.currentUser, displayName });
   }
 
   updateEmblemPath(emblemPath: string): void {
-    this.updateState({ ...this.currentUser, emblemPath: emblemPath });
+    this.updateState({ ...this.currentUser, emblemPath });
   }
 
   updateMembershipTypeId(membershipId: string, membershipType: BungieMembershipType) {

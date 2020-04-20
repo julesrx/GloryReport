@@ -39,7 +39,7 @@ export class ReportHeaderComponent implements OnInit {
         ? 'w-char-lg'
         : 'w-char',
       'flex h-char cursor-pointer text-white bg-black transition-all duration-75'
-    ]
+    ];
   }
 
 }

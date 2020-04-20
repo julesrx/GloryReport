@@ -18,7 +18,7 @@ export class NavbarComponent implements OnDestroy {
   public socials = [
     { name: 'twitter', url: 'https://twitter.com/myjulot' },
     { name: 'github', url: 'https://github.com/julesrx/glory.report' }
-  ]
+  ];
 
   constructor(private currentUserService: CurrentUserService) {
     this.currentUser$ = this.currentUserService.state
@@ -27,7 +27,7 @@ export class NavbarComponent implements OnDestroy {
       )
       .subscribe((currentUser: CurrentUser) => {
         this.currentUser = currentUser;
-      })
+      });
   }
 
   ngOnDestroy(): void {
