@@ -15,6 +15,11 @@ export class NavbarComponent implements OnDestroy {
   private currentUser$: Subscription;
   public currentUser: CurrentUser;
 
+  public links = [
+    { name: 'Report', route: '/report', enabled: true },
+    { name: 'Encounters', route: '/encounters', enabled: false }
+  ];
+
   public socials = [
     { name: 'twitter', url: 'https://twitter.com/myjulot' },
     { name: 'github', url: 'https://github.com/julesrx/glory.report' }
