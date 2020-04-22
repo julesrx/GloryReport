@@ -68,7 +68,7 @@ export class ReportSessionComponent implements OnInit {
 
   getActivityIcon(activity: DestinyHistoricalStatsPeriodGroup): string {
     // not working correctly
-    return `https://www.bungie.net${this.manifestService.defs.Activity.get(activity.activityDetails.referenceId).displayProperties.icon}`;
+    return `https://www.bungie.net${this.manifestService.defs.Activity?.get(activity.activityDetails.referenceId).displayProperties.icon}`;
   }
 
   // TODO: add locale support
