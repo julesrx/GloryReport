@@ -7,7 +7,7 @@ module.exports = {
         'sans': ['Inter var', ...defaultTheme.fontFamily.sans]
       },
       colors: {
-        main: '#c51611',
+        brand: '#c51611',
         gray: {
           '100': '#f5f5f5',
           '200': '#eeeeee',
