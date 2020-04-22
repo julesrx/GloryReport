@@ -29,7 +29,7 @@ export class BungieHttpService {
     }
   }
 
-  get(url: string, stats: boolean = false, params: any = {}, headers: any = {}): Observable<ServerResponse<any>> {
+  public get(url: string, stats: boolean = false, params: any = {}, headers: any = {}): Observable<ServerResponse<any>> {
     const options = {
       headers: new HttpHeaders({
         ...headers,
