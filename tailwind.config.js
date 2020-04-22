@@ -1,12 +1,14 @@
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 module.exports = {
   theme: {
-    fontFamily: {
-      'sans': ['Inter', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif']
-    },
     extend: {
+      fontFamily: {
+        'sans': ['Inter var', ...defaultTheme.fontFamily.sans]
+      },
       colors: {
         main: '#c51611',
-        gray: { // replaced the default cool grays with a neutral gray palette
+        gray: {
           '100': '#f5f5f5',
           '200': '#eeeeee',
           '300': '#e0e0e0',
