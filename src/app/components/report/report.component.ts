@@ -40,6 +40,8 @@ export class ReportComponent implements OnInit {
   public activities: DestinyHistoricalStatsPeriodGroup[];
   public sessions: GameSession[];
 
+  public sessionLimit: number = 10;
+
   // TODO: add loading object array with loading type (activities, characters, pgcrs...)
   // TODO: add loadMore button
   public searchOptions: ReportSearchOptions;
@@ -84,7 +86,7 @@ export class ReportComponent implements OnInit {
           this.selectedCharacter$.subscribe((char: DestinyCharacterComponent) => {
             // TODO: abort current requests if selectedCharacter is changed
             this.selectedCharacter = char;
-            this.searchOptions = this.initSearchOptions();
+            this.searchOptions = this.getNewSearchOptions();
             this.initSessions();
 
             this.currentUserService.updateEmblemPath(char.emblemPath);
@@ -104,7 +106,7 @@ export class ReportComponent implements OnInit {
 
     this.bHttp.get(
       `/Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
-      false,
+      true,
       options)
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
         if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
@@ -112,12 +114,10 @@ export class ReportComponent implements OnInit {
             this.activities = _.concat(this.activities, res.Response.activities);
 
             this.getSessions(res.Response.activities);
-            this.sessions.slice(0, 3).forEach(s => this.getPGCRs(character, s));
+            // this.sessions.slice(0, 3).forEach(s => this.getPGCRs(character, s));
 
-            if (options.page < 4) {
-              this.searchOptions.page += 1;
-              this.getActivities(character);
-            }
+            this.searchOptions.page += 1;
+            this.getActivities(character);
           }
         } else { console.error('Profile in private'); }
       });
@@ -154,39 +154,9 @@ export class ReportComponent implements OnInit {
     });
   }
 
-  // TODO: display medals and 'medalMatchMostDamage' in priority
-  getPGCRs(character: DestinyCharacterComponent, session: GameSession): void {
-    if (!session.fetched) {
-      session.activities.forEach(act => {
-        this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
-          .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-            const pgcr: DestinyPostGameCarnageReportData = res.Response;
-
-            pgcr.entries.filter(e => e.characterId === character.characterId).forEach(e => {
-              // e.extended.weapons is undefined if the player has 0 kills 😥
-              if (e.extended.weapons) {
-                e.extended.weapons.forEach(weapon => {
-                  if (session.weapons.some(w => w.referenceId === weapon.referenceId)) {
-                    const stat = session.weapons.find(w => w.referenceId === weapon.referenceId);
-                    stat.uniqueWeaponKills += weapon.values['uniqueWeaponKills'].basic.value;
-                    stat.uniqueWeaponPrecisionKills += weapon.values['uniqueWeaponPrecisionKills'].basic.value;
-                    stat.uniqueWeaponKillsPrecisionKills += weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value;
-                  } else {
-                    session.weapons.push({
-                      referenceId: weapon.referenceId,
-                      uniqueWeaponKills: weapon.values['uniqueWeaponKills'].basic.value,
-                      uniqueWeaponPrecisionKills: weapon.values['uniqueWeaponPrecisionKills'].basic.value,
-                      uniqueWeaponKillsPrecisionKills: weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value
-                    });
-                  }
-                });
-              }
-            });
-          });
-      });
-
-      session.fetched = true;
-    }
+  // TODO: Add loadAll() and handle api ThrottleSeconds
+  loadMore(): void {
+    this.sessionLimit += 5;
   }
 
   onCharacterSelect(character: DestinyCharacterComponent): void {
@@ -198,9 +168,9 @@ export class ReportComponent implements OnInit {
     this.sessions = [];
   }
 
-  initSearchOptions(): ReportSearchOptions {
+  getNewSearchOptions(): ReportSearchOptions {
     return {
-      count: 100,
+      count: 250,
       page: 0,
       mode: DestinyActivityModeType.AllPvP
     };

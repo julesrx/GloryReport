@@ -1,6 +1,16 @@
-<app-report-header [profile]="profile"
-  [characters]="characters"
-  [currentCharacterId]="selectedCharacter ? selectedCharacter.characterId : null"
-  (selectedCharacter)="onCharacterSelect($event)"></app-report-header>
+<ng-container *ngIf="selectedCharacter">
+  <app-report-header [profile]="profile"
+    [characters]="characters"
+    [currentCharacterId]="selectedCharacter.characterId"
+    (selectedCharacter)="onCharacterSelect($event)"></app-report-header>
 
-<app-report-session [session]="sess" *ngFor="let sess of sessions"></app-report-session>
+  <app-report-session [session]="sess"
+    [characterId]="selectedCharacter.characterId"
+    *ngFor="let sess of sessions | slice:0:sessionLimit"></app-report-session>
+
+  <div class="flex justify-center items-center">
+    <button class="shadow rounded border px-4 py-2 mb-8"
+      *ngIf="sessions.length && sessionLimit < sessions.length"
+      (click)="loadMore()">Load more</button>
+  </div>
+</ng-container>
