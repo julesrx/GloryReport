@@ -18,15 +18,9 @@ export class BungieHttpService {
   constructor(private http: HttpClient) {
     this.error = new BehaviorSubject(null);
     this.origin = window.location.protocol + '//' + window.location.hostname;
-    switch (this.origin) {
-      case 'http://dev.glory.report':
-        this.key = 'ecc34e9250b34803ae6e09405568df82';
-        break;
-
-      case 'https://glory.report':
-        this.key = '457b1436a98a4390be099a140c42fd3d';
-        break;
-    }
+    this.key = this.origin === 'https://glory.report'
+      ? '457b1436a98a4390be099a140c42fd3d'
+      : 'ecc34e9250b34803ae6e09405568df82';
   }
 
   public get(url: string, stats: boolean = false, params: any = {}, headers: any = {}): Observable<ServerResponse<any>> {
