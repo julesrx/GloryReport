@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { ServerResponse } from 'bungie-api-ts/common';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +19,7 @@ export class BungieHttpService {
   constructor(private http: HttpClient) {
     this.error = new BehaviorSubject(null);
     this.origin = window.location.protocol + '//' + window.location.hostname;
-    this.key = this.origin === 'https://glory.report'
-      ? '457b1436a98a4390be099a140c42fd3d'
-      : 'ecc34e9250b34803ae6e09405568df82';
+    this.key = environment.BUNGIE_API_KEY;
   }
 
   public get(url: string, stats: boolean = false, params: any = {}, headers: any = {}): Observable<ServerResponse<any>> {
