@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "9"
+  - "12"
 
 dist: trusty
 sudo: required
@@ -12,8 +12,6 @@ before_install:
   - mv src/environments/secrets.example.ts src/environments/secrets.ts
 
 script:
-# - npm run test
-# - npm run e2e
 - npm run prod
 
 deploy:
