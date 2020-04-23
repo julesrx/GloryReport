@@ -15,4 +15,8 @@ export class ReportSessionWeaponComponent implements OnInit {
 
   ngOnInit(): void { }
 
+  getWeaponPrecision(): string {
+    return (this.weapon.uniqueWeaponPrecisionKills / this.weapon.uniqueWeaponKills * 100).toFixed(2);
+  }
+
 }

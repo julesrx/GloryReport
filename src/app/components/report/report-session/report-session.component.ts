@@ -47,13 +47,11 @@ export class ReportSessionComponent implements OnInit {
                     const stat = session.weapons.find(w => w.referenceId === weapon.referenceId);
                     stat.uniqueWeaponKills += weapon.values['uniqueWeaponKills'].basic.value;
                     stat.uniqueWeaponPrecisionKills += weapon.values['uniqueWeaponPrecisionKills'].basic.value;
-                    stat.uniqueWeaponKillsPrecisionKills += weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value;
                   } else {
                     session.weapons.push({
                       referenceId: weapon.referenceId,
                       uniqueWeaponKills: weapon.values['uniqueWeaponKills'].basic.value,
                       uniqueWeaponPrecisionKills: weapon.values['uniqueWeaponPrecisionKills'].basic.value,
-                      uniqueWeaponKillsPrecisionKills: weapon.values['uniqueWeaponKillsPrecisionKills'].basic.value
                     });
                   }
                 });
