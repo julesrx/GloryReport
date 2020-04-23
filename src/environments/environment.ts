@@ -2,11 +2,9 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import { secrets } from './secrets';
-
 export const environment = {
   production: false,
-  BUNGIE_API_KEY: secrets.BUNGIE_API_KEY
+  BUNGIE_API_KEY: 'ecc34e9250b34803ae6e09405568df82'
 };
 
 /*

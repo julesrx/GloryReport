@@ -1,6 +1,4 @@
-import { secrets } from './secrets';
-
 export const environment = {
   production: true,
-  API_KEY: secrets.BUNGIE_API_KEY
+  BUNGIE_API_KEY: '457b1436a98a4390be099a140c42fd3d'
 };
