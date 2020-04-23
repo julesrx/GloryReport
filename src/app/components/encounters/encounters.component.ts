@@ -119,6 +119,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
     this.subs.push(
       this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${activity.activityDetails.instanceId}/`, true)
         .pipe(
+          delay(50),
           catchError((e) => {
             if (e.error.ErrorCode == PlatformErrorCodes.PerEndpointRequestThrottleExceeded) {
               this.retryLater.push(activity);
