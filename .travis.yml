@@ -8,9 +8,6 @@ sudo: required
 before_script:
   - npm install -g @angular/cli@9
 
-before_install:
-  - mv src/environments/secrets.example.ts src/environments/secrets.ts
-
 script:
 - npm run prod
 
