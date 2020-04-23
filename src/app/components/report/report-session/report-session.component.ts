@@ -1,9 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 
+import { Subscription } from 'rxjs';
 import { ServerResponse } from 'bungie-api-ts/common';
 import {
   DestinyHistoricalStatsPeriodGroup,
-  DestinyCharacterComponent,
   DestinyPostGameCarnageReportData
 } from 'bungie-api-ts/destiny2/interfaces';
 import * as moment from 'moment';
@@ -17,10 +17,12 @@ import { BungieHttpService } from 'src/app/services/bungie-http.service';
   templateUrl: './report-session.component.html',
   styleUrls: ['./report-session.component.scss']
 })
-export class ReportSessionComponent implements OnInit {
+export class ReportSessionComponent implements OnInit, OnDestroy {
 
   @Input() session: GameSession;
   @Input() characterId: string;
+
+  private subs: Subscription[];
 
   constructor(
     private bHttp: BungieHttpService,
@@ -28,36 +30,39 @@ export class ReportSessionComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.getPGCRs(this.characterId, this.session);;
+    this.subs = [];
+    this.getPGCRs(this.characterId, this.session);
   }
 
   // TODO: display medals and 'medalMatchMostDamage' in priority
   getPGCRs(characterId: string, session: GameSession): void {
     if (!session.fetched) {
       session.activities.forEach(act => {
-        this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
-          .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-            const pgcr: DestinyPostGameCarnageReportData = res.Response;
+        this.subs.push(
+          this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
+            .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+              const pgcr: DestinyPostGameCarnageReportData = res.Response;
 
-            pgcr.entries.filter(e => e.characterId === characterId).forEach(e => {
-              // e.extended.weapons is undefined if the player has 0 kills 😥
-              if (e.extended.weapons) {
-                e.extended.weapons.forEach(weapon => {
-                  if (session.weapons.some(w => w.referenceId === weapon.referenceId)) {
-                    const stat = session.weapons.find(w => w.referenceId === weapon.referenceId);
-                    stat.uniqueWeaponKills += weapon.values['uniqueWeaponKills'].basic.value;
-                    stat.uniqueWeaponPrecisionKills += weapon.values['uniqueWeaponPrecisionKills'].basic.value;
-                  } else {
-                    session.weapons.push({
-                      referenceId: weapon.referenceId,
-                      uniqueWeaponKills: weapon.values['uniqueWeaponKills'].basic.value,
-                      uniqueWeaponPrecisionKills: weapon.values['uniqueWeaponPrecisionKills'].basic.value,
-                    });
-                  }
-                });
-              }
-            });
-          });
+              pgcr.entries.filter(e => e.characterId === characterId).forEach(e => {
+                // e.extended.weapons is undefined if the player has 0 kills 😥
+                if (e.extended.weapons) {
+                  e.extended.weapons.forEach(weapon => {
+                    if (session.weapons.some(w => w.referenceId === weapon.referenceId)) {
+                      const stat = session.weapons.find(w => w.referenceId === weapon.referenceId);
+                      stat.uniqueWeaponKills += weapon.values['uniqueWeaponKills'].basic.value;
+                      stat.uniqueWeaponPrecisionKills += weapon.values['uniqueWeaponPrecisionKills'].basic.value;
+                    } else {
+                      session.weapons.push({
+                        referenceId: weapon.referenceId,
+                        uniqueWeaponKills: weapon.values['uniqueWeaponKills'].basic.value,
+                        uniqueWeaponPrecisionKills: weapon.values['uniqueWeaponPrecisionKills'].basic.value,
+                      });
+                    }
+                  });
+                }
+              });
+            })
+        );
       });
 
       session.fetched = true;
@@ -76,6 +81,12 @@ export class ReportSessionComponent implements OnInit {
 
   fromNow(period: string): string {
     return moment(period).fromNow();
+  }
+
+  ngOnDestroy(): void {
+    if (this.subs) {
+      this.subs.forEach(a => a.unsubscribe());
+    }
   }
 
 }

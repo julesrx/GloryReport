@@ -13,7 +13,6 @@ export class ReportSessionDetailsComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
 }

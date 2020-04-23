@@ -1,17 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Params, ActivatedRoute } from '@angular/router';
 
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import {
   DestinyProfileResponse,
   DestinyProfileComponent,
   DestinyCharacterComponent,
   DestinyActivityModeType,
   DestinyActivityHistoryResults,
-  DestinyHistoricalStatsPeriodGroup,
-  DestinyPostGameCarnageReportData
+  DestinyHistoricalStatsPeriodGroup
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 
@@ -25,13 +24,15 @@ import { CurrentUserService } from 'src/app/services/current-user.service';
   templateUrl: './report.component.html',
   styleUrls: ['./report.component.scss']
 })
-export class ReportComponent implements OnInit {
+export class ReportComponent implements OnInit, OnDestroy {
 
   // TODO: add all to this array and unsub on destroy
   // private subs: Subscription[];
 
   private membershipTypeId: BehaviorSubject<string>;
   private selectedCharacter$: BehaviorSubject<DestinyCharacterComponent>;
+
+  private activitySubs: Subscription[] = [];
 
   public profile: DestinyProfileComponent;
   public characters: DestinyCharacterComponent[];
@@ -40,7 +41,7 @@ export class ReportComponent implements OnInit {
   public activities: DestinyHistoricalStatsPeriodGroup[];
   public sessions: GameSession[];
 
-  public sessionLimit: number = 10;
+  public sessionLimit: number;
 
   // TODO: add loading object array with loading type (activities, characters, pgcrs...)
   // TODO: add loadMore button
@@ -54,6 +55,8 @@ export class ReportComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.sessionLimit = 10;
+
     this.membershipTypeId = new BehaviorSubject('');
     this.selectedCharacter$ = new BehaviorSubject(null);
 
@@ -104,23 +107,25 @@ export class ReportComponent implements OnInit {
       mode: this.searchOptions.mode
     };
 
-    this.bHttp.get(
-      `/Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
-      true,
-      options)
-      .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-        if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
-          if (res.Response.activities && res.Response.activities.length) {
-            this.activities = _.concat(this.activities, res.Response.activities);
+    this.activitySubs.push(
+      this.bHttp.get(
+        `/Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
+        true,
+        options)
+        .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
+          if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
+            if (res.Response.activities && res.Response.activities.length) {
+              this.activities = _.concat(this.activities, res.Response.activities);
 
-            this.getSessions(res.Response.activities);
-            // this.sessions.slice(0, 3).forEach(s => this.getPGCRs(character, s));
+              this.getSessions(res.Response.activities);
+              // this.sessions.slice(0, 3).forEach(s => this.getPGCRs(character, s));
 
-            this.searchOptions.page += 1;
-            this.getActivities(character);
-          }
-        } else { console.error('Profile in private'); }
-      });
+              this.searchOptions.page += 1;
+              this.getActivities(character);
+            }
+          } else { console.error('Profile in private'); }
+        })
+    );
   }
 
   getSessions(activities: DestinyHistoricalStatsPeriodGroup[]): void {
@@ -160,6 +165,8 @@ export class ReportComponent implements OnInit {
   }
 
   onCharacterSelect(character: DestinyCharacterComponent): void {
+    this.unsubscribeToActivitySubs();
+
     this.selectedCharacter$.next(character);
   }
 
@@ -174,6 +181,18 @@ export class ReportComponent implements OnInit {
       page: 0,
       mode: DestinyActivityModeType.AllPvP
     };
+  }
+
+  unsubscribeToActivitySubs(): void {
+    if (this.activitySubs) {
+      this.activitySubs.forEach(a => a.unsubscribe());
+    }
+
+    this.activitySubs = [];
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribeToActivitySubs();
   }
 
 }
