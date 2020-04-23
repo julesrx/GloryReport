@@ -19,6 +19,7 @@ import { ReportHeaderComponent } from './components/report/report-header/report-
 import { ReportSessionComponent } from './components/report/report-session/report-session.component';
 import { ReportSessionWeaponComponent } from './components/report/report-session-details/report-session-weapon/report-session-weapon.component';
 import { ReportSessionDetailsComponent } from './components/report/report-session-details/report-session-details.component';
+import { EncountersComponent } from './components/encounters/encounters.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { ReportSessionDetailsComponent } from './components/report/report-sessio
     ReportHeaderComponent,
     ReportSessionComponent,
     ReportSessionWeaponComponent,
-    ReportSessionDetailsComponent
+    ReportSessionDetailsComponent,
+    EncountersComponent
   ],
   imports: [
     BrowserModule,
