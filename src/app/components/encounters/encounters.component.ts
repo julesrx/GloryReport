@@ -148,7 +148,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
           this.fetched++;
 
-          if (index < activities.length) {
+          if (index < activities.length - 1) {
             this.getPGCR(activities, index += 1);
           }
         })
