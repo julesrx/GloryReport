@@ -11,10 +11,10 @@ import {
   DestinyRaceDefinition
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse } from 'bungie-api-ts/common';
-import * as localForage from 'localforage';
 import * as _ from 'lodash';
 
 import { BungieHttpService } from './bungie-http.service';
+import { StorageService } from './storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +42,6 @@ export class ManifestService {
     }
   };
 
-  private store: LocalForage;
   private definitions: BehaviorSubject<any>;
 
   private localManifestTables = 'd2-manifest-tables';
@@ -51,16 +50,12 @@ export class ManifestService {
 
   constructor(
     private http: HttpClient,
-    private bHttp: BungieHttpService
+    private bHttp: BungieHttpService,
+    private storage: StorageService
   ) {
     this.defs = {};
-    this.store = localForage.createInstance({
-      name: 'Glory.report',
-      storeName: 'glory-report',
-      description: `Glory.report's database`
-    });
 
-    this.store.getItem<string>(this.localManifestVersion)
+    this.storage.getItem<string>(this.localManifestVersion)
       .then((currentVersion: string) => {
         this.definitions = new BehaviorSubject(null);
         this.definitions.pipe(
@@ -76,7 +71,7 @@ export class ManifestService {
 
             try {
               if (currentVersion === version && this.arrayAreEqual(currentTables, this.tables)) {
-                const manifest: Promise<object> = this.store.getItem<object>(this.localManifestData);
+                const manifest: Promise<object> = this.storage.getItem<object>(this.localManifestData);
 
                 if (!manifest) {
                   throw new Error('Empty cached manifest file');
@@ -119,8 +114,8 @@ export class ManifestService {
           }),
           catchError((err) => {
             console.error(err.message || err);
-            this.store.removeItem(this.localManifestData);
-            this.store.removeItem(this.localManifestVersion);
+            this.storage.removeItem(this.localManifestData);
+            this.storage.removeItem(this.localManifestVersion);
 
             return EMPTY;
           })
@@ -134,10 +129,10 @@ export class ManifestService {
 
   private async saveToDB(manifest: object, version: string) {
     try {
-      await this.store.setItem(this.localManifestData, manifest)
+      await this.storage.setItem(this.localManifestData, manifest)
         .then(() => {
           console.log(`Sucessfully stored manifest file.`);
-          this.store.setItem(this.localManifestVersion, version);
+          this.storage.setItem(this.localManifestVersion, version);
           localStorage.setItem(this.localManifestTables, JSON.stringify(this.tables));
         });
     } catch (e) {
@@ -157,6 +152,4 @@ export class ManifestService {
 
 export interface ManifestServiceState {
   loaded: boolean;
-  // error?: Error;
-  // statusText?: string;
 }
