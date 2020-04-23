@@ -1,1 +1,6 @@
-<p class="text-center text-lg">{{ activities.length }} activities</p>
+<p class="text-center text-lg">Fetched {{ fetched }}/{{ activities.length }} activities (retryLater: {{ retryLater.length }})</p>
+
+<!-- sort only the first ones -->
+<div *ngFor="let player of playerEncounters | slice:0:20 | sortBy:'desc':'count'">
+  <p>{{ player.displayName }} : {{ player.count }}</p>
+</div>

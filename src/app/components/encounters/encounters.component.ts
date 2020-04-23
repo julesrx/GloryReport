@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, Subscriber, empty, EMPTY } from 'rxjs';
 import * as _ from 'lodash';
 import {
   DestinyProfileComponent,
@@ -9,13 +9,15 @@ import {
   DestinyProfileResponse,
   DestinyActivityHistoryResults,
   DestinyHistoricalStatsPeriodGroup,
-  DestinyActivityModeType
+  DestinyActivityModeType,
+  DestinyPostGameCarnageReportData
 } from 'bungie-api-ts/destiny2/interfaces';
-import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
+import { ServerResponse, PlatformErrorCodes, BungieMembershipType } from 'bungie-api-ts/common';
 
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { CurrentUserService } from 'src/app/services/current-user.service';
+import { delay, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-encounters',
@@ -32,6 +34,11 @@ export class EncountersComponent implements OnInit, OnDestroy {
   public characters: DestinyCharacterComponent[];
   public activities: DestinyHistoricalStatsPeriodGroup[];
 
+  public playerEncounters: PlayerEncounter[];
+
+  public fetched: number;
+  public retryLater: DestinyHistoricalStatsPeriodGroup[];
+
   constructor(
     private bHttp: BungieHttpService,
     private route: ActivatedRoute,
@@ -40,8 +47,13 @@ export class EncountersComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.subs = [];
     this.activities = [];
+    this.playerEncounters = [];
+
+    this.fetched = 0;
+    this.retryLater = [];
+
+    this.subs = [];
     this.membershipTypeId = new BehaviorSubject('');
 
     this.route.params.subscribe((params: Params) => {
@@ -92,10 +104,52 @@ export class EncountersComponent implements OnInit, OnDestroy {
           if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
             if (res.Response.activities && res.Response.activities.length) {
               this.activities = _.concat(this.activities, res.Response.activities);
+              this.getPGCR(res.Response.activities, 0);
 
               this.getActivities(character, page += 1);
             }
           } else { console.error('Profile in private'); }
+        })
+    );
+  }
+
+  getPGCR(activities: DestinyHistoricalStatsPeriodGroup[], index: number): void {
+    const activity = activities[index];
+
+    this.subs.push(
+      this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${activity.activityDetails.instanceId}/`, true)
+        .pipe(
+          catchError((e) => {
+            if (e.error.ErrorCode == PlatformErrorCodes.PerEndpointRequestThrottleExceeded) {
+              this.retryLater.push(activity);
+            }
+
+            return EMPTY;
+          })
+        )
+        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
+          const pgcr: DestinyPostGameCarnageReportData = res.Response;
+
+          pgcr.entries
+            .filter(e => e.player.destinyUserInfo.membershipId != this.profile.userInfo.membershipId)
+            .forEach(entry => {
+              if (this.playerEncounters.some(e => e.membershipId == entry.player.destinyUserInfo.membershipId)) {
+                this.playerEncounters.find(e => e.membershipId == entry.player.destinyUserInfo.membershipId).count++;
+              } else {
+                this.playerEncounters.push({
+                  displayName: entry.player.destinyUserInfo.displayName,
+                  membershipId: entry.player.destinyUserInfo.membershipId,
+                  membershipType: entry.player.destinyUserInfo.membershipType,
+                  count: 1,
+                });
+              }
+            });
+
+          this.fetched++;
+
+          if (index < activities.length) {
+            this.getPGCR(activities, index += 1);
+          }
         })
     );
   }
@@ -106,4 +160,11 @@ export class EncountersComponent implements OnInit, OnDestroy {
     }
   }
 
+}
+
+export interface PlayerEncounter {
+  displayName: string;
+  membershipId: string;
+  membershipType: BungieMembershipType;
+  count: number;
 }
