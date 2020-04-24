@@ -1,7 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { BehaviorSubject, Subscription, Subscriber, empty, EMPTY } from 'rxjs';
+import { BehaviorSubject, Subscription, EMPTY, from, of } from 'rxjs';
+import { delay, catchError, mergeMap, concatMap } from 'rxjs/operators';
+import { observable, computed } from 'mobx';
 import * as _ from 'lodash';
 import {
   DestinyProfileComponent,
@@ -17,7 +19,6 @@ import { ServerResponse, PlatformErrorCodes, BungieMembershipType } from 'bungie
 import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { CurrentUserService } from 'src/app/services/current-user.service';
-import { delay, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-encounters',
@@ -34,10 +35,10 @@ export class EncountersComponent implements OnInit, OnDestroy {
   public characters: DestinyCharacterComponent[];
   public activities: DestinyHistoricalStatsPeriodGroup[];
 
-  public playerEncounters: PlayerEncounter[];
+  @observable public playerEncounters: PlayerEncounter[];
 
   public fetched: number;
-  public retryLater: DestinyHistoricalStatsPeriodGroup[];
+  public retryLater: string[];
 
   constructor(
     private bHttp: BungieHttpService,
@@ -104,7 +105,17 @@ export class EncountersComponent implements OnInit, OnDestroy {
           if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
             if (res.Response.activities && res.Response.activities.length) {
               this.activities = _.concat(this.activities, res.Response.activities);
-              this.getPGCR(res.Response.activities, 0);
+
+              this.subs.push(
+                of(res.Response.activities)
+                  .pipe(
+                    mergeMap((x: [any]) => from(x)),
+                    concatMap(x => of(x).pipe(delay(200)))
+                  )
+                  .subscribe((act: DestinyHistoricalStatsPeriodGroup) => {
+                    this.getPGCR(act.activityDetails.instanceId);
+                  })
+              );
 
               this.getActivities(character, page += 1);
             }
@@ -113,16 +124,13 @@ export class EncountersComponent implements OnInit, OnDestroy {
     );
   }
 
-  getPGCR(activities: DestinyHistoricalStatsPeriodGroup[], index: number): void {
-    const activity = activities[index];
-
+  getPGCR(instanceId: string): void {
     this.subs.push(
-      this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${activity.activityDetails.instanceId}/`, true)
+      this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${instanceId}/`, true)
         .pipe(
-          delay(50),
           catchError((e) => {
             if (e.error.ErrorCode == PlatformErrorCodes.PerEndpointRequestThrottleExceeded) {
-              this.retryLater.push(activity);
+              this.retryLater.push(instanceId);
             }
 
             return EMPTY;
@@ -147,12 +155,12 @@ export class EncountersComponent implements OnInit, OnDestroy {
             });
 
           this.fetched++;
-
-          if (index < activities.length - 1) {
-            this.getPGCR(activities, index += 1);
-          }
         })
     );
+  }
+
+  @computed get sortedEncounters() {
+    return _.orderBy(this.playerEncounters, 'count', 'desc').slice(0, 20);
   }
 
   ngOnDestroy(): void {
