@@ -3,10 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { MembershipTypeIdService } from './membership-type-id.service';
 
 describe('MembershipTypeIdService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  let service: MembershipTypeIdService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(MembershipTypeIdService);
+  });
 
   it('should be created', () => {
-    const service: MembershipTypeIdService = TestBed.get(MembershipTypeIdService);
     expect(service).toBeTruthy();
   });
 });

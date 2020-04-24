@@ -7,10 +7,18 @@ import * as _ from 'lodash';
 })
 export class SortByPipe implements PipeTransform {
 
-  transform(value: any[], column: string, order = ''): any[] {
-    if (!value || !column || column === '' || order === '') { return value; } // no array
-    if (value.length <= 1) { return value; } // array with only one item
-    return _.orderBy(value, [column], [order]);
+  transform(value: any[], order: string = '', column: string = ''): any[] {
+    if (!value || order === '' || !order) { return value; }
+
+    if (value.length <= 1) { return value; }
+
+    if (!column || column === '') {
+      return order === 'asc'
+        ? value.sort()
+        : value.sort().reverse();
+    }
+
+    return _.orderBy(value, [column], [order == 'asc' ? 'asc' : 'desc']);
   }
 
 }

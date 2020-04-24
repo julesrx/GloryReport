@@ -1,7 +1,0 @@
-<div class="results">
-  <a *ngFor="let r of results" [routerLink]="[ '/report', membershipTypeId(r) ]">
-    <!-- TODO: Add fontawesome icon -->
-    <img [src]="'https://www.bungie.net/' + r.iconPath" [alt]="r.displayName" height="20">
-    <span>{{ r.displayName }}</span>
-  </a>
-</div>

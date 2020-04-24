@@ -1,6 +1,4 @@
-import { environment as defaultEnv } from './environment.all';
-
 export const environment = {
-  ...defaultEnv,
   production: true,
+  BUNGIE_API_KEY: '457b1436a98a4390be099a140c42fd3d'
 };

@@ -1,0 +1,29 @@
+<div class="flex justify-center items-center my-5">
+  <div class="flex">
+    <div [ngStyle]="getCharacterStyle(char)"
+      [ngClass]="getCharacterClasses(char)"
+      *ngFor="let char of characters"
+      (click)="selectCharacter(char)">
+      <div class="w-char h-char bg-black">
+        <img [src]="'https://www.bungie.net' + char.emblemPath"
+          alt=""
+          [ngClass]="[isCharacterActive(char) ? '' : 'opacity-75 hover:opacity-100 transition-opacity duration-75', 'w-char h-char']">
+      </div>
+
+      <ng-container *ngIf="isCharacterActive(char)">
+        <div class="flex flex-col justify-center ml-2">
+          <h1 class="text-2xl font-semibold">{{ profile.userInfo.displayName }}</h1>
+
+          <div class="-mt-1">
+            {{ char.raceHash | destinyItemHash:'raceName' | async }}
+            {{ char.classHash | destinyItemHash:'className' | async }}
+          </div>
+        </div>
+
+        <div class="flex-1"></div>
+
+        <p class="m-2 text-2xl text-yellow-400 leading-none">{{ char.light }}</p>
+      </ng-container>
+    </div>
+  </div>
+</div>

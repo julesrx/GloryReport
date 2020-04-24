@@ -20,15 +20,14 @@ export class MembershipTypeIdService {
   }
 
   getMembershipType(membershipTypeId: string): number {
-    let split: string[] = membershipTypeId.split(this.separator);
+    const split: string[] = membershipTypeId.split(this.separator);
 
     return +split[1];
   }
 
   getMembershipId(membershipTypeId: string): string {
-    let split: string[] = membershipTypeId.split(this.separator);
+    const split: string[] = membershipTypeId.split(this.separator);
 
     return split[0];
   }
-
 }
