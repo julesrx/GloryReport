@@ -17,7 +17,7 @@ export class NavbarComponent implements OnDestroy {
 
   public links = [
     { name: 'Report', route: '/report' },
-    { name: 'Encounters', route: '/encounters' }
+    // { name: 'Encounters', route: '/encounters' }
   ];
 
   public socials = [
