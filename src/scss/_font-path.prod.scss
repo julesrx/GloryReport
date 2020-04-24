@@ -1,0 +1,3 @@
+@function fontPath($font) {
+  @return "/assets/fonts/inter/" + $font;
+}
