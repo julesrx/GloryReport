@@ -44,7 +44,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
   @observable public filter: string;
   @computed get filteredEncounters() {
-    if (this.filter === '') return this.encounters;
+    if (this.filter === '') { return this.encounters; }
     return this.encounters.filter(occ => {
       return occ.displayName.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1;
     });
@@ -75,8 +75,8 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
     // TODO: Add different modes for different types of connection => slow (wait and add seconds before next request) or fast
     this.membershipTypeId.subscribe((membershipTypeId: string) => {
-      let membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
-      let membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
+      const membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
+      const membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
 
       this.private = false;
 
@@ -98,16 +98,16 @@ export class EncountersComponent implements OnInit, OnDestroy {
   }
 
   getActivities(c: DestinyCharacterComponent, mode: DestinyActivityModeType, page: number = 0, count: number = 100) {
-    let options: any = {
+    const options: any = {
       count: 100,
-      mode: mode,
-      page: page
+      mode,
+      page
     };
 
     this.subs.push(
-      this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, options)
+      this.bHttp.get(`/Destiny2/${c.membershipType}/Account/${c.membershipId}/Character/${c.characterId}/Stats/Activities/`, false, options)
         .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-          if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+          if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
             if (res.Response.activities && res.Response.activities.length) {
               res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
                 this.activities.push(act);
@@ -140,15 +140,15 @@ export class EncountersComponent implements OnInit, OnDestroy {
   getEncounters(pgcr: DestinyPostGameCarnageReportData) {
     pgcr.entries.forEach((entry: DestinyPostGameCarnageReportEntry) => {
       if (entry.player.destinyUserInfo.displayName !== this.displayName) { // TODO: Compare membershipId instead
-        let enc: PlayerEncounter = this.encounters.find((e: PlayerEncounter) => {
-          return e.membershipId == entry.player.destinyUserInfo.membershipId
+        const enc: PlayerEncounter = this.encounters.find((e: PlayerEncounter) => {
+          return e.membershipId === entry.player.destinyUserInfo.membershipId;
         });
 
         if (enc != null && enc.count) {
           // TODO: remove pgcrs from encounters to improve performances and memory usage
           enc.count++;
         } else {
-          let encounter: PlayerEncounter = {
+          const encounter: PlayerEncounter = {
             membershipId: entry.player.destinyUserInfo.membershipId,
             membershipType: entry.player.destinyUserInfo.membershipType,
             displayName: entry.player.destinyUserInfo.displayName,

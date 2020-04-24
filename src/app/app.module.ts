@@ -20,7 +20,6 @@ import { ReportSessionComponent } from './components/report/report-session/repor
 import { ReportSessionWeaponComponent } from './components/report/report-session-details/report-session-weapon/report-session-weapon.component';
 import { ReportSessionDetailsComponent } from './components/report/report-session-details/report-session-details.component';
 import { EncountersComponent } from './components/encounters/encounters.component';
-import { SortByPipe } from './pipes/sort-by.pipe';
 
 @NgModule({
   declarations: [
@@ -34,8 +33,7 @@ import { SortByPipe } from './pipes/sort-by.pipe';
     ReportSessionComponent,
     ReportSessionWeaponComponent,
     ReportSessionDetailsComponent,
-    EncountersComponent,
-    SortByPipe
+    EncountersComponent
   ],
   imports: [
     BrowserModule,
