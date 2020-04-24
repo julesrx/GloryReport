@@ -1,50 +1,58 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
-import { MarkdownModule } from 'ngx-markdown';
+import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faGithub, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faPlus, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BungieHttpService } from './services/bungie-http.service';
-import { RoutesModule } from './routes/routes.module';
-import { HomeComponent } from './components/home/home.component';
-import { NavComponent } from './components/nav/nav.component';
-import { SearchComponent } from './components/search/search.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 import { ReportComponent } from './components/report/report.component';
-import { DetailsComponent } from './components/report/details/details.component';
-import { PlayerCardComponent } from './components/player-card/player-card.component';
+import { ManifestService } from './services/manifest.service';
+import { DestinyItemHashPipe } from './pipes/destiny-item-hash.pipe';
+import { HomeComponent } from './components/home/home.component';
+import { GlobalAlertsComponent } from './components/global-alerts/global-alerts.component';
+import { ReportHeaderComponent } from './components/report/report-header/report-header.component';
+import { ReportSessionComponent } from './components/report/report-session/report-session.component';
+import { ReportSessionWeaponComponent } from './components/report/report-session-details/report-session-weapon/report-session-weapon.component';
+import { ReportSessionDetailsComponent } from './components/report/report-session-details/report-session-details.component';
+import { EncountersComponent } from './components/encounters/encounters.component';
 import { SortByPipe } from './pipes/sort-by.pipe';
-import { FaqComponent } from './components/faq/faq.component';
-import { ChangelogComponent } from './components/changelog/changelog.component';
-import { ClansComponent } from './components/clans/clans.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
-    NavComponent,
-    SearchComponent,
+    NavbarComponent,
     ReportComponent,
-    DetailsComponent,
-    PlayerCardComponent,
-    SortByPipe,
-    FaqComponent,
-    ChangelogComponent,
-    ClansComponent
+    DestinyItemHashPipe,
+    HomeComponent,
+    GlobalAlertsComponent,
+    ReportHeaderComponent,
+    ReportSessionComponent,
+    ReportSessionWeaponComponent,
+    ReportSessionDetailsComponent,
+    EncountersComponent,
+    SortByPipe
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule, ReactiveFormsModule,
     HttpClientModule,
-    FormsModule,
-    RoutesModule,
-    MarkdownModule.forRoot({ loader: HttpClient })
+    FontAwesomeModule
   ],
   providers: [
-    BungieHttpService
+    ManifestService
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+
+  constructor(private library: FaIconLibrary) {
+    library.addIcons(faGithub, faTwitter, faPlus, faCircleNotch);
+  }
+
+}

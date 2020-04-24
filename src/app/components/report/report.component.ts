@@ -1,27 +1,23 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Params, ActivatedRoute } from '@angular/router';
 
-import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
+import * as _ from 'lodash';
+import * as moment from 'moment';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import {
   DestinyProfileResponse,
   DestinyProfileComponent,
   DestinyCharacterComponent,
-  DestinyActivityHistoryResults,
   DestinyActivityModeType,
-  DestinyHistoricalStatsPeriodGroup,
-  DestinyPostGameCarnageReportData,
-  DestinyPostGameCarnageReportEntry
+  DestinyActivityHistoryResults,
+  DestinyHistoricalStatsPeriodGroup
 } from 'bungie-api-ts/destiny2/interfaces';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 
-import { environment } from 'src/environments/environment';
-import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
-// import { LocalstorageReportService } from 'src/app/services/localstorage-report.service';
-import { Report } from 'src/app/interfaces/report';
-import { Encounter } from 'src/app/interfaces/encounter';
-import { ActivityShort } from 'src/app/interfaces/activity-short';
-import { DetailsComponent } from './details/details.component';
+import { BungieHttpService } from 'src/app/services/bungie-http.service';
+import { GameSession } from 'src/app/interfaces/game-session';
+import { CurrentUserService } from 'src/app/services/current-user.service';
 
 @Component({
   selector: 'app-report',
@@ -30,207 +26,179 @@ import { DetailsComponent } from './details/details.component';
 })
 export class ReportComponent implements OnInit, OnDestroy {
 
-  // FIXME: Does not work properly
-  @ViewChild(DetailsComponent) childRef: DetailsComponent;
+  // TODO: add all to this array and unsub on destroy
+  // private subs: Subscription[];
 
-  private subs: Subscription[];
+  private membershipTypeId: BehaviorSubject<string>;
+  private selectedCharacter$: BehaviorSubject<DestinyCharacterComponent>;
 
-  public membershipTypeId: BehaviorSubject<string>;
+  private activitySubs: Subscription[] = [];
 
   public profile: DestinyProfileComponent;
-  public displayName: string;
   public characters: DestinyCharacterComponent[];
-
-  public private: boolean;
-  public message: string;
+  public selectedCharacter: DestinyCharacterComponent;
 
   public activities: DestinyHistoricalStatsPeriodGroup[];
-  public fetched: number;
+  public sessions: GameSession[];
 
-  public report: Report;
-  public encounters: Encounter[];
+  public sessionLimit: number;
 
-  public selection: Encounter;
-
-  public filter: string;
-  // TODO: improve computed property => bad performances
-  get filteredEncounters() {
-    if (this.filter === '') return this.encounters;
-    return this.encounters.filter(occ => {
-      return occ.displayName.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1;
-    });
-  }
+  // TODO: add loading object array with loading type (activities, characters, pgcrs...)
+  // TODO: add loadMore button
+  public searchOptions: ReportSearchOptions;
 
   constructor(
     private bHttp: BungieHttpService,
     private route: ActivatedRoute,
     private typeIdService: MembershipTypeIdService,
-    // private localReportService: LocalstorageReportService
+    private currentUserService: CurrentUserService
   ) { }
 
-  ngOnInit() {
-    this.subs = [];
+  ngOnInit(): void {
+    this.sessionLimit = 10;
 
     this.membershipTypeId = new BehaviorSubject('');
-    this.characters = [];
-    this.activities = [];
-    this.fetched = 0;
-    this.encounters = [];
-    this.filter = '';
+    this.selectedCharacter$ = new BehaviorSubject(null);
 
     this.route.params.subscribe((params: Params) => {
-      if (params['membershipTypeId']) {
-        this.membershipTypeId.next(params['membershipTypeId']);
+      if (params.membershipTypeId) {
+        this.membershipTypeId.next(params.membershipTypeId);
       }
     });
 
-    // TODO: Add different modes for different types of connection => slow (wait and add seconds before next request) or fast
     this.membershipTypeId.subscribe((membershipTypeId: string) => {
-      let membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
-      let membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
+      this.initSessions();
+      this.characters = [];
 
-      this.private = false;
+      const membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
+      const membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
 
-      this.subs.push(
-        this.bHttp.get('Destiny2/' + membershipType + '/Profile/' + membershipId + '/', false, { components: '100,200' })
-          .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
-            this.profile = res.Response.profile.data;
-            this.displayName = this.profile.userInfo.displayName;
-            Object.keys(res.Response.characters.data).forEach(key => {
-              this.characters.push(res.Response.characters.data[key]);
-            });
+      this.bHttp.get(`Destiny2/${membershipType}/Profile/${membershipId}/`, false, { components: '100,200' })
+        .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
+          this.profile = res.Response.profile.data;
+          this.currentUserService.updateDisplayName(this.profile.userInfo.displayName);
+          this.currentUserService.updateMembershipTypeId(this.profile.userInfo.membershipId, this.profile.userInfo.membershipType);
 
-            // this.report = this.localReportService.getReport(membershipTypeId);
-            // if (this.report === null) {
-            //   this.report = {
-            //     key: membershipTypeId,
-            //     updated_at: new Date().toISOString(),
-            //     version_at: environment.VERSION,
-            //     destinyUserInfo: this.profile.userInfo,
-            //     activities: []
-            //   };
-            //   this.localReportService.initReport(this.report, membershipTypeId);
-            // }
+          Object.keys(res.Response.characters.data).forEach(key => {
+            this.characters.push(res.Response.characters.data[key]);
+          });
+          this.characters.sort((a, b) => a.dateLastPlayed < b.dateLastPlayed ? 1 : -1);
 
-            this.report = {
-              key: membershipTypeId,
-              updated_at: new Date().toISOString(),
-              version_at: environment.VERSION,
-              destinyUserInfo: this.profile.userInfo,
-              activities: []
-            };
+          // TODO: add to settings
+          this.selectedCharacter$.next(this.characters[0]);
+          this.selectedCharacter$.subscribe((char: DestinyCharacterComponent) => {
+            // TODO: abort current requests if selectedCharacter is changed
+            this.selectedCharacter = char;
+            this.searchOptions = this.getNewSearchOptions();
+            this.initSessions();
 
-            this.characters.forEach((c: DestinyCharacterComponent) => {
-              this.getActivities(c, DestinyActivityModeType.AllPvP, new Date(this.report.updated_at));
-            });
-          })
-      );
+            this.currentUserService.updateEmblemPath(char.emblemPath);
+
+            this.getActivities(char);
+          });
+        });
     });
   }
 
-  getActivities(c: DestinyCharacterComponent, mode: DestinyActivityModeType, date: Date = null, page: number = 0, count: number = 100) {
-    let options: any = {
-      count: 100,
-      mode: mode,
-      page: page
+  getActivities(character: DestinyCharacterComponent): void {
+    const options: any = {
+      count: this.searchOptions.count,
+      page: this.searchOptions.page,
+      mode: this.searchOptions.mode
     };
 
-    this.subs.push(
-      this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, options)
+    this.activitySubs.push(
+      this.bHttp.get(
+        `/Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
+        true,
+        options)
         .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-          if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+          if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
             if (res.Response.activities && res.Response.activities.length) {
-              res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-                this.activities.push(act);
-                this.getPGCR(act.activityDetails.instanceId);
+              this.activities = _.concat(this.activities, res.Response.activities);
 
-                // TODO: Check the last update
-                // this.localReportService.saveActivity(act, this.typeIdService.combine(c.membershipType, c.membershipId));
-              });
+              this.getSessions(res.Response.activities);
+              // this.sessions.slice(0, 3).forEach(s => this.getPGCRs(character, s));
 
-              this.getActivities(c, mode, date, page += 1, count);
+              this.searchOptions.page += 1;
+              this.getActivities(character);
             }
-          } else {
-            // TODO: Fix error handling, does not enter subscribe when error in response (500)
-            this.private = true;
-            this.message = res.ErrorStatus;
-          }
+          } else { console.error('Profile in private'); }
         })
     );
   }
 
-  getPGCR(instanceId: string) {
-    this.subs.push(
-      this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + instanceId + '/', true)
-        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-          this.getEncounters(res.Response);
-        })
-    );
-  }
+  getSessions(activities: DestinyHistoricalStatsPeriodGroup[]): void {
+    // TODO: group by date difference (1h)
+    // no need to order for the moment
+    const groups: _.Dictionary<DestinyHistoricalStatsPeriodGroup[]> = _.groupBy(activities, act => {
+      return moment(act.period).startOf('day').format();
+    });
 
-  getEncounters(pgcr: DestinyPostGameCarnageReportData) {
-    pgcr.entries.forEach((entry: DestinyPostGameCarnageReportEntry) => {
-      if (entry.player.destinyUserInfo.displayName !== this.displayName) { // TODO: Compare membershipId instead
-        let enc: Encounter = this.encounters.find((e: Encounter) => {
-          return e.membershipId == entry.player.destinyUserInfo.membershipId
-        });
+    const sessions: GameSession[] = _.map(groups, (group, day) => {
+      return {
+        day,
+        activities: group,
+        weapons: [],
+        fetched: false
+      };
+    });
 
-        let act: ActivityShort = {
-          instanceId: pgcr.activityDetails.instanceId,
-          period: pgcr.period
-        };
-
-        if (enc != null && enc.count) {
-          // TODO: remove pgcrs from encounters to improve performances and memory usage
-          enc.activities.push(act);
-          enc.count++;
-          this.sortActs(enc.activities); // TODO: Remove
-        } else {
-          let encounter: Encounter = {
-            membershipId: entry.player.destinyUserInfo.membershipId,
-            membershipType: entry.player.destinyUserInfo.membershipType,
-            displayName: entry.player.destinyUserInfo.displayName,
-            activities: [],
-            count: 1
-          };
-          encounter.activities.push(act);
-          this.sortActs(encounter.activities); // TODO: Remove
-          this.encounters.push(encounter);
+    sessions.forEach((session: GameSession) => {
+      const sess = this.sessions.find(s => s.day === session.day);
+      if (sess) {
+        // TODO: check if session complete
+        sess.activities = _.concat(sess.activities, session.activities);
+        if (sess.fetched) {
+          // TODO: if loadmore is clicked and is fetched, get pgcrs (with lodash debounce), reload PGCRs on session
+          // this.getPGCRs(character, sess);
         }
-
-        this.encounters.sort((a, b) => {
-          return a.count < b.count ? 1 : -1;
-        });
       } else {
-        this.fetched++;
+        this.sessions.push(session);
       }
     });
   }
 
-  selectPlayer(encounter: Encounter) {
-    // TODO: Improve details component destruction
-    if (this.childRef) {
-      console.log('destroy');
-      this.childRef.ngOnDestroy();
+  // TODO: Add loadAll() and handle api ThrottleSeconds
+  loadMore(): void {
+    this.sessionLimit += 5;
+  }
+
+  onCharacterSelect(character: DestinyCharacterComponent): void {
+    this.unsubscribeToActivitySubs();
+
+    this.selectedCharacter$.next(character);
+  }
+
+  initSessions(): void {
+    this.activities = [];
+    this.sessions = [];
+  }
+
+  getNewSearchOptions(): ReportSearchOptions {
+    return {
+      count: 250,
+      page: 0,
+      mode: DestinyActivityModeType.AllPvP
+    };
+  }
+
+  unsubscribeToActivitySubs(): void {
+    if (this.activitySubs) {
+      this.activitySubs.forEach(a => a.unsubscribe());
     }
-    this.selection = encounter;
+
+    this.activitySubs = [];
   }
 
-  sortActs(activities: ActivityShort[]) {
-    activities.sort((a, b) => {
-      return a.period < b.period ? 1 : -1;
-    });
+  ngOnDestroy(): void {
+    this.unsubscribeToActivitySubs();
   }
 
-  clearStorage() {
-    // if (confirm('Are you sure ?')) {
-    //   this.localReportService.clearStorage();
-    // }
-  }
+}
 
-  ngOnDestroy() {
-    this.membershipTypeId.unsubscribe();
-    this.subs.forEach(s => s.unsubscribe());
-  }
-
+export interface ReportSearchOptions {
+  count: number;
+  page: number;
+  mode: DestinyActivityModeType;
 }
