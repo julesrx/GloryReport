@@ -134,7 +134,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
           // delay(1000) // TODO: remove this (used because all the characters are loaded at the same time)
         )
         .subscribe((res: DestinyPostGameCarnageReportData[]) => {
-          res.forEach(pgcr => { this.getEncounters(pgcr) });
+          res.forEach(pgcr => { this.getEncounters(pgcr); });
           this.fetchChunks(chunks, chunkId += 1, actParams);
         });
     }

@@ -7,14 +7,14 @@ import * as localForage from 'localforage';
 })
 export class StorageService {
 
-  private dbName: string = 'Glory.report';
+  private dbName = 'Glory.report';
 
   constructor() { }
 
   public createInstance(storeName: string): LocalForage {
     return localForage.createInstance({
       name: this.dbName,
-      storeName: storeName
+      storeName
     });
   }
 

@@ -35,12 +35,12 @@ export class DestinyService {
 
   public getProfile(membershipType: BungieMembershipType, membershipId: string, components: string = '100,200')
     : Observable<ServerResponse<DestinyProfileResponse>> {
-    return this.bHttp.get(`Destiny2/${membershipType}/Profile/${membershipId}/`, false, { components: components })
+    return this.bHttp.get(`Destiny2/${membershipType}/Profile/${membershipId}/`, false, { components });
   }
 
   public getActivities(membershipType: BungieMembershipType, membershipId: string, characterId: string, options: any)
     : Observable<ServerResponse<DestinyActivityHistoryResults>> {
-    return this.bHttp.get(`Destiny2/${membershipType}/Account/${membershipId}/Character/${characterId}/Stats/Activities/`, true, options)
+    return this.bHttp.get(`Destiny2/${membershipType}/Account/${membershipId}/Character/${characterId}/Stats/Activities/`, true, options);
   }
 
   public getPGCR(instanceId: string): Observable<DestinyPostGameCarnageReportData> {
@@ -63,7 +63,7 @@ export class DestinyService {
             return of(data['response']);
           }
         })
-      )
+      );
   }
 
   public setCachedRequest<T>(url: string, data: T): void {
