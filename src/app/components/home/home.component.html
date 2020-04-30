@@ -25,7 +25,7 @@
   <a [routerLink]="['/report', getMembershipTypeId(user)]"
     class="flex align-middle mx-2 mb-4"
     *ngFor="let user of users">
-    <img [src]="'http://www.bungie.net' + user.iconPath"
+    <img [src]="'https://www.bungie.net' + user.iconPath"
       [alt]="user.displayName"
       class="h-6 w-6 mr-1"
       [class]="user.iconPath.indexOf('steam') !== -1 ? 'bg-gray-900 rounded-full' : ''">
