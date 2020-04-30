@@ -58,12 +58,9 @@ export class ManifestService {
     private storage: StorageService
   ) {
     this.db = this.storage.createInstance(this.storeName);
-  }
-
-  public load(): void {
-    console.log('Loading manifest...');
-
     this.defs = {};
+
+    console.log('Loading manifest...');
 
     this.db.getItem<string>(this.localManifestVersion)
       .then((currentVersion: string) => {

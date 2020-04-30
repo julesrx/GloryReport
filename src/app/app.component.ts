@@ -4,6 +4,8 @@ import { Router, RouterEvent } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, distinctUntilChanged } from 'rxjs/operators';
 
+import { ManifestService } from './services/manifest.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -15,7 +17,10 @@ export class AppComponent implements OnDestroy {
 
   private routeChanges: Subscription;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private manifest: ManifestService// injecting ManifestService to load manifest
+  ) {
     this.routeChanges = this.router.events
       .pipe(
         filter(e => e instanceof RouterEvent),
