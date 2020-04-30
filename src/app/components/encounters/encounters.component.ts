@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 import { observable, computed } from 'mobx';
 import * as _ from 'lodash';
 import {
@@ -16,8 +16,8 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse, PlatformErrorCodes, BungieMembershipType } from 'bungie-api-ts/common';
 
-import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
+import { DestinyService } from 'src/app/services/destiny.service';
 
 @Component({
   selector: 'app-encounters',
@@ -44,17 +44,17 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
   @observable public filter: string;
   @computed get filteredEncounters() {
-    if (this.filter === '') return this.encounters;
-    return this.encounters.filter(occ => {
-      return occ.displayName.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1;
-    });
+    return this.filter === ''
+      ? this.encounters
+      : this.encounters.filter(occ => {
+        return occ.displayName.toLowerCase().indexOf(this.filter.toLowerCase()) !== -1;
+      });
   }
 
   constructor(
-    private bHttp: BungieHttpService,
+    private destiny: DestinyService,
     private route: ActivatedRoute,
-    private typeIdService: MembershipTypeIdService,
-    // private localReportService: LocalstorageReportService
+    private typeIdService: MembershipTypeIdService
   ) { }
 
   ngOnInit() {
@@ -75,13 +75,13 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
     // TODO: Add different modes for different types of connection => slow (wait and add seconds before next request) or fast
     this.membershipTypeId.subscribe((membershipTypeId: string) => {
-      let membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
-      let membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
+      const membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
+      const membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
 
       this.private = false;
 
       this.subs.push(
-        this.bHttp.get('Destiny2/' + membershipType + '/Profile/' + membershipId + '/', false, { components: '100,200' })
+        this.destiny.getProfile(membershipType, membershipId)
           .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
             this.profile = res.Response.profile.data;
             this.displayName = this.profile.userInfo.displayName;
@@ -90,34 +90,27 @@ export class EncountersComponent implements OnInit, OnDestroy {
             });
 
             this.characters.forEach((c: DestinyCharacterComponent) => {
-              this.getActivities(c, DestinyActivityModeType.AllPvP);
+              this.getActivities({ character: c, mode: DestinyActivityModeType.AllPvP, page: 0, count: 250 });
             });
           })
       );
     });
   }
 
-  getActivities(c: DestinyCharacterComponent, mode: DestinyActivityModeType, page: number = 0, count: number = 100) {
-    let options: any = {
-      count: 100,
-      mode: mode,
-      page: page
+  getActivities(params: GetActivitiesParams) {
+    const options: any = {
+      count: params.count,
+      mode: params.mode,
+      page: params.page
     };
 
     this.subs.push(
-      this.bHttp.get('/Destiny2/' + c.membershipType + '/Account/' + c.membershipId + '/Character/' + c.characterId + '/Stats/Activities/', false, options)
+      this.destiny.getActivities(params.character.membershipType, params.character.membershipId, params.character.characterId, options)
         .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
-          if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+          if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
             if (res.Response.activities && res.Response.activities.length) {
-              res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-                this.activities.push(act);
-                this.getPGCR(act.activityDetails.instanceId);
-
-                // TODO: Check the last update
-                // this.localReportService.saveActivity(act, this.typeIdService.combine(c.membershipType, c.membershipId));
-              });
-
-              this.getActivities(c, mode, page += 1, count);
+              this.activities = _.concat(this.activities, res.Response.activities);
+              this.fetchChunks(_.chunk(res.Response.activities, 20), 0, params);
             }
           } else {
             // TODO: Fix error handling, does not enter subscribe when error in response (500)
@@ -128,27 +121,37 @@ export class EncountersComponent implements OnInit, OnDestroy {
     );
   }
 
-  getPGCR(instanceId: string) {
-    this.subs.push(
-      this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + instanceId + '/', true)
-        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-          this.getEncounters(res.Response);
-        })
-    );
+  // instead of waiting for the interval, use forkjoin and to requests
+  // trash code
+  // TODO: improve memory usage
+  fetchChunks(chunks: DestinyHistoricalStatsPeriodGroup[][], chunkId: number, actParams: GetActivitiesParams): void {
+    if (chunkId >= chunks.length) {
+      actParams.page += 1;
+      this.getActivities(actParams);
+    } else {
+      forkJoin(chunks[chunkId].map((act: DestinyHistoricalStatsPeriodGroup) => this.destiny.getPGCR(act.activityDetails.instanceId)))
+        .pipe(
+          // delay(1000) // TODO: remove this (used because all the characters are loaded at the same time)
+        )
+        .subscribe((res: DestinyPostGameCarnageReportData[]) => {
+          res.forEach(pgcr => { this.getEncounters(pgcr); });
+          this.fetchChunks(chunks, chunkId += 1, actParams);
+        });
+    }
   }
 
   getEncounters(pgcr: DestinyPostGameCarnageReportData) {
     pgcr.entries.forEach((entry: DestinyPostGameCarnageReportEntry) => {
       if (entry.player.destinyUserInfo.displayName !== this.displayName) { // TODO: Compare membershipId instead
-        let enc: PlayerEncounter = this.encounters.find((e: PlayerEncounter) => {
-          return e.membershipId == entry.player.destinyUserInfo.membershipId
+        const enc: PlayerEncounter = this.encounters.find((e: PlayerEncounter) => {
+          return e.membershipId === entry.player.destinyUserInfo.membershipId;
         });
 
         if (enc != null && enc.count) {
           // TODO: remove pgcrs from encounters to improve performances and memory usage
           enc.count++;
         } else {
-          let encounter: PlayerEncounter = {
+          const encounter: PlayerEncounter = {
             membershipId: entry.player.destinyUserInfo.membershipId,
             membershipType: entry.player.destinyUserInfo.membershipType,
             displayName: entry.player.destinyUserInfo.displayName,
@@ -178,5 +181,12 @@ export interface PlayerEncounter {
   displayName: string;
   membershipId: string;
   membershipType: BungieMembershipType;
+  count: number;
+}
+
+export interface GetActivitiesParams {
+  character: DestinyCharacterComponent;
+  mode: DestinyActivityModeType;
+  page: number;
   count: number;
 }
