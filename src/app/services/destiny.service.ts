@@ -60,7 +60,7 @@ export class DestinyService {
                 })
               );
           } else {
-            return of(data);
+            return of(data['response']);
           }
         })
       )

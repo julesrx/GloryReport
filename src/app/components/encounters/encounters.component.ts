@@ -108,13 +108,23 @@ export class EncountersComponent implements OnInit, OnDestroy {
         .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
           if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
             if (res.Response.activities && res.Response.activities.length) {
-              res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
-                this.activities.push(act);
+              this.activities = _.concat(this.activities, res.Response.activities);
 
-                this.getPGCR(act.activityDetails.instanceId);
-              });
+              let chunks = _.chunk(res.Response.activities, 20);
+              let chunkId = 0;
 
-              this.getActivities(c, mode, page += 1, count);
+              let interval = setInterval(() => {
+                if (chunkId >= chunks.length) {
+                  clearInterval(interval);
+                  this.getActivities(c, mode, page += 1, count);
+                } else {
+                  chunks[chunkId].forEach((act: DestinyHistoricalStatsPeriodGroup) => {
+                    this.getPGCR(act.activityDetails.instanceId);
+                  });
+                }
+
+                chunkId++;
+              }, 1000);
             }
           } else {
             // TODO: Fix error handling, does not enter subscribe when error in response (500)
