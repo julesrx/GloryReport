@@ -17,11 +17,7 @@ export class AppComponent implements OnDestroy {
 
   private routeChanges: Subscription;
 
-  // injecting manifest service to load definitions on page load
-  constructor(
-    private manifestService: ManifestService,
-    private router: Router
-  ) {
+  constructor(private router: Router) {
     this.routeChanges = this.router.events
       .pipe(
         filter(e => e instanceof RouterEvent),

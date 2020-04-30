@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
@@ -43,14 +43,19 @@ import { EncountersComponent } from './components/encounters/encounters.componen
     FontAwesomeModule
   ],
   providers: [
-    ManifestService
+    ManifestService,
+    { provide: APP_INITIALIZER, useFactory: manifestFactory, deps: [ManifestService], multi: true }
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
 
   constructor(private library: FaIconLibrary) {
-    library.addIcons(faGithub, faTwitter, faPlus, faCircleNotch);
+    this.library.addIcons(faGithub, faTwitter, faPlus, faCircleNotch);
   }
 
+}
+
+export function manifestFactory(provider: ManifestService) {
+  return () => provider.load();
 }

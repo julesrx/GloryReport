@@ -52,7 +52,11 @@ export class ManifestService {
     private http: HttpClient,
     private bHttp: BungieHttpService,
     private storage: StorageService
-  ) {
+  ) { }
+
+  public load(): void {
+    console.log('Loading manifest...');
+
     this.defs = {};
 
     this.storage.getItem<string>(this.localManifestVersion)
