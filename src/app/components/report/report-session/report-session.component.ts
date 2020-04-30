@@ -40,9 +40,7 @@ export class ReportSessionComponent implements OnInit, OnDestroy {
       session.activities.forEach(act => {
         this.subs.push(
           this.destiny.getPGCR(act.activityDetails.instanceId)
-            .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-              const pgcr: DestinyPostGameCarnageReportData = res.Response;
-
+            .subscribe((pgcr: DestinyPostGameCarnageReportData) => {
               pgcr.entries.filter(e => e.characterId === characterId).forEach(e => {
                 // e.extended.weapons is undefined if the player has 0 kills 😥
                 if (e.extended.weapons) {

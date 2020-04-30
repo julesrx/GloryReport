@@ -4,8 +4,6 @@ import { Router, RouterEvent } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, distinctUntilChanged } from 'rxjs/operators';
 
-import { ManifestService } from './services/manifest.service';
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

@@ -7,25 +7,15 @@ import * as localForage from 'localforage';
 })
 export class StorageService {
 
-  private store: LocalForage;
+  private dbName: string = 'Glory.report';
 
-  constructor() {
-    this.store = localForage.createInstance({
-      name: 'Glory.report',
-      storeName: 'glory-report',
-      description: `Glory.report's database`
+  constructor() { }
+
+  public createInstance(storeName: string): LocalForage {
+    return localForage.createInstance({
+      name: this.dbName,
+      storeName: storeName
     });
   }
 
-  public getItem<T>(key: string): Promise<T> {
-    return this.store.getItem<T>(key);
-  }
-
-  public setItem(key: string, value: any): Promise<any> {
-    return this.store.setItem(key, value);
-  }
-
-  public removeItem(key: string): void {
-    this.store.removeItem(key);
-  }
 }

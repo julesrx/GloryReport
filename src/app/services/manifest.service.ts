@@ -21,6 +21,8 @@ import { StorageService } from './storage.service';
 })
 export class ManifestService {
 
+  private db: LocalForage;
+
   public state: ManifestServiceState = {
     loaded: false
   };
@@ -44,22 +46,26 @@ export class ManifestService {
 
   private definitions: BehaviorSubject<any>;
 
+  private storeName = 'd2-manifest';
+
   private localManifestTables = 'd2-manifest-tables';
   private localManifestVersion = 'd2-manifest-version';
-  private localManifestData = 'd2-manifest';
+  private localManifestData = 'd2-manifest-data';
 
   constructor(
     private http: HttpClient,
     private bHttp: BungieHttpService,
     private storage: StorageService
-  ) { }
+  ) {
+    this.db = this.storage.createInstance(this.storeName);
+  }
 
   public load(): void {
     console.log('Loading manifest...');
 
     this.defs = {};
 
-    this.storage.getItem<string>(this.localManifestVersion)
+    this.db.getItem<string>(this.localManifestVersion)
       .then((currentVersion: string) => {
         this.definitions = new BehaviorSubject(null);
         this.definitions.pipe(
@@ -75,7 +81,7 @@ export class ManifestService {
 
             try {
               if (currentVersion === version && this.arrayAreEqual(currentTables, this.tables)) {
-                const manifest: Promise<object> = this.storage.getItem<object>(this.localManifestData);
+                const manifest: Promise<object> = this.db.getItem<object>(this.localManifestData);
 
                 if (!manifest) {
                   throw new Error('Empty cached manifest file');
@@ -118,8 +124,8 @@ export class ManifestService {
           }),
           catchError((err) => {
             console.error(err.message || err);
-            this.storage.removeItem(this.localManifestData);
-            this.storage.removeItem(this.localManifestVersion);
+            this.db.removeItem(this.localManifestData);
+            this.db.removeItem(this.localManifestVersion);
 
             return EMPTY;
           })
@@ -133,10 +139,10 @@ export class ManifestService {
 
   private async saveToDB(manifest: object, version: string) {
     try {
-      await this.storage.setItem(this.localManifestData, manifest)
+      await this.db.setItem(this.localManifestData, manifest)
         .then(() => {
           console.log(`Sucessfully stored manifest file.`);
-          this.storage.setItem(this.localManifestVersion, version);
+          this.db.setItem(this.localManifestVersion, version);
           localStorage.setItem(this.localManifestTables, JSON.stringify(this.tables));
         });
     } catch (e) {

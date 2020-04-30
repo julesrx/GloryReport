@@ -128,8 +128,8 @@ export class EncountersComponent implements OnInit, OnDestroy {
   getPGCR(instanceId: string) {
     this.subs.push(
       this.destiny.getPGCR(instanceId)
-        .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
-          this.getEncounters(res.Response);
+        .subscribe((res: DestinyPostGameCarnageReportData) => {
+          this.getEncounters(res);
         })
     );
   }
