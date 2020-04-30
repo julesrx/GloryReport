@@ -15,9 +15,9 @@ import {
 import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
-import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { GameSession } from 'src/app/interfaces/game-session';
 import { CurrentUserService } from 'src/app/services/current-user.service';
+import { DestinyService } from 'src/app/services/destiny.service';
 
 @Component({
   selector: 'app-report',
@@ -48,7 +48,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   public searchOptions: ReportSearchOptions;
 
   constructor(
-    private bHttp: BungieHttpService,
+    private destiny: DestinyService,
     private route: ActivatedRoute,
     private typeIdService: MembershipTypeIdService,
     private currentUserService: CurrentUserService
@@ -73,7 +73,7 @@ export class ReportComponent implements OnInit, OnDestroy {
       const membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
       const membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
 
-      this.bHttp.get(`Destiny2/${membershipType}/Profile/${membershipId}/`, false, { components: '100,200' })
+      this.destiny.getProfile(membershipType, membershipId)
         .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
           this.profile = res.Response.profile.data;
           this.currentUserService.updateDisplayName(this.profile.userInfo.displayName);
@@ -108,10 +108,7 @@ export class ReportComponent implements OnInit, OnDestroy {
     };
 
     this.activitySubs.push(
-      this.bHttp.get(
-        `/Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
-        true,
-        options)
+      this.destiny.getActivities(character.membershipType, character.membershipId, character.characterId, options)
         .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
           if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
             if (res.Response.activities && res.Response.activities.length) {

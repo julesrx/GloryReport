@@ -16,8 +16,8 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse, PlatformErrorCodes, BungieMembershipType } from 'bungie-api-ts/common';
 
-import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
+import { DestinyService } from 'src/app/services/destiny.service';
 
 @Component({
   selector: 'app-encounters',
@@ -51,10 +51,9 @@ export class EncountersComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private bHttp: BungieHttpService,
+    private destiny: DestinyService,
     private route: ActivatedRoute,
-    private typeIdService: MembershipTypeIdService,
-    // private localReportService: LocalstorageReportService
+    private typeIdService: MembershipTypeIdService
   ) { }
 
   ngOnInit() {
@@ -81,7 +80,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
       this.private = false;
 
       this.subs.push(
-        this.bHttp.get('Destiny2/' + membershipType + '/Profile/' + membershipId + '/', false, { components: '100,200' })
+        this.destiny.getProfile(membershipType, membershipId)
           .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
             this.profile = res.Response.profile.data;
             this.displayName = this.profile.userInfo.displayName;
@@ -105,16 +104,14 @@ export class EncountersComponent implements OnInit, OnDestroy {
     };
 
     this.subs.push(
-      this.bHttp.get(`/Destiny2/${c.membershipType}/Account/${c.membershipId}/Character/${c.characterId}/Stats/Activities/`, false, options)
+      this.destiny.getActivities(c.membershipType, c.membershipId, c.characterId, options)
         .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
           if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
             if (res.Response.activities && res.Response.activities.length) {
               res.Response.activities.forEach((act: DestinyHistoricalStatsPeriodGroup) => {
                 this.activities.push(act);
-                this.getPGCR(act.activityDetails.instanceId);
 
-                // TODO: Check the last update
-                // this.localReportService.saveActivity(act, this.typeIdService.combine(c.membershipType, c.membershipId));
+                this.getPGCR(act.activityDetails.instanceId);
               });
 
               this.getActivities(c, mode, page += 1, count);
@@ -130,7 +127,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
   getPGCR(instanceId: string) {
     this.subs.push(
-      this.bHttp.get('Destiny2/Stats/PostGameCarnageReport/' + instanceId + '/', true)
+      this.destiny.getPGCR(instanceId)
         .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
           this.getEncounters(res.Response);
         })

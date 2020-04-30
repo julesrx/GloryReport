@@ -5,8 +5,8 @@ import { Subscription, BehaviorSubject, EMPTY } from 'rxjs';
 import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 
-import { BungieHttpService } from 'src/app/services/bungie-http.service';
 import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
+import { DestinyService } from 'src/app/services/destiny.service';
 
 @Component({
   selector: 'app-home',
@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private response: Subscription;
 
   constructor(
-    private bHttp: BungieHttpService,
+    private destiny: DestinyService,
     private typeIdService: MembershipTypeIdService
   ) { }
 
@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           if (value) {
             this.users = [];
             this.loading = true;
-            return this.bHttp.get(`Destiny2/SearchDestinyPlayer/${BungieMembershipType.All}/${encodeURIComponent(value)}/`);
+            return this.destiny.searchPlayer(value);
           } else { return EMPTY; }
         })
       )

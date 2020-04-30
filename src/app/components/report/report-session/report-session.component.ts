@@ -10,7 +10,7 @@ import * as moment from 'moment';
 
 import { GameSession } from 'src/app/interfaces/game-session';
 import { ManifestService } from 'src/app/services/manifest.service';
-import { BungieHttpService } from 'src/app/services/bungie-http.service';
+import { DestinyService } from 'src/app/services/destiny.service';
 
 @Component({
   selector: 'app-report-session',
@@ -25,7 +25,7 @@ export class ReportSessionComponent implements OnInit, OnDestroy {
   private subs: Subscription[];
 
   constructor(
-    private bHttp: BungieHttpService,
+    private destiny: DestinyService,
     private manifestService: ManifestService
   ) { }
 
@@ -39,7 +39,7 @@ export class ReportSessionComponent implements OnInit, OnDestroy {
     if (!session.fetched) {
       session.activities.forEach(act => {
         this.subs.push(
-          this.bHttp.get(`Destiny2/Stats/PostGameCarnageReport/${act.activityDetails.instanceId}/`, true)
+          this.destiny.getPGCR(act.activityDetails.instanceId)
             .subscribe((res: ServerResponse<DestinyPostGameCarnageReportData>) => {
               const pgcr: DestinyPostGameCarnageReportData = res.Response;
 
