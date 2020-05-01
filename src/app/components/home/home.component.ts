@@ -5,7 +5,6 @@ import { Subscription, BehaviorSubject, EMPTY } from 'rxjs';
 import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 
-import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { DestinyService } from 'src/app/services/destiny.service';
 
 @Component({
@@ -24,8 +23,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private response: Subscription;
 
   constructor(
-    private destiny: DestinyService,
-    private typeIdService: MembershipTypeIdService
+    private destiny: DestinyService
   ) { }
 
   ngOnInit(): void {
@@ -55,9 +53,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.gamertag.next(event.target.value);
   }
 
-  getMembershipTypeId(user: UserInfoCard): string {
-    return this.typeIdService.combine(user.membershipType, user.membershipId);
-  }
+  // getMembershipTypeId(user: UserInfoCard): string {
+  //   return this.typeIdService.combine(user.membershipType, user.membershipId);
+  // }
 
   ngOnDestroy(): void {
     if (this.response) {

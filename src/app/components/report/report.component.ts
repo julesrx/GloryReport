@@ -4,6 +4,7 @@ import { Params, ActivatedRoute } from '@angular/router';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { startWith } from 'rxjs/operators';
 import {
   DestinyProfileResponse,
   DestinyProfileComponent,
@@ -14,10 +15,10 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 
-import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { GameSession } from 'src/app/interfaces/game-session';
-import { CurrentUserService } from 'src/app/services/current-user.service';
+import { CurrentUserService, CurrentUser } from 'src/app/services/current-user.service';
 import { DestinyService } from 'src/app/services/destiny.service';
+import { routeHasProfile, getMembershipTypeFromRoute, getMembershipIdFromRoute } from 'src/app/utils/route-utils';
 
 @Component({
   selector: 'app-report',
@@ -29,7 +30,7 @@ export class ReportComponent implements OnInit, OnDestroy {
   // TODO: add all to this array and unsub on destroy
   // private subs: Subscription[];
 
-  private membershipTypeId: BehaviorSubject<string>;
+  public user: BehaviorSubject<any>;
   private selectedCharacter$: BehaviorSubject<DestinyCharacterComponent>;
 
   private activitySubs: Subscription[] = [];
@@ -41,43 +42,43 @@ export class ReportComponent implements OnInit, OnDestroy {
   public activities: DestinyHistoricalStatsPeriodGroup[];
   public sessions: GameSession[];
 
-  public sessionLimit: number;
+  public sessionLimit: number = 10;
 
   // TODO: add loading object array with loading type (activities, characters, pgcrs...)
   // TODO: add loadMore button
   public searchOptions: ReportSearchOptions;
 
+
   constructor(
     private destiny: DestinyService,
     private route: ActivatedRoute,
-    private typeIdService: MembershipTypeIdService,
-    private currentUserService: CurrentUserService
+    private currentUser: CurrentUserService
   ) { }
 
   ngOnInit(): void {
-    this.sessionLimit = 10;
-
-    this.membershipTypeId = new BehaviorSubject('');
+    this.user = new BehaviorSubject(null);
     this.selectedCharacter$ = new BehaviorSubject(null);
 
-    this.route.params.subscribe((params: Params) => {
-      if (params.membershipTypeId) {
-        this.membershipTypeId.next(params.membershipTypeId);
-      }
-    });
+    this.route.params
+      .subscribe((params: Params) => {
+        if (routeHasProfile(params)) {
+          this.user.next({
+            membershipType: getMembershipTypeFromRoute(params),
+            membershipId: getMembershipIdFromRoute(params)
+          });
+        }
+      });
 
-    this.membershipTypeId.subscribe((membershipTypeId: string) => {
+    this.user.subscribe(user => {
+      console.log(user);
+
       this.initSessions();
       this.characters = [];
 
-      const membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
-      const membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
-
-      this.destiny.getProfile(membershipType, membershipId)
+      this.destiny.getProfile(user.membershipType, user.membershipId)
         .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
           this.profile = res.Response.profile.data;
-          this.currentUserService.updateDisplayName(this.profile.userInfo.displayName);
-          this.currentUserService.updateMembershipTypeId(this.profile.userInfo.membershipId, this.profile.userInfo.membershipType);
+          this.currentUser.updateDisplayName(this.profile.userInfo.displayName);
 
           Object.keys(res.Response.characters.data).forEach(key => {
             this.characters.push(res.Response.characters.data[key]);
@@ -92,7 +93,7 @@ export class ReportComponent implements OnInit, OnDestroy {
             this.searchOptions = this.getNewSearchOptions();
             this.initSessions();
 
-            this.currentUserService.updateEmblemPath(char.emblemPath);
+            this.currentUser.updateEmblemPath(char.emblemPath);
 
             this.getActivities(char);
           });

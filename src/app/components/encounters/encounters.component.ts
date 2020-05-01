@@ -16,8 +16,8 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse, PlatformErrorCodes, BungieMembershipType } from 'bungie-api-ts/common';
 
-import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { DestinyService } from 'src/app/services/destiny.service';
+import { routeHasProfile, getMembershipTypeFromRoute, getMembershipIdFromRoute } from 'src/app/utils/route-utils';
 
 @Component({
   selector: 'app-encounters',
@@ -28,7 +28,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
   private subs: Subscription[];
 
-  public membershipTypeId: BehaviorSubject<string>;
+  public user: BehaviorSubject<any>;
 
   public profile: DestinyProfileComponent;
   public displayName: string;
@@ -53,35 +53,35 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
   constructor(
     private destiny: DestinyService,
-    private route: ActivatedRoute,
-    private typeIdService: MembershipTypeIdService
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
     this.subs = [];
 
-    this.membershipTypeId = new BehaviorSubject('');
+    this.user = new BehaviorSubject(null);
     this.characters = [];
     this.activities = [];
     this.fetched = 0;
     this.encounters = [];
     this.filter = '';
 
-    this.route.params.subscribe((params: Params) => {
-      if (params['membershipTypeId']) {
-        this.membershipTypeId.next(params['membershipTypeId']);
-      }
-    });
+    this.route.params
+      .subscribe((params: Params) => {
+        if (routeHasProfile(params)) {
+          this.user.next({
+            membershipType: getMembershipTypeFromRoute(params),
+            membershipId: getMembershipIdFromRoute(params)
+          });
+        }
+      });
 
     // TODO: Add different modes for different types of connection => slow (wait and add seconds before next request) or fast
-    this.membershipTypeId.subscribe((membershipTypeId: string) => {
-      const membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
-      const membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
-
+    this.user.subscribe(user => {
       this.private = false;
 
       this.subs.push(
-        this.destiny.getProfile(membershipType, membershipId)
+        this.destiny.getProfile(user.membershipType, user.membershipId)
           .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
             this.profile = res.Response.profile.data;
             this.displayName = this.profile.userInfo.displayName;
@@ -171,7 +171,6 @@ export class EncountersComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.membershipTypeId.unsubscribe();
     this.subs.forEach(s => s.unsubscribe());
   }
 

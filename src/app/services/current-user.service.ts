@@ -3,8 +3,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BungieMembershipType } from 'bungie-api-ts/common';
 
-import { MembershipTypeIdService } from './membership-type-id.service';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -13,7 +11,7 @@ export class CurrentUserService {
   private currentUser: CurrentUser;
   public state: BehaviorSubject<CurrentUser>;
 
-  constructor(private membershipTypeIdService: MembershipTypeIdService) {
+  constructor() {
     this.state = new BehaviorSubject(this.currentUser);
   }
 
@@ -25,10 +23,6 @@ export class CurrentUserService {
     this.updateState({ ...this.currentUser, emblemPath });
   }
 
-  updateMembershipTypeId(membershipId: string, membershipType: BungieMembershipType) {
-    this.updateState({ ...this.currentUser, membershipTypeId: this.membershipTypeIdService.combine(membershipType, membershipId) });
-  }
-
   private updateState(user: CurrentUser): void {
     this.currentUser = user;
     this.state.next(user);
@@ -37,7 +31,8 @@ export class CurrentUserService {
 }
 
 export interface CurrentUser {
-  membershipTypeId: string;
-  displayName: string;
-  emblemPath: string;
+  membershipType: BungieMembershipType;
+  membershipId: string;
+  displayName?: string;
+  emblemPath?: string;
 }
