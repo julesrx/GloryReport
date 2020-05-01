@@ -4,8 +4,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
-import { faGithub, faTwitter } from '@fortawesome/free-brands-svg-icons';
-import { faPlus, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faGithub, faTwitter, faXbox, faSteam, faPlaystation, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { faPlus, faCircleNotch, faGamepad } from '@fortawesome/free-solid-svg-icons';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -50,7 +50,17 @@ import { EncountersComponent } from './components/encounters/encounters.componen
 export class AppModule {
 
   constructor(private library: FaIconLibrary) {
-    this.library.addIcons(faGithub, faTwitter, faPlus, faCircleNotch);
+    this.library.addIcons(
+      faGithub,
+      faTwitter,
+      faPlus,
+      faCircleNotch,
+      faXbox,
+      faSteam,
+      faPlaystation,
+      faGoogle,
+      faGamepad
+    );
   }
 
 }
