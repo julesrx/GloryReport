@@ -22,7 +22,11 @@ module.exports = {
           '700': '#616161',
           '800': '#424242',
           '900': '#212121',
-        }
+        },
+        xbox: '#107c10',
+        playstation: '#003891',
+        steam: '#000000',
+        stadia: '#e4362e'
       },
       spacing: {
         'char': '96px',
