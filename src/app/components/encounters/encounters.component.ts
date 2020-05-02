@@ -1,13 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
 
-import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { observable, computed } from 'mobx';
 import * as _ from 'lodash';
 import {
   DestinyProfileComponent,
   DestinyCharacterComponent,
-  DestinyProfileResponse,
   DestinyActivityHistoryResults,
   DestinyHistoricalStatsPeriodGroup,
   DestinyActivityModeType,
@@ -16,8 +14,8 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse, PlatformErrorCodes, BungieMembershipType } from 'bungie-api-ts/common';
 
-import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { DestinyService } from 'src/app/services/destiny.service';
+import { SessionService, SessionProfile } from 'src/app/services/session.service';
 
 @Component({
   selector: 'app-encounters',
@@ -27,8 +25,6 @@ import { DestinyService } from 'src/app/services/destiny.service';
 export class EncountersComponent implements OnInit, OnDestroy {
 
   private subs: Subscription[];
-
-  public membershipTypeId: BehaviorSubject<string>;
 
   public profile: DestinyProfileComponent;
   public displayName: string;
@@ -53,47 +49,30 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
   constructor(
     private destiny: DestinyService,
-    private route: ActivatedRoute,
-    private typeIdService: MembershipTypeIdService
+    private session: SessionService
   ) { }
 
   ngOnInit() {
     this.subs = [];
 
-    this.membershipTypeId = new BehaviorSubject('');
     this.characters = [];
     this.activities = [];
     this.fetched = 0;
     this.encounters = [];
     this.filter = '';
 
-    this.route.params.subscribe((params: Params) => {
-      if (params['membershipTypeId']) {
-        this.membershipTypeId.next(params['membershipTypeId']);
-      }
-    });
-
     // TODO: Add different modes for different types of connection => slow (wait and add seconds before next request) or fast
-    this.membershipTypeId.subscribe((membershipTypeId: string) => {
-      const membershipType: number = this.typeIdService.getMembershipType(membershipTypeId);
-      const membershipId: string = this.typeIdService.getMembershipId(membershipTypeId);
-
+    this.session.uniqueProfile.subscribe((profile: SessionProfile) => {
       this.private = false;
 
-      this.subs.push(
-        this.destiny.getProfile(membershipType, membershipId)
-          .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
-            this.profile = res.Response.profile.data;
-            this.displayName = this.profile.userInfo.displayName;
-            Object.keys(res.Response.characters.data).forEach(key => {
-              this.characters.push(res.Response.characters.data[key]);
-            });
+      this.profile = profile.profile;
+      this.characters = profile.characters;
 
-            this.characters.forEach((c: DestinyCharacterComponent) => {
-              this.getActivities({ character: c, mode: DestinyActivityModeType.AllPvP, page: 0, count: 250 });
-            });
-          })
-      );
+      this.displayName = this.profile.userInfo.displayName;
+
+      this.characters.forEach((c: DestinyCharacterComponent) => {
+        this.getActivities({ character: c, mode: DestinyActivityModeType.AllPvP, page: 0, count: 250 });
+      });
     });
   }
 
@@ -121,9 +100,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
     );
   }
 
-  // instead of waiting for the interval, use forkjoin and to requests
-  // trash code
-  // TODO: improve memory usage
+  // TODO: trash code, improve memory usage
   fetchChunks(chunks: DestinyHistoricalStatsPeriodGroup[][], chunkId: number, actParams: GetActivitiesParams): void {
     if (chunkId >= chunks.length) {
       actParams.page += 1;
@@ -171,7 +148,6 @@ export class EncountersComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.membershipTypeId.unsubscribe();
     this.subs.forEach(s => s.unsubscribe());
   }
 

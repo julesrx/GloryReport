@@ -30,7 +30,7 @@ export class DestinyService {
 
   public searchPlayer(displayName: string, membershipType: BungieMembershipType = BungieMembershipType.All)
     : Observable<ServerResponse<UserInfoCard[]>> {
-    return this.bHttp.get(`Destiny2/SearchDestinyPlayer/${membershipType}/${encodeURIComponent(displayName)}/`);
+    return this.bHttp.get(`Destiny2/SearchDestinyPlayer/${membershipType}/${encodeURIComponent(displayName.trim())}/`);
   }
 
   public getProfile(membershipType: BungieMembershipType, membershipId: string, components: string = '100,200')

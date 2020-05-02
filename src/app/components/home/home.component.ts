@@ -2,11 +2,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Subscription, BehaviorSubject, EMPTY } from 'rxjs';
-import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
+import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
+import * as _ from 'lodash';
 
-import { MembershipTypeIdService } from 'src/app/services/membership-type-id.service';
 import { DestinyService } from 'src/app/services/destiny.service';
+import { getBranding } from 'src/app/utils/branding';
 
 @Component({
   selector: 'app-home',
@@ -24,8 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   private response: Subscription;
 
   constructor(
-    private destiny: DestinyService,
-    private typeIdService: MembershipTypeIdService
+    private destiny: DestinyService
   ) { }
 
   ngOnInit(): void {
@@ -45,8 +45,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       )
       .subscribe((res: ServerResponse<UserInfoCard[]>) => {
         this.users = res.Response;
-        this.loading = false;
 
+        this.loading = false;
         this.noMatch = !this.users.length;
       });
   }
@@ -55,8 +55,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.gamertag.next(event.target.value);
   }
 
-  getMembershipTypeId(user: UserInfoCard): string {
-    return this.typeIdService.combine(user.membershipType, user.membershipId);
+  getIcon(membershipType: BungieMembershipType): string {
+    return getBranding(membershipType).name;
+  }
+
+  getColor(membershipType: BungieMembershipType): string {
+    return getBranding(membershipType).textClass;
   }
 
   ngOnDestroy(): void {

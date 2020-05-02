@@ -22,13 +22,13 @@
 </div>
 
 <div class="flex justify-center flex-wrap" *ngIf="!loading && users.length">
-  <a [routerLink]="['/report', getMembershipTypeId(user)]"
+  <a [routerLink]="['/', user.membershipType, user.membershipId, 'report']"
     class="flex align-middle mx-2 mb-4"
     *ngFor="let user of users">
-    <img [src]="'https://www.bungie.net' + user.iconPath"
-      [alt]="user.displayName"
-      class="h-6 w-6 mr-1"
-      [class]="user.iconPath.indexOf('steam') !== -1 ? 'bg-gray-900 rounded-full' : ''">
+    <fa-icon [icon]="['fab', getIcon(user.membershipType)]"
+      size="lg"
+      [fixedWidth]="true"
+      [class]="getColor(user.membershipType)"></fa-icon>
 
     <span class="whitespace-no-wrap">{{ user.displayName }}</span>
   </a>
