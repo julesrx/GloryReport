@@ -20,6 +20,7 @@ import { ReportSessionComponent } from './components/report/report-session/repor
 import { ReportSessionWeaponComponent } from './components/report/report-session-details/report-session-weapon/report-session-weapon.component';
 import { ReportSessionDetailsComponent } from './components/report/report-session-details/report-session-details.component';
 import { EncountersComponent } from './components/encounters/encounters.component';
+import { SessionService } from './services/session.service';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { EncountersComponent } from './components/encounters/encounters.componen
     FontAwesomeModule
   ],
   providers: [
-    ManifestService
+    ManifestService,
+    SessionService
   ],
   bootstrap: [AppComponent]
 })

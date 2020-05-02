@@ -1,12 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Params, ActivatedRoute } from '@angular/router';
 
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { startWith } from 'rxjs/operators';
 import {
-  DestinyProfileResponse,
   DestinyProfileComponent,
   DestinyCharacterComponent,
   DestinyActivityModeType,
@@ -16,9 +13,8 @@ import {
 import { ServerResponse, PlatformErrorCodes } from 'bungie-api-ts/common';
 
 import { GameSession } from 'src/app/interfaces/game-session';
-import { CurrentUserService, CurrentUser } from 'src/app/services/current-user.service';
 import { DestinyService } from 'src/app/services/destiny.service';
-import { routeHasProfile, getMembershipTypeFromRoute, getMembershipIdFromRoute } from 'src/app/utils/route-utils';
+import { SessionService, SessionProfile } from 'src/app/services/session.service';
 
 @Component({
   selector: 'app-report',
@@ -48,56 +44,34 @@ export class ReportComponent implements OnInit, OnDestroy {
   // TODO: add loadMore button
   public searchOptions: ReportSearchOptions;
 
-
   constructor(
     private destiny: DestinyService,
-    private route: ActivatedRoute,
-    private currentUser: CurrentUserService
+    private session: SessionService
   ) { }
 
   ngOnInit(): void {
     this.user = new BehaviorSubject(null);
     this.selectedCharacter$ = new BehaviorSubject(null);
 
-    this.route.params
-      .subscribe((params: Params) => {
-        if (routeHasProfile(params)) {
-          this.user.next({
-            membershipType: getMembershipTypeFromRoute(params),
-            membershipId: getMembershipIdFromRoute(params)
-          });
-        }
-      });
-
-    this.user.subscribe(user => {
-      console.log(user);
-
+    this.session.uniqueProfile.subscribe((profile: SessionProfile) => {
       this.initSessions();
       this.characters = [];
 
-      this.destiny.getProfile(user.membershipType, user.membershipId)
-        .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
-          this.profile = res.Response.profile.data;
-          this.currentUser.updateDisplayName(this.profile.userInfo.displayName);
+      this.profile = profile.profile;
+      this.characters = profile.characters;
 
-          Object.keys(res.Response.characters.data).forEach(key => {
-            this.characters.push(res.Response.characters.data[key]);
-          });
-          this.characters.sort((a, b) => a.dateLastPlayed < b.dateLastPlayed ? 1 : -1);
+      // TODO: add to settings
+      this.selectedCharacter$.next(this.characters[0]);
+      this.selectedCharacter$.subscribe((char: DestinyCharacterComponent) => {
+        // TODO: abort current requests if selectedCharacter is changed
+        this.selectedCharacter = char;
+        this.searchOptions = this.getNewSearchOptions();
+        this.initSessions();
 
-          // TODO: add to settings
-          this.selectedCharacter$.next(this.characters[0]);
-          this.selectedCharacter$.subscribe((char: DestinyCharacterComponent) => {
-            // TODO: abort current requests if selectedCharacter is changed
-            this.selectedCharacter = char;
-            this.searchOptions = this.getNewSearchOptions();
-            this.initSessions();
+        // this.currentUser.updateEmblemPath(char.emblemPath);
 
-            this.currentUser.updateEmblemPath(char.emblemPath);
-
-            this.getActivities(char);
-          });
-        });
+        this.getActivities(char);
+      });
     });
   }
 
