@@ -23,9 +23,6 @@ import { SessionService, SessionProfile } from 'src/app/services/session.service
 })
 export class ReportComponent implements OnInit, OnDestroy {
 
-  // TODO: add all to this array and unsub on destroy
-  // private subs: Subscription[];
-
   public user: BehaviorSubject<any>;
   private selectedCharacter$: BehaviorSubject<DestinyCharacterComponent>;
 
@@ -38,10 +35,9 @@ export class ReportComponent implements OnInit, OnDestroy {
   public activities: DestinyHistoricalStatsPeriodGroup[];
   public sessions: GameSession[];
 
-  public sessionLimit: number = 10;
+  public sessionLimit = 10;
 
   // TODO: add loading object array with loading type (activities, characters, pgcrs...)
-  // TODO: add loadMore button
   public searchOptions: ReportSearchOptions;
 
   constructor(
@@ -60,16 +56,12 @@ export class ReportComponent implements OnInit, OnDestroy {
       this.profile = profile.profile;
       this.characters = profile.characters;
 
-      // TODO: add to settings
       this.selectedCharacter$.next(this.characters[0]);
       this.selectedCharacter$.subscribe((char: DestinyCharacterComponent) => {
-        // TODO: abort current requests if selectedCharacter is changed
         this.selectedCharacter = char;
         this.searchOptions = this.getNewSearchOptions();
+
         this.initSessions();
-
-        // this.currentUser.updateEmblemPath(char.emblemPath);
-
         this.getActivities(char);
       });
     });

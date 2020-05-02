@@ -15,8 +15,7 @@ import { DestinyService } from './destiny.service';
 export class SessionService {
 
   private profile: SessionProfile;
-
-  public state: BehaviorSubject<SessionProfile>;
+  private state: BehaviorSubject<SessionProfile>;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,24 +24,28 @@ export class SessionService {
   ) {
     this.state = new BehaviorSubject(this.profile);
 
+    // TODO: add to localStorage
     // https://github.com/angular/angular/issues/15004
     this.router.events
       .pipe(
         filter(event => event instanceof NavigationEnd),
         map(() => this.route),
-        map(route => {
-          while (route.firstChild) route = route.firstChild;
-          return route;
+        map(actRoute => {
+          while (actRoute.firstChild) { actRoute = actRoute.firstChild; }
+          return actRoute;
         }),
-        filter(route => route.outlet === 'primary'),
-        mergeMap(route => route.params)
+        filter(actRoute => actRoute.outlet === 'primary'),
+        mergeMap(actRoute => actRoute.params)
       )
       .subscribe((params: Params) => {
         if (routeHasProfile(params)) {
           const membershipType = getMembershipTypeFromRoute(params);
           const membershipId = getMembershipIdFromRoute(params);
 
-          if (this.profile?.profile?.userInfo.membershipId !== membershipId && this.profile?.profile?.userInfo.membershipType !== membershipType) {
+          if (
+            this.profile?.profile?.userInfo.membershipId !== membershipId &&
+            this.profile?.profile?.userInfo.membershipType !== membershipType
+          ) {
             this.destiny.getProfile(membershipType, membershipId, '100,200')
               .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
                 this.profile = {
@@ -50,7 +53,7 @@ export class SessionService {
                   characters: Object.keys(res.Response.characters.data)
                     .map(key => res.Response.characters.data[key])
                     .sort((a, b) => a.dateLastPlayed < b.dateLastPlayed ? 1 : -1)
-                }
+                };
                 this.state.next(this.profile);
               });
           }
@@ -64,7 +67,7 @@ export class SessionService {
         const prevType = prev?.profile?.userInfo.membershipType.toString();
         const currType = curr?.profile?.userInfo.membershipType.toString();
 
-        return prevType === currType && prev?.profile?.userInfo.membershipId === curr?.profile?.userInfo.membershipId
+        return prevType === currType && prev?.profile?.userInfo.membershipId === curr?.profile?.userInfo.membershipId;
       }),
       filter(p => p !== null && typeof (p) !== 'undefined')
     );

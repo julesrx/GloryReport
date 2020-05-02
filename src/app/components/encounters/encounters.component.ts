@@ -1,13 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
 
-import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { observable, computed } from 'mobx';
 import * as _ from 'lodash';
 import {
   DestinyProfileComponent,
   DestinyCharacterComponent,
-  DestinyProfileResponse,
   DestinyActivityHistoryResults,
   DestinyHistoricalStatsPeriodGroup,
   DestinyActivityModeType,
@@ -17,7 +15,7 @@ import {
 import { ServerResponse, PlatformErrorCodes, BungieMembershipType } from 'bungie-api-ts/common';
 
 import { DestinyService } from 'src/app/services/destiny.service';
-import { routeHasProfile, getMembershipTypeFromRoute, getMembershipIdFromRoute } from 'src/app/utils/route-utils';
+import { SessionService, SessionProfile } from 'src/app/services/session.service';
 
 @Component({
   selector: 'app-encounters',
@@ -27,8 +25,6 @@ import { routeHasProfile, getMembershipTypeFromRoute, getMembershipIdFromRoute }
 export class EncountersComponent implements OnInit, OnDestroy {
 
   private subs: Subscription[];
-
-  public user: BehaviorSubject<any>;
 
   public profile: DestinyProfileComponent;
   public displayName: string;
@@ -53,47 +49,30 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
   constructor(
     private destiny: DestinyService,
-    private route: ActivatedRoute
+    private session: SessionService
   ) { }
 
   ngOnInit() {
     this.subs = [];
 
-    this.user = new BehaviorSubject(null);
     this.characters = [];
     this.activities = [];
     this.fetched = 0;
     this.encounters = [];
     this.filter = '';
 
-    this.route.params
-      .subscribe((params: Params) => {
-        if (routeHasProfile(params)) {
-          this.user.next({
-            membershipType: getMembershipTypeFromRoute(params),
-            membershipId: getMembershipIdFromRoute(params)
-          });
-        }
-      });
-
     // TODO: Add different modes for different types of connection => slow (wait and add seconds before next request) or fast
-    this.user.subscribe(user => {
+    this.session.uniqueProfile.subscribe((profile: SessionProfile) => {
       this.private = false;
 
-      this.subs.push(
-        this.destiny.getProfile(user.membershipType, user.membershipId)
-          .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
-            this.profile = res.Response.profile.data;
-            this.displayName = this.profile.userInfo.displayName;
-            Object.keys(res.Response.characters.data).forEach(key => {
-              this.characters.push(res.Response.characters.data[key]);
-            });
+      this.profile = profile.profile;
+      this.characters = profile.characters;
 
-            this.characters.forEach((c: DestinyCharacterComponent) => {
-              this.getActivities({ character: c, mode: DestinyActivityModeType.AllPvP, page: 0, count: 250 });
-            });
-          })
-      );
+      this.displayName = this.profile.userInfo.displayName;
+
+      this.characters.forEach((c: DestinyCharacterComponent) => {
+        this.getActivities({ character: c, mode: DestinyActivityModeType.AllPvP, page: 0, count: 250 });
+      });
     });
   }
 
@@ -121,9 +100,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
     );
   }
 
-  // instead of waiting for the interval, use forkjoin and to requests
-  // trash code
-  // TODO: improve memory usage
+  // TODO: trash code, improve memory usage
   fetchChunks(chunks: DestinyHistoricalStatsPeriodGroup[][], chunkId: number, actParams: GetActivitiesParams): void {
     if (chunkId >= chunks.length) {
       actParams.page += 1;

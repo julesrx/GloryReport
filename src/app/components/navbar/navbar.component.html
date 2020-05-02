@@ -21,12 +21,12 @@
     class="border border-gray-300 text-md rounded shadow max-w-sm py-1 px-2"
     placeholder="Guardian..."> -->
 
-  <div class="flex items-center ml-4" *ngIf="currentUser">
-    <img [src]="'https://www.bungie.net' + currentUser.emblemPath"
-      [alt]="currentUser.displayName"
+  <div class="flex items-center ml-4" *ngIf="profile">
+    <img [src]="'https://www.bungie.net' + profile.characters[0].emblemPath"
+      [alt]="profile.profile.userInfo.displayName"
       class="h-12 rounded"
-      *ngIf="currentUser.emblemPath">
-    <span class="ml-2 font-semibold">{{ currentUser.displayName }}</span>
+      *ngIf="profile.characters[0].emblemPath">
+    <span class="ml-2 font-semibold">{{ profile.profile.userInfo.displayName }}</span>
   </div>
 
   <span class="ml-4">

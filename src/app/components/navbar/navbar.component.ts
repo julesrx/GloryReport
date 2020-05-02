@@ -3,7 +3,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
-import { CurrentUserService, CurrentUser } from 'src/app/services/current-user.service';
+import { SessionService, SessionProfile } from 'src/app/services/session.service';
 
 @Component({
   selector: 'app-navbar',
@@ -12,26 +12,23 @@ import { CurrentUserService, CurrentUser } from 'src/app/services/current-user.s
 })
 export class NavbarComponent implements OnDestroy {
 
-  private currentUser$: Subscription;
-  public currentUser: CurrentUser;
+  private profile$: Subscription;
+  public profile: SessionProfile;
 
   public socials = [
     { name: 'twitter', url: 'https://twitter.com/myjulot' },
     { name: 'github', url: 'https://github.com/julesrx/glory.report' }
   ];
 
-  constructor(private currentUserService: CurrentUserService) {
-    this.currentUser$ = this.currentUserService.state
-      .pipe(
-        distinctUntilChanged()
-      )
-      .subscribe((currentUser: CurrentUser) => {
-        this.currentUser = currentUser;
+  constructor(private session: SessionService) {
+    this.profile$ = this.session.uniqueProfile
+      .subscribe((profile: SessionProfile) => {
+        this.profile = profile;
       });
   }
 
   ngOnDestroy(): void {
-    this.currentUser$.unsubscribe();
+    this.profile$.unsubscribe();
   }
 
 }
