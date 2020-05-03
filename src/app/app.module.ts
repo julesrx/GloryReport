@@ -22,6 +22,8 @@ import { ReportSessionDetailsComponent } from './components/report/report-sessio
 import { EncountersComponent } from './components/encounters/encounters.component';
 import { SessionService } from './services/session.service';
 import { GuardianComponent } from './components/guardian/guardian.component';
+import { EncounterDetailsComponent } from './components/encounters/encounter-details/encounter-details.component';
+import { EncountersService } from './services/encounters.service';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { GuardianComponent } from './components/guardian/guardian.component';
     ReportSessionWeaponComponent,
     ReportSessionDetailsComponent,
     EncountersComponent,
-    GuardianComponent
+    GuardianComponent,
+    EncounterDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -47,7 +50,8 @@ import { GuardianComponent } from './components/guardian/guardian.component';
   ],
   providers: [
     ManifestService,
-    SessionService
+    SessionService,
+    EncountersService
   ],
   bootstrap: [AppComponent]
 })

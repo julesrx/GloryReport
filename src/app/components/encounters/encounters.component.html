@@ -1,15 +1,12 @@
-<p *ngIf="displayName && displayName.length" class="mb-2 text-lg text-center">
-  You encountered a total of {{ encounters.length }} players over the course
-  of {{ fetched }}/{{ activities.length }} PvP games.
-</p>
-
 <label for="filter" class="mb-2">Search a player
-  <input type="text" name="filter" id="filter" [(ngModel)]="filter" class="rounded shadow py-2 px-4">
+  <input type="text" name="filter" id="filter" (keyup)="filter($event)" class="rounded shadow py-2 px-4">
 </label>
 
 <div class="space-y-2">
-  <div *ngFor="let enc of filteredEncounters | slice:0:50" class="flex items-center">
+  <a [routerLink]="[enc.displayName]" *ngFor="let enc of data$ | async | slice:0:50" class="flex items-center">
     <img [src]="'https://www.bungie.net' + enc.iconPath" class="h-16 w-16">
     <p class="ml-2">{{ enc.displayName }}: {{ enc.count }}</p>
-  </div>
+  </a>
 </div>
+
+<router-outlet></router-outlet>
