@@ -25,6 +25,8 @@ export class EncountersService {
   public activities$: BehaviorSubject<DestinyHistoricalStatsPeriodGroup[]>;
   public encounters$: BehaviorSubject<PlayerEncounter[]>;
 
+  public fetched: BehaviorSubject<number>;
+
   private charDoneActivities: BehaviorSubject<number>;
   public charDoneLoading: BehaviorSubject<boolean>;
 
@@ -45,6 +47,8 @@ export class EncountersService {
 
     this.charDoneActivities = new BehaviorSubject(0);
     this.charDoneLoading = new BehaviorSubject(false);
+    this.fetched = new BehaviorSubject(0);
+
     this.activities = [];
     this.encounters = [];
 
@@ -97,6 +101,7 @@ export class EncountersService {
     if (chunkId < chunks.length) {
       forkJoin(chunks[chunkId].map((act: DestinyHistoricalStatsPeriodGroup) => this.destiny.getPGCR(act.activityDetails.instanceId)))
         .subscribe((res: DestinyPostGameCarnageReportData[]) => {
+          this.fetched.next(this.fetched.value + res.length);
           res.forEach(pgcr => { this.getEncounters(pgcr); });
           this.fetchChunks(chunks, chunkId += 1);
         });

@@ -2,6 +2,8 @@
 <p *ngIf="actsLoading">Loading activities... (found {{ actslength$ | async }})</p>
 
 <ng-container *ngIf="!actsLoading">
+  <p>Fetched {{ fetched$ | async }}/{{ actslength$ | async }}</p>
+
   <label for="filter" class="mb-2">Search a player
     <input type="text" name="filter" id="filter" (keyup)="filter($event)" class="rounded shadow py-2 px-4">
   </label>
