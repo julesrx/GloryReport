@@ -14,14 +14,17 @@ import { EncountersService, PlayerEncounter } from 'src/app/services/encounters.
 export class EncountersComponent implements OnInit {
 
   private filter$: BehaviorSubject<string>;
-  public data$: Observable<PlayerEncounter[]>;
+  public encounters$: Observable<PlayerEncounter[]>;
+  public actslength$: Observable<number>;
+
+  public actsLoading = true;
 
   constructor(private encounters: EncountersService) { }
 
   ngOnInit() {
     this.filter$ = new BehaviorSubject('');
 
-    this.data$ = this.encounters.encounters$
+    this.encounters$ = this.encounters.encounters$
       .pipe(
         flatMap(encs => this.filter$
           .pipe(
@@ -32,6 +35,12 @@ export class EncountersComponent implements OnInit {
               : encs.filter(enc => enc.displayName.toLowerCase().indexOf(v.toLowerCase()) !== -1)))
         )
       );
+
+    this.encounters.charDoneLoading.subscribe(l => {
+      this.actsLoading = !l;
+    });
+
+    this.actslength$ = this.encounters.activities$.pipe(map(acts => acts.length));
   }
 
   filter(event: any): void {

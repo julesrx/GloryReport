@@ -18,6 +18,8 @@ export class EncounterDetailsComponent implements OnInit {
   public acts$: Observable<DestinyHistoricalStatsPeriodGroup[]>
   public displayName: string;
 
+  public actsLoading = true;
+
   constructor(
     private route: ActivatedRoute,
     private encounters: EncountersService
@@ -38,6 +40,10 @@ export class EncounterDetailsComponent implements OnInit {
             )
           )
         );
+    });
+
+    this.encounters.charDoneLoading.subscribe(l => {
+      this.actsLoading = !l;
     });
   }
 

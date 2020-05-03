@@ -26,6 +26,7 @@ export class EncountersService {
   public encounters$: BehaviorSubject<PlayerEncounter[]>;
 
   private charDoneActivities: BehaviorSubject<number>;
+  public charDoneLoading: BehaviorSubject<boolean>;
 
   private profile: DestinyProfileComponent;
   private characters: DestinyCharacterComponent[];
@@ -43,6 +44,7 @@ export class EncountersService {
     this.activities$ = new BehaviorSubject([]);
 
     this.charDoneActivities = new BehaviorSubject(0);
+    this.charDoneLoading = new BehaviorSubject(false);
     this.activities = [];
     this.encounters = [];
 
@@ -57,6 +59,7 @@ export class EncountersService {
       });
 
       this.charDoneActivities.pipe(filter(n => n === this.characters.length)).subscribe(() => {
+        this.charDoneLoading.next(true);
         this.fetchChunks(_.chunk(this.activities, 20), 0);
       });
     });
