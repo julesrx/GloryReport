@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject, forkJoin } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, retry } from 'rxjs/operators';
 import * as _ from 'lodash';
 import {
   DestinyProfileComponent,
@@ -64,7 +64,7 @@ export class EncountersService {
 
       this.charDoneActivities.pipe(filter(n => n === this.characters.length)).subscribe(() => {
         this.charDoneLoading.next(true);
-        this.fetchChunks(_.chunk(this.activities, 20), 0);
+        this.fetchChunks(_.chunk(this.activities, 25), 0);
       });
     });
   }
@@ -76,6 +76,7 @@ export class EncountersService {
       page: params.page
     };
 
+    // request still in progress after the encounters component is destroyed
     this.destiny.getActivities(params.character.membershipType, params.character.membershipId, params.character.characterId, options)
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
         if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
@@ -99,7 +100,9 @@ export class EncountersService {
 
   private fetchChunks(chunks: DestinyHistoricalStatsPeriodGroup[][], chunkId: number): void {
     if (chunkId < chunks.length) {
-      forkJoin(chunks[chunkId].map((act: DestinyHistoricalStatsPeriodGroup) => this.destiny.getPGCR(act.activityDetails.instanceId)))
+      forkJoin(chunks[chunkId].map((act: DestinyHistoricalStatsPeriodGroup) => this.destiny.getPGCR(act.activityDetails.instanceId).pipe(
+        retry(3)
+      )))
         .subscribe((res: DestinyPostGameCarnageReportData[]) => {
           this.fetched.next(this.fetched.value + res.length);
           res.forEach(pgcr => { this.getEncounters(pgcr); });
