@@ -1,1 +1,7 @@
-<p>encounter-details works!</p>
+<a [routerLink]="['../']">Back</a>
+
+<p>Activities against {{ displayName }}</p>
+
+<div *ngFor="let act of acts$ | async">
+  {{ act.period }}
+</div>

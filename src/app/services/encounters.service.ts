@@ -22,7 +22,7 @@ import { SessionService, SessionProfile } from './session.service';
 })
 export class EncountersService {
 
-  // public activities$: BehaviorSubject<DestinyHistoricalStatsPeriodGroup[]>;
+  public activities$: BehaviorSubject<DestinyHistoricalStatsPeriodGroup[]>;
   public encounters$: BehaviorSubject<PlayerEncounter[]>;
 
   private charDoneActivities: BehaviorSubject<number>;
@@ -40,6 +40,8 @@ export class EncountersService {
     private destiny: DestinyService
   ) {
     this.encounters$ = new BehaviorSubject([]);
+    this.activities$ = new BehaviorSubject([]);
+
     this.charDoneActivities = new BehaviorSubject(0);
     this.activities = [];
     this.encounters = [];
@@ -71,7 +73,8 @@ export class EncountersService {
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
         if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
           if (res.Response.activities && res.Response.activities.length) {
-            this.activities = _.concat(this.activities, res.Response.activities);
+            this.activities = _.concat(this.activities, res.Response.activities); // remove this.activities and only use activities$ ? (same for encounters$)
+            this.activities$.next(this.activities);
 
             params.page += 1;
             this.getActivities(params);
@@ -106,16 +109,16 @@ export class EncountersService {
         if (enc != null && enc.count) {
           // TODO: remove pgcrs from encounters to improve performances and memory usage
           enc.count++;
+          enc.instanceIds.push(pgcr.activityDetails.instanceId);
         } else {
-          const encounter: PlayerEncounter = {
+          this.encounters.push({
             membershipId: entry.player.destinyUserInfo.membershipId,
             membershipType: entry.player.destinyUserInfo.membershipType,
             displayName: entry.player.destinyUserInfo.displayName,
             iconPath: entry.player.destinyUserInfo.iconPath,
+            instanceIds: [pgcr.activityDetails.instanceId],
             count: 1
-          };
-
-          this.encounters.push(encounter);
+          });
         }
 
         this.encounters.sort((a, b) => {
@@ -136,6 +139,7 @@ export interface PlayerEncounter {
   membershipId: string;
   membershipType: BungieMembershipType;
   iconPath: string;
+  instanceIds: string[];
   count: number;
 }
 
