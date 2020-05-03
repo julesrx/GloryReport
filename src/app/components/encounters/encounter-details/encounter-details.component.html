@@ -1,0 +1,14 @@
+<a [routerLink]="['../']">Back to all encounters</a>
+
+<p *ngIf="actsLoading">Loading activities...</p>
+
+<ng-container *ngIf="!actsLoading">
+  <p class="text-center">Activities against {{ displayName }}</p>
+
+  <div *ngFor="let act of acts$ | async">
+    <a [href]="'https://destinytracker.com/destiny-2/pgcr/' + act.activityDetails.instanceId"
+      [rel]="'noopener noreferrer'"
+      [target]="'_blank'"
+      class="cursor-pointer hover:underline">{{ act.period }}</a>
+  </div>
+</ng-container>

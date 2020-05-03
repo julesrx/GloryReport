@@ -46,6 +46,7 @@ export class SessionService {
             this.profile?.profile?.userInfo.membershipId !== membershipId &&
             this.profile?.profile?.userInfo.membershipType !== membershipType
           ) {
+            this.state.next(null);
             this.destiny.getProfile(membershipType, membershipId, '100,200')
               .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
                 this.profile = {
