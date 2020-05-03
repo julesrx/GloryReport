@@ -76,7 +76,8 @@ export class EncountersService {
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
         if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
           if (res.Response.activities && res.Response.activities.length) {
-            this.activities = _.concat(this.activities, res.Response.activities); // remove this.activities and only use activities$ ? (same for encounters$)
+            // remove this.activities and only use activities$ ? (same for encounters$)
+            this.activities = _.concat(this.activities, res.Response.activities);
             this.activities$.next(this.activities);
 
             params.page += 1;
@@ -89,7 +90,7 @@ export class EncountersService {
           // this.private = true;
           // this.message = res.ErrorStatus;
         }
-      })
+      });
   }
 
   private fetchChunks(chunks: DestinyHistoricalStatsPeriodGroup[][], chunkId: number): void {

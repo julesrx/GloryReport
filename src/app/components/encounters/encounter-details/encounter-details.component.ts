@@ -15,7 +15,7 @@ import { EncountersService } from 'src/app/services/encounters.service';
 })
 export class EncounterDetailsComponent implements OnInit {
 
-  public acts$: Observable<DestinyHistoricalStatsPeriodGroup[]>
+  public acts$: Observable<DestinyHistoricalStatsPeriodGroup[]>;
   public displayName: string;
 
   public actsLoading = true;
