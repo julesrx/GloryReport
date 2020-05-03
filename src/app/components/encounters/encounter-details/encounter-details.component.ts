@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
-import { Observable, EMPTY } from 'rxjs';
-import { map, flatMap, filter } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, flatMap } from 'rxjs/operators';
 import { DestinyHistoricalStatsPeriodGroup } from 'bungie-api-ts/destiny2/interfaces';
 import * as moment from 'moment';
 
@@ -16,8 +16,9 @@ import { EncountersService } from 'src/app/services/encounters.service';
 export class EncounterDetailsComponent implements OnInit {
 
   public acts$: Observable<DestinyHistoricalStatsPeriodGroup[]>;
-  public displayName: string;
+  public actLength$: Observable<number>;
 
+  public displayName: string;
   public actsLoading = true;
 
   constructor(
@@ -40,10 +41,9 @@ export class EncounterDetailsComponent implements OnInit {
             )
           )
         );
-    });
 
-    this.encounters.charDoneLoading.subscribe(l => {
-      this.actsLoading = !l;
+      this.actLength$ = this.acts$.pipe(map(acts => acts.length));
+      this.encounters.charDoneLoading.subscribe(l => this.actsLoading = !l);
     });
   }
 
