@@ -24,9 +24,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   private response: Subscription;
 
-  constructor(
-    private destiny: DestinyService
-  ) { }
+  constructor(private destiny: DestinyService) { }
 
   ngOnInit(): void {
     this.users = [];

@@ -21,6 +21,7 @@ import { ReportSessionWeaponComponent } from './components/report/report-session
 import { ReportSessionDetailsComponent } from './components/report/report-session-details/report-session-details.component';
 import { EncountersComponent } from './components/encounters/encounters.component';
 import { SessionService } from './services/session.service';
+import { GuardianComponent } from './components/guardian/guardian.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { SessionService } from './services/session.service';
     ReportSessionComponent,
     ReportSessionWeaponComponent,
     ReportSessionDetailsComponent,
-    EncountersComponent
+    EncountersComponent,
+    GuardianComponent
   ],
   imports: [
     BrowserModule,
