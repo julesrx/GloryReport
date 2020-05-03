@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { Subscription, forkJoin } from 'rxjs';
+import { Subscription, forkJoin, BehaviorSubject } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { observable, computed } from 'mobx';
 import * as _ from 'lodash';
 import {
@@ -33,6 +34,8 @@ export class EncountersComponent implements OnInit, OnDestroy {
   public private: boolean;
   public message: string;
 
+  public charDoneActivities: BehaviorSubject<number>;
+
   public activities: DestinyHistoricalStatsPeriodGroup[];
   public fetched: number;
 
@@ -61,6 +64,8 @@ export class EncountersComponent implements OnInit, OnDestroy {
     this.encounters = [];
     this.filter = '';
 
+    this.charDoneActivities = new BehaviorSubject(0);
+
     // TODO: Add different modes for different types of connection => slow (wait and add seconds before next request) or fast
     this.session.uniqueProfile.subscribe((profile: SessionProfile) => {
       this.private = false;
@@ -72,6 +77,10 @@ export class EncountersComponent implements OnInit, OnDestroy {
 
       this.characters.forEach((c: DestinyCharacterComponent) => {
         this.getActivities({ character: c, mode: DestinyActivityModeType.AllPvP, page: 0, count: 250 });
+      });
+
+      this.charDoneActivities.pipe(filter(n => n === this.characters.length)).subscribe(n => {
+        this.fetchChunks(_.chunk(this.activities, 20), 0);
       });
     });
   }
@@ -89,7 +98,11 @@ export class EncountersComponent implements OnInit, OnDestroy {
           if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
             if (res.Response.activities && res.Response.activities.length) {
               this.activities = _.concat(this.activities, res.Response.activities);
-              this.fetchChunks(_.chunk(res.Response.activities, 20), 0, params);
+
+              params.page += 1;
+              this.getActivities(params);
+            } else {
+              this.charDoneActivities.next(this.charDoneActivities.value + 1);
             }
           } else {
             // TODO: Fix error handling, does not enter subscribe when error in response (500)
@@ -101,19 +114,15 @@ export class EncountersComponent implements OnInit, OnDestroy {
   }
 
   // TODO: trash code, improve memory usage
-  fetchChunks(chunks: DestinyHistoricalStatsPeriodGroup[][], chunkId: number, actParams: GetActivitiesParams): void {
-    if (chunkId >= chunks.length) {
-      actParams.page += 1;
-      this.getActivities(actParams);
-    } else {
-      forkJoin(chunks[chunkId].map((act: DestinyHistoricalStatsPeriodGroup) => this.destiny.getPGCR(act.activityDetails.instanceId)))
-        .pipe(
-          // delay(1000) // TODO: remove this (used because all the characters are loaded at the same time)
-        )
-        .subscribe((res: DestinyPostGameCarnageReportData[]) => {
-          res.forEach(pgcr => { this.getEncounters(pgcr); });
-          this.fetchChunks(chunks, chunkId += 1, actParams);
-        });
+  fetchChunks(chunks: DestinyHistoricalStatsPeriodGroup[][], chunkId: number): void {
+    if (chunkId < chunks.length) {
+      this.subs.push(
+        forkJoin(chunks[chunkId].map((act: DestinyHistoricalStatsPeriodGroup) => this.destiny.getPGCR(act.activityDetails.instanceId)))
+          .subscribe((res: DestinyPostGameCarnageReportData[]) => {
+            res.forEach(pgcr => { this.getEncounters(pgcr); });
+            this.fetchChunks(chunks, chunkId += 1);
+          })
+      );
     }
   }
 
@@ -132,6 +141,7 @@ export class EncountersComponent implements OnInit, OnDestroy {
             membershipId: entry.player.destinyUserInfo.membershipId,
             membershipType: entry.player.destinyUserInfo.membershipType,
             displayName: entry.player.destinyUserInfo.displayName,
+            iconPath: entry.player.destinyUserInfo.iconPath,
             count: 1
           };
 
@@ -157,6 +167,7 @@ export interface PlayerEncounter {
   displayName: string;
   membershipId: string;
   membershipType: BungieMembershipType;
+  iconPath: string;
   count: number;
 }
 

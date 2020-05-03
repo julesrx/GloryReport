@@ -7,6 +7,9 @@
   <input type="text" name="filter" id="filter" [(ngModel)]="filter" class="rounded shadow py-2 px-4">
 </label>
 
-<div *ngFor="let enc of filteredEncounters | slice:0:50" class="ml-2">
-  {{ enc.displayName }}: {{ enc.count }}
+<div class="space-y-2">
+  <div *ngFor="let enc of filteredEncounters | slice:0:50" class="flex items-center">
+    <img [src]="'https://www.bungie.net' + enc.iconPath" class="h-16 w-16">
+    <p class="ml-2">{{ enc.displayName }}: {{ enc.count }}</p>
+  </div>
 </div>
