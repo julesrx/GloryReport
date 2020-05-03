@@ -3,7 +3,12 @@ import { ActivatedRoute, Router, NavigationEnd, Params } from '@angular/router';
 
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map, filter, mergeMap } from 'rxjs/operators';
-import { DestinyProfileComponent, DestinyProfileResponse, DestinyCharacterComponent } from 'bungie-api-ts/destiny2/interfaces';
+import {
+  DestinyProfileComponent,
+  DestinyProfileResponse,
+  DestinyCharacterComponent,
+  DestinyMetricComponent
+} from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse } from 'bungie-api-ts/common';
 
 import { routeHasProfile, getMembershipTypeFromRoute, getMembershipIdFromRoute } from '../utils/route-utils';
@@ -47,13 +52,14 @@ export class SessionService {
             this.profile?.profile?.userInfo.membershipType !== membershipType
           ) {
             this.state.next(null);
-            this.destiny.getProfile(membershipType, membershipId, '100,200')
+            this.destiny.getProfile(membershipType, membershipId, '100,200,1100')
               .subscribe((res: ServerResponse<DestinyProfileResponse>) => {
                 this.profile = {
                   profile: res.Response.profile.data,
                   characters: Object.keys(res.Response.characters.data)
                     .map(key => res.Response.characters.data[key])
-                    .sort((a, b) => a.dateLastPlayed < b.dateLastPlayed ? 1 : -1)
+                    .sort((a, b) => a.dateLastPlayed < b.dateLastPlayed ? 1 : -1),
+                  metrics: res.Response.metrics.data.metrics
                 };
                 this.state.next(this.profile);
               });
@@ -79,4 +85,5 @@ export class SessionService {
 export interface SessionProfile {
   profile: DestinyProfileComponent;
   characters: DestinyCharacterComponent[];
+  metrics: { [key: number]: DestinyMetricComponent; };
 }
