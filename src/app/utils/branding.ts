@@ -12,7 +12,7 @@ export function getBranding(membershipType: BungieMembershipType): PlatformBrand
       return { name: 'playstation', textClass: 'text-playstation' };
 
     case BungieMembershipType.TigerStadia:
-      return { name: 'google', textClass: 'text-google' };
+      return { name: 'google', textClass: 'text-stadia' };
 
     default:
       return { name: 'gamepad', textClass: 'text-black' };

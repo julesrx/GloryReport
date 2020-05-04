@@ -42,7 +42,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((res: ServerResponse<UserInfoCard[]>) => {
-        this.users = res.Response;
+        this.users = _.uniqWith(res.Response, (a, b) => {
+          return a.membershipId === b.membershipId && a.membershipType === b.membershipType;
+        });
 
         this.loading = false;
         this.noMatch = !this.users.length;
