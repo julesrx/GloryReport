@@ -34,7 +34,7 @@ export class EncountersComponent implements OnInit {
             distinctUntilChanged(),
             map(v => v === ''
               ? encs
-              : encs.filter(enc => enc.displayName.toLowerCase().indexOf(v.toLowerCase()) !== -1)))
+              : encs.filter(enc => enc?.displayName?.toLowerCase().indexOf(v.toLowerCase()) !== -1)))
         )
       );
 

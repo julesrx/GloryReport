@@ -113,21 +113,27 @@ export class EncountersService {
 
   private getEncounters(pgcr: DestinyPostGameCarnageReportData) {
     pgcr.entries.forEach((entry: DestinyPostGameCarnageReportEntry) => {
-      if (entry.player.destinyUserInfo.displayName !== this.displayName) { // TODO: Compare membershipId instead
+      if (entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId) {
         const enc: PlayerEncounter = this.encounters.find((e: PlayerEncounter) => {
           return e.membershipId === entry.player.destinyUserInfo.membershipId;
         });
 
         if (enc != null && enc.count) {
-          // TODO: remove pgcrs from encounters to improve performances and memory usage
           enc.count++;
           enc.instanceIds.push(pgcr.activityDetails.instanceId);
+
+          if (!enc.displayName && entry.player.destinyUserInfo.displayName) {
+            enc.displayName = entry.player.destinyUserInfo.displayName;
+          }
+          if (!enc.iconPath && entry.player.destinyUserInfo.iconPath) {
+            enc.iconPath = entry.player.destinyUserInfo.iconPath;
+          }
         } else {
           this.encounters.push({
             membershipId: entry.player.destinyUserInfo.membershipId,
             membershipType: entry.player.destinyUserInfo.membershipType,
-            displayName: entry.player.destinyUserInfo.displayName,
-            iconPath: entry.player.destinyUserInfo.iconPath,
+            displayName: entry.player.destinyUserInfo.displayName, // can be undefined
+            iconPath: entry.player.destinyUserInfo.iconPath, // can be undefined
             instanceIds: [pgcr.activityDetails.instanceId],
             count: 1
           });
