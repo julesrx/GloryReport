@@ -12,6 +12,7 @@ module.exports = {
       },
       colors: {
         brand: '#c51611',
+        lime: '#99ff00',
         oyster: {
           '100': '#fefefe',
           '200': '#fdfdfd',
