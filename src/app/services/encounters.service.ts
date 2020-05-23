@@ -52,6 +52,8 @@ export class EncountersService {
     this.activities = [];
     this.encounters = [];
 
+
+    // reset all when profile change
     this.session.uniqueProfile.subscribe((profile: SessionProfile) => {
       this.profile = profile.profile;
       this.characters = profile.characters;
