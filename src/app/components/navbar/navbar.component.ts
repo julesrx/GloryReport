@@ -20,6 +20,11 @@ export class NavbarComponent implements OnDestroy {
     { name: 'github', url: 'https://github.com/julesrx/glory.report' }
   ];
 
+  public links = [
+    { name: 'Report', route: 'report' },
+    { name: 'Encounters', route: 'encounters' }
+  ];
+
   constructor(private session: SessionService) {
     this.profile$ = this.session.uniqueProfile
       .subscribe((profile: SessionProfile) => {

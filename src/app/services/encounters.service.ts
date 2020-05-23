@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { BehaviorSubject, forkJoin } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, retry } from 'rxjs/operators';
 import * as _ from 'lodash';
 import {
   DestinyProfileComponent,
@@ -25,6 +25,8 @@ export class EncountersService {
   public activities$: BehaviorSubject<DestinyHistoricalStatsPeriodGroup[]>;
   public encounters$: BehaviorSubject<PlayerEncounter[]>;
 
+  public fetched: BehaviorSubject<number>;
+
   private charDoneActivities: BehaviorSubject<number>;
   public charDoneLoading: BehaviorSubject<boolean>;
 
@@ -45,9 +47,13 @@ export class EncountersService {
 
     this.charDoneActivities = new BehaviorSubject(0);
     this.charDoneLoading = new BehaviorSubject(false);
+    this.fetched = new BehaviorSubject(0);
+
     this.activities = [];
     this.encounters = [];
 
+
+    // reset all when profile change
     this.session.uniqueProfile.subscribe((profile: SessionProfile) => {
       this.profile = profile.profile;
       this.characters = profile.characters;
@@ -60,7 +66,7 @@ export class EncountersService {
 
       this.charDoneActivities.pipe(filter(n => n === this.characters.length)).subscribe(() => {
         this.charDoneLoading.next(true);
-        this.fetchChunks(_.chunk(this.activities, 20), 0);
+        this.fetchChunks(_.chunk(this.activities, 25), 0);
       });
     });
   }
@@ -72,6 +78,7 @@ export class EncountersService {
       page: params.page
     };
 
+    // request still in progress after the encounters component is destroyed
     this.destiny.getActivities(params.character.membershipType, params.character.membershipId, params.character.characterId, options)
       .subscribe((res: ServerResponse<DestinyActivityHistoryResults>) => {
         if (res.ErrorCode !== PlatformErrorCodes.DestinyPrivacyRestriction) {
@@ -95,8 +102,11 @@ export class EncountersService {
 
   private fetchChunks(chunks: DestinyHistoricalStatsPeriodGroup[][], chunkId: number): void {
     if (chunkId < chunks.length) {
-      forkJoin(chunks[chunkId].map((act: DestinyHistoricalStatsPeriodGroup) => this.destiny.getPGCR(act.activityDetails.instanceId)))
+      forkJoin(chunks[chunkId].map((act: DestinyHistoricalStatsPeriodGroup) => this.destiny.getPGCR(act.activityDetails.instanceId).pipe(
+        retry(3)
+      )))
         .subscribe((res: DestinyPostGameCarnageReportData[]) => {
+          this.fetched.next(this.fetched.value + res.length);
           res.forEach(pgcr => { this.getEncounters(pgcr); });
           this.fetchChunks(chunks, chunkId += 1);
         });
@@ -105,21 +115,27 @@ export class EncountersService {
 
   private getEncounters(pgcr: DestinyPostGameCarnageReportData) {
     pgcr.entries.forEach((entry: DestinyPostGameCarnageReportEntry) => {
-      if (entry.player.destinyUserInfo.displayName !== this.displayName) { // TODO: Compare membershipId instead
+      if (entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId) {
         const enc: PlayerEncounter = this.encounters.find((e: PlayerEncounter) => {
           return e.membershipId === entry.player.destinyUserInfo.membershipId;
         });
 
         if (enc != null && enc.count) {
-          // TODO: remove pgcrs from encounters to improve performances and memory usage
           enc.count++;
           enc.instanceIds.push(pgcr.activityDetails.instanceId);
+
+          if (!enc.displayName && entry.player.destinyUserInfo.displayName) {
+            enc.displayName = entry.player.destinyUserInfo.displayName;
+          }
+          if (!enc.iconPath && entry.player.destinyUserInfo.iconPath) {
+            enc.iconPath = entry.player.destinyUserInfo.iconPath;
+          }
         } else {
           this.encounters.push({
             membershipId: entry.player.destinyUserInfo.membershipId,
             membershipType: entry.player.destinyUserInfo.membershipType,
-            displayName: entry.player.destinyUserInfo.displayName,
-            iconPath: entry.player.destinyUserInfo.iconPath,
+            displayName: entry.player.destinyUserInfo.displayName, // can be undefined
+            iconPath: entry.player.destinyUserInfo.iconPath, // can be undefined
             instanceIds: [pgcr.activityDetails.instanceId],
             count: 1
           });

@@ -5,6 +5,10 @@
 <ng-container *ngIf="!actsLoading">
   <p class="text-center">Activities against {{ displayName }}</p>
 
+  <div class="text-center">
+    <p>Total of {{ actLength$ | async }} activities</p>
+  </div>
+
   <div *ngFor="let act of acts$ | async">
     <a [href]="'https://destinytracker.com/destiny-2/pgcr/' + act.activityDetails.instanceId"
       [rel]="'noopener noreferrer'"

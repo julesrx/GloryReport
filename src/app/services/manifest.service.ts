@@ -8,7 +8,8 @@ import {
   DestinyInventoryItemDefinition,
   DestinyActivityDefinition,
   DestinyClassDefinition,
-  DestinyRaceDefinition
+  DestinyRaceDefinition,
+  DestinyMetricDefinition
 } from 'bungie-api-ts/destiny2/interfaces';
 import { ServerResponse } from 'bungie-api-ts/common';
 import * as _ from 'lodash';
@@ -28,7 +29,7 @@ export class ManifestService {
   };
   public state$ = new BehaviorSubject<ManifestServiceState>(this.state);
 
-  public tables: string[] = ['InventoryItem', 'Activity', 'Class', 'Race'];
+  public tables: string[] = ['InventoryItem', 'Activity', 'Class', 'Race', 'Metric'];
   public defs: {
     InventoryItem?: {
       get(hash: number): DestinyInventoryItemDefinition;
@@ -41,6 +42,9 @@ export class ManifestService {
     },
     Race?: {
       get(hash: number): DestinyRaceDefinition;
+    },
+    Metric?: {
+      get(hash: number): DestinyMetricDefinition;
     }
   };
 

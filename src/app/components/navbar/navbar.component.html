@@ -7,19 +7,14 @@
     </h1>
   </a>
 
-  <!-- <div *ngIf="currentUser">
-    <a [routerLink]="['/', currentUser.membershipType, currentUser.membershipId, link.route]"
+  <div *ngIf="profile">
+    <a [routerLink]="['/', profile.profile.userInfo.membershipType, profile.profile.userInfo.membershipId, link.route]"
       [routerLinkActive]="'text-gray-900'"
       class="mr-2 text-gray-500 hover:text-gray-900 transition-all duration-75"
       *ngFor="let link of links">{{ link.name }}</a>
-  </div> -->
+  </div>
 
   <div class="flex-1"></div>
-
-  <!-- <input type="text"
-    id="gamertag"
-    class="border border-gray-300 text-md rounded shadow max-w-sm py-1 px-2"
-    placeholder="Guardian..."> -->
 
   <div class="flex items-center ml-4" *ngIf="profile">
     <img [src]="'https://www.bungie.net' + profile.characters[0].emblemPath"

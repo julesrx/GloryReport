@@ -15,7 +15,9 @@ export class EncountersComponent implements OnInit {
 
   private filter$: BehaviorSubject<string>;
   public encounters$: Observable<PlayerEncounter[]>;
+
   public actslength$: Observable<number>;
+  public fetched$: Observable<number>;
 
   public actsLoading = true;
 
@@ -32,7 +34,7 @@ export class EncountersComponent implements OnInit {
             distinctUntilChanged(),
             map(v => v === ''
               ? encs
-              : encs.filter(enc => enc.displayName.toLowerCase().indexOf(v.toLowerCase()) !== -1)))
+              : encs.filter(enc => enc?.displayName?.toLowerCase().indexOf(v.toLowerCase()) !== -1)))
         )
       );
 
@@ -41,6 +43,7 @@ export class EncountersComponent implements OnInit {
     });
 
     this.actslength$ = this.encounters.activities$.pipe(map(acts => acts.length));
+    this.fetched$ = this.encounters.fetched;
   }
 
   filter(event: any): void {

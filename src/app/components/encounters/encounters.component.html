@@ -2,14 +2,18 @@
 <p *ngIf="actsLoading">Loading activities... (found {{ actslength$ | async }})</p>
 
 <ng-container *ngIf="!actsLoading">
+  <p>Fetched {{ fetched$ | async }}/{{ actslength$ | async }}</p>
+
   <label for="filter" class="mb-2">Search a player
     <input type="text" name="filter" id="filter" (keyup)="filter($event)" class="rounded shadow py-2 px-4">
   </label>
 
   <div class="space-y-2">
-    <a [routerLink]="[enc.displayName]" *ngFor="let enc of encounters$ | async | slice:0:50" class="flex items-center">
-      <img [src]="'https://www.bungie.net' + enc.iconPath" class="h-16 w-16">
-      <p class="ml-2">{{ enc.displayName }}: {{ enc.count }}</p>
-    </a>
+    <ng-container *ngFor="let enc of encounters$ | async | slice:0:50">
+      <a [routerLink]="[enc.displayName]" *ngIf="enc.displayName && enc.iconPath" class="flex items-center">
+        <img [src]="'https://www.bungie.net' + enc.iconPath" class="h-16 w-16">
+        <p class="ml-2">{{ enc.displayName }}: {{ enc.count }}</p>
+      </a>
+    </ng-container>
   </div>
 </ng-container>
