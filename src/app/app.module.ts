@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { faGithub, faTwitter, faXbox, faSteam, faPlaystation, faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { faPlus, faCircleNotch, faGamepad } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faCircleNotch, faGamepad, faLink } from '@fortawesome/free-solid-svg-icons';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,6 +24,7 @@ import { SessionService } from './services/session.service';
 import { GuardianComponent } from './components/guardian/guardian.component';
 import { EncounterDetailsComponent } from './components/encounters/encounter-details/encounter-details.component';
 import { EncountersService } from './services/encounters.service';
+import { EncounterPgcrComponent } from './components/encounters/encounter-details/encounter-pgcr/encounter-pgcr.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { EncountersService } from './services/encounters.service';
     ReportSessionDetailsComponent,
     EncountersComponent,
     GuardianComponent,
-    EncounterDetailsComponent
+    EncounterDetailsComponent,
+    EncounterPgcrComponent
   ],
   imports: [
     BrowserModule,
@@ -67,7 +69,8 @@ export class AppModule {
       faSteam,
       faPlaystation,
       faGoogle,
-      faGamepad
+      faGamepad,
+      faLink
     );
   }
 

@@ -5,14 +5,9 @@
 <ng-container *ngIf="!actsLoading">
   <p class="text-center">Activities against {{ displayName }}</p>
 
-  <div class="text-center">
+  <div class="text-center mb-4">
     <p>Total of {{ actLength$ | async }} activities</p>
   </div>
 
-  <div *ngFor="let act of acts$ | async">
-    <a [href]="'https://destinytracker.com/destiny-2/pgcr/' + act.activityDetails.instanceId"
-      [rel]="'noopener noreferrer'"
-      [target]="'_blank'"
-      class="cursor-pointer hover:underline">{{ act.period }}</a>
-  </div>
+  <app-encounter-pgcr [activity]="act" *ngFor="let act of acts$ | async"></app-encounter-pgcr>
 </ng-container>
