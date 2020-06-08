@@ -1,5 +1,6 @@
 <div *ngIf="activity"
-  [ngClass]="[activity.values.standing.basic.value === 0 ? 'border-green-600' : 'border-red-600', 'max-w-4xl border-l-2 mx-auto p-2 flex items-center']">
+  [ngClass]="[activity.values.standing.basic.value === 0 ? 'bg-green-100' : 'bg-red-100', 'max-w-4xl mx-auto pr-2 flex items-center shadow']">
+  <img [src]="getPgcrImage(activity.activityDetails.referenceId)" class="h-16 mr-2">
   <div class="flex flex-col">
     <p>
       {{ activity.activityDetails.directorActivityHash | destinyItemHash: 'activityName' | async }}:

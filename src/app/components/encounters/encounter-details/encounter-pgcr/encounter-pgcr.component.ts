@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 
 import * as moment from 'moment';
-import { DestinyPostGameCarnageReportData, DestinyHistoricalStatsPeriodGroup } from 'bungie-api-ts/destiny2/interfaces';
+import { DestinyHistoricalStatsPeriodGroup } from 'bungie-api-ts/destiny2/interfaces';
 
-import { DestinyService } from 'src/app/services/destiny.service';
+import { ManifestService } from 'src/app/services/manifest.service';
 
 @Component({
   selector: 'app-encounter-pgcr',
@@ -14,16 +14,10 @@ export class EncounterPgcrComponent implements OnInit {
 
   @Input() activity: DestinyHistoricalStatsPeriodGroup;
 
-  // public pgcr: DestinyPostGameCarnageReportData;
 
-  constructor(private destiny: DestinyService) { }
+  constructor(private manifest: ManifestService) { }
 
-  ngOnInit(): void {
-    // this.destiny.getPGCR(this.activity.activityDetails.instanceId)
-    //   .subscribe(res => {
-    //     this.pgcr = res;
-    //   });
-  }
+  ngOnInit(): void { }
 
   formatPeriod(period: string, format: string): string {
     return moment(period).format(format);
@@ -31,6 +25,10 @@ export class EncounterPgcrComponent implements OnInit {
 
   fromNow(period: string): string {
     return moment(period).fromNow();
+  }
+
+  getPgcrImage(hash: number): string {
+    return 'https://bungie.net' + this.manifest.defs.Activity.get(hash).pgcrImage;
   }
 
 }

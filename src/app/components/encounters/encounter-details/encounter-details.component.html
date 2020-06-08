@@ -9,5 +9,7 @@
     <p>Total of {{ actLength$ | async }} activities</p>
   </div>
 
-  <app-encounter-pgcr [activity]="act" *ngFor="let act of acts$ | async"></app-encounter-pgcr>
+  <div class="space-y-4 flex flex-col mb-6">
+    <app-encounter-pgcr [activity]="act" *ngFor="let act of acts$ | async"></app-encounter-pgcr>
+  </div>
 </ng-container>
