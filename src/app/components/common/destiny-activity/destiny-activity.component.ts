@@ -6,14 +6,15 @@ import { DestinyHistoricalStatsPeriodGroup } from 'bungie-api-ts/destiny2/interf
 import { ManifestService } from 'src/app/services/manifest.service';
 
 @Component({
-  selector: 'app-encounter-pgcr',
-  templateUrl: './encounter-pgcr.component.html',
-  styleUrls: ['./encounter-pgcr.component.scss']
+  selector: 'app-destiny-activity',
+  templateUrl: './destiny-activity.component.html',
+  styleUrls: ['./destiny-activity.component.scss']
 })
-export class EncounterPgcrComponent implements OnInit {
+export class DestinyActivityComponent implements OnInit {
 
   @Input() activity: DestinyHistoricalStatsPeriodGroup;
 
+  public showPgcr: boolean;
 
   constructor(private manifest: ManifestService) { }
 

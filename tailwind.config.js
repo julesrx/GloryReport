@@ -24,6 +24,11 @@ module.exports = {
           '800': '#6f6f6f',
           '900': '#4a4a4a'
         },
+        bungie: {
+          'red': '#c94340',
+          'blue': '#1a9ee8',
+          'yellow': '#ffce3e'
+        },
         xbox: '#107c10',
         playstation: '#003891',
         steam: '#000000',

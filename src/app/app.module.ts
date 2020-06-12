@@ -24,7 +24,8 @@ import { SessionService } from './services/session.service';
 import { GuardianComponent } from './components/guardian/guardian.component';
 import { EncounterDetailsComponent } from './components/encounters/encounter-details/encounter-details.component';
 import { EncountersService } from './services/encounters.service';
-import { EncounterPgcrComponent } from './components/encounters/encounter-details/encounter-pgcr/encounter-pgcr.component';
+import { DestinyActivityComponent } from './components/common/destiny-activity/destiny-activity.component';
+import { DestinyPgcrComponent } from './components/common/destiny-pgcr/destiny-pgcr.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { EncounterPgcrComponent } from './components/encounters/encounter-detail
     EncountersComponent,
     GuardianComponent,
     EncounterDetailsComponent,
-    EncounterPgcrComponent
+    DestinyActivityComponent,
+    DestinyPgcrComponent
   ],
   imports: [
     BrowserModule,
