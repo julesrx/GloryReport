@@ -1,13 +1,18 @@
 <template>
   <div id="global-alerts" v-if="alerts && alerts.length">
-    <div v-for="alert in alerts" :key="alert.AlertKey" v-html="alert.AlertHtml"></div>
+    <div
+      v-for="alert in alerts"
+      :key="alert.AlertKey"
+      v-html="alert.AlertHtml"
+    ></div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { ServerResponse } from "bungie-api-ts/common";
-import { BungieHttp } from "@/libs/http";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Component, Vue } from 'vue-property-decorator';
+import { ServerResponse } from 'bungie-api-ts/common';
+import { BungieHttp } from '@/libs/http';
 
 @Component
 export default class Nav extends Vue {

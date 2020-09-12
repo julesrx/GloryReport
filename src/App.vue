@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import Nav from "@/components/Nav.vue";
+import { Component, Vue } from 'vue-property-decorator';
+import Nav from '@/components/Nav.vue';
 
 @Component({
   components: {
@@ -17,26 +17,4 @@ import Nav from "@/components/Nav.vue";
 export default class App extends Vue {}
 </script>
 
-<style lang="scss">
-@font-face {
-  font-family: "Inter var";
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: normal;
-  font-named-instance: "Regular";
-  src: url("~@/assets/fonts/Inter-roman.var.woff2?v=3.15") format("woff2");
-}
-
-@font-face {
-  font-family: "Inter var";
-  font-weight: 100 900;
-  font-display: swap;
-  font-style: italic;
-  font-named-instance: "Italic";
-  src: url("~@/assets/fonts/Inter-italic.var.woff2?v=3.15") format("woff2");
-}
-
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
-</style>
+<style lang="scss" src="./App.scss"></style>
