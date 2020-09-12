@@ -1,10 +1,6 @@
 <template>
   <div id="global-alerts" v-if="alerts && alerts.length">
-    <div
-      v-for="alert in alerts"
-      :key="alert.AlertKey"
-      v-html="alert.AlertHtml"
-    ></div>
+    <div v-for="alert in alerts" :key="alert.AlertKey" v-html="alert.AlertHtml"></div>
   </div>
 </template>
 
