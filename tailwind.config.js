@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const defaultTheme = require("tailwindcss/defaultTheme");
+
 module.exports = {
   purge: [
     './src/**/*.html',
@@ -5,7 +8,11 @@ module.exports = {
     './src/**/*.jsx'
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'sans': ['Inter var', ...defaultTheme.fontFamily.sans]
+      }
+    }
   },
   variants: {},
   plugins: []
