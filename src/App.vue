@@ -16,3 +16,9 @@ import Nav from "@/components/Nav.vue";
 })
 export default class App extends Vue {}
 </script>
+
+<style lang="scss">
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+</style>
