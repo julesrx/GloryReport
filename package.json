@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "prod": "vue-cli-service build --modern",
+    "prod": "vue-cli-service build --modern && cp CNAME dist/CNAME",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
