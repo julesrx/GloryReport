@@ -4,7 +4,13 @@
     <p v-if="fetching">fetching...</p>
     <ul v-if="users.length">
       <li v-for="user in users" :key="user.membershipType + '-' + user.membershipId">
-        <router-link to="/">{{ user.displayName }}</router-link>
+        <router-link
+          :to="{
+            name: 'PlayerReport',
+            params: { membershipType: user.membershipType, membershipId: user.membershipId }
+          }"
+          >{{ user.displayName }}</router-link
+        >
       </li>
     </ul>
   </div>
@@ -29,12 +35,12 @@ export default class PlayerSearch extends Vue {
   private debounceSearch = debounce((val: string) => this.searchPlayer(val), 500);
 
   @Watch('search')
-  onSearch(val: string) {
+  private onSearch(val: string) {
     this.fetching = true;
     this.debounceSearch(val);
   }
 
-  async searchPlayer(search: string) {
+  private async searchPlayer(search: string) {
     this.users = [];
 
     const { data }: AxiosResponse<ServerResponse<UserInfoCard[]>> = await BungieHttp.get(
@@ -44,7 +50,13 @@ export default class PlayerSearch extends Vue {
     );
 
     this.fetching = false;
-    this.users = data.Response;
+    this.users = data.Response.filter(
+      (user, index, self) =>
+        index ===
+        self.findIndex(
+          t => t.membershipType === user.membershipType && t.membershipId === user.membershipId
+        )
+    );
   }
 }
 </script>

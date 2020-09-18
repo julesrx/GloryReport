@@ -1,14 +1,21 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
+
 import Home from '../views/Home.vue';
+import PlayerReport from '../views/PlayerReport.vue';
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
-    path: '/',
     name: 'Home',
+    path: '/',
     component: Home
+  },
+  {
+    name: 'PlayerReport',
+    path: '/:membershipType/:membershipId',
+    component: PlayerReport
   }
 ];
 

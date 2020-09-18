@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "strict": true,
+    // https://vuejs.org/v2/guide/typescript.html#Recommended-Configuration
+    // "strict": true, // disabled because i'm going insane (i'm probably too bad to know what i'm doing)
+    "noImplicitAny": true,
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
