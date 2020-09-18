@@ -23,7 +23,7 @@ import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 import { debounce } from 'lodash';
 
-import { BungieHttp } from '@/libs/http';
+import { bhttp } from '@/http-common';
 import { AxiosResponse } from 'axios';
 
 @Component
@@ -43,7 +43,7 @@ export default class PlayerSearch extends Vue {
   private async searchPlayer(search: string) {
     this.users = [];
 
-    const { data }: AxiosResponse<ServerResponse<UserInfoCard[]>> = await BungieHttp.get(
+    const { data }: AxiosResponse<ServerResponse<UserInfoCard[]>> = await bhttp.get(
       `Destiny2/SearchDestinyPlayer/${BungieMembershipType.All}/${encodeURIComponent(
         search.trim()
       )}/`

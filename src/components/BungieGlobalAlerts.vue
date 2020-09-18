@@ -8,15 +8,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, Vue } from 'vue-property-decorator';
 import { ServerResponse } from 'bungie-api-ts/common';
-import { BungieHttp } from '@/libs/http';
+import { bhttp } from '@/http-common';
 
 @Component
 export default class Nav extends Vue {
   private alerts: any[] = [];
 
   async created(): Promise<void> {
-    // directly type { data } to ServerResponse<any> ?
-    const { data } = await BungieHttp.get(`GlobalAlerts/`);
+    const { data } = await bhttp.get(`GlobalAlerts/`);
     const res: ServerResponse<any> = data;
 
     this.alerts = res.Response;
