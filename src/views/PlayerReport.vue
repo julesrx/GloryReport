@@ -23,12 +23,10 @@ export default {
     return {
       loading: false,
       error: null,
-      player: {
-        membershipType: null,
-        membershipId: null,
-        profile: null,
-        characters: []
-      },
+      membershipType: null,
+      membershipId: null,
+      profile: null,
+      characters: [],
       encounters: [],
       cancelToken: null
     };
@@ -47,17 +45,24 @@ export default {
       immediate: true,
       deep: true,
       handler: function() {
+        const membershipType = Number(this.$route.params['membershipType']);
+        const membershipId = this.$route.params['membershipId'];
+
+        if (this.membershipType === membershipType && this.membershipId === membershipId) return;
+
         if (this.cancelToken) {
           this.cancelToken.cancel('Operation canceled by the user.');
         }
-
-        this.getProfile();
+        this.getProfile(membershipType, membershipId);
       }
     }
   },
   methods: {
-    async getProfile() {
+    async getProfile(membershipType, membershipId) {
       try {
+        this.membershipType = membershipType;
+        this.membershipId = membershipId;
+
         this.cancelToken = axios.CancelToken.source();
         this.$bqueue.clear();
 
@@ -66,9 +71,6 @@ export default {
         this.profile = null;
         this.characters = [];
         this.encounters = [];
-
-        this.membershipType = this.$route.params['membershipType'];
-        this.membershipId = this.$route.params['membershipId'];
 
         const { data } = await this.$bhttp.get(
           `Destiny2/${this.membershipType}/Profile/${this.membershipId}/`,
@@ -88,8 +90,6 @@ export default {
         this.characters.forEach(c => {
           this.getActivities(c, 0);
         });
-        // } catch (ex) {
-        //   this.error = '';
       } finally {
         this.loading = false;
       }
@@ -126,38 +126,36 @@ export default {
           .then(res => {
             const pgcr = res.Response;
             pgcr.entries.forEach(entry => {
+              const player = entry.player;
+
               if (
                 entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId
               ) {
                 const enc = this.encounters.find(e => {
-                  return e.membershipId === entry.player.destinyUserInfo.membershipId;
+                  return e.membershipId === player.destinyUserInfo.membershipId;
                 });
 
                 if (enc != null && enc.count) {
                   enc.count++;
                   enc.instanceIds.push(pgcr.activityDetails.instanceId);
 
-                  if (!enc.displayName && entry.player.destinyUserInfo.displayName) {
-                    enc.displayName = entry.player.destinyUserInfo.displayName;
+                  if (!enc.displayName && player.destinyUserInfo.displayName) {
+                    enc.displayName = player.destinyUserInfo.displayName;
                   }
-                  if (!enc.iconPath && entry.player.destinyUserInfo.iconPath) {
-                    enc.iconPath = entry.player.destinyUserInfo.iconPath;
+                  if (!enc.iconPath && player.destinyUserInfo.iconPath) {
+                    enc.iconPath = player.destinyUserInfo.iconPath;
                   }
                 } else {
                   this.encounters.push(
                     new Encounter(
-                      entry.player.destinyUserInfo.membershipId,
-                      entry.player.destinyUserInfo.membershipType,
-                      entry.player.destinyUserInfo.displayName,
-                      entry.player.destinyUserInfo.iconPath,
+                      player.destinyUserInfo.membershipId,
+                      player.destinyUserInfo.membershipType,
+                      player.destinyUserInfo.displayName,
+                      player.destinyUserInfo.iconPath,
                       pgcr.activityDetails.instanceId
                     )
                   );
                 }
-
-                this.encounters.sort((a, b) => {
-                  return a.count < b.count ? 1 : -1;
-                });
               }
             });
           })
