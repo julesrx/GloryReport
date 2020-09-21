@@ -16,47 +16,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator';
-
-import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
-import { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
+<script>
 import { debounce } from 'lodash';
 
-import { bhttp } from '@/http-common';
-import { AxiosResponse } from 'axios';
+export default {
+  name: 'PlayerSearch',
+  data() {
+    return {
+      users: [],
+      search: '',
+      fetching: false
+    };
+  },
+  watch: {
+    search: debounce(async function(val) {
+      this.users = [];
 
-@Component
-export default class PlayerSearch extends Vue {
-  private search = '';
-  private users: UserInfoCard[] = [];
-  private fetching = false;
+      const { data } = await this.$bhttp.get(
+        `Destiny2/SearchDestinyPlayer/-1/${encodeURIComponent(val.trim())}/`
+      );
 
-  private debounceSearch = debounce((val: string) => this.searchPlayer(val), 500);
-
-  @Watch('search')
-  private onSearch(val: string) {
-    this.fetching = true;
-    this.debounceSearch(val);
+      this.fetching = false;
+      this.users = data.Response.filter(
+        (user, index, self) =>
+          index ===
+          self.findIndex(
+            t => t.membershipType === user.membershipType && t.membershipId === user.membershipId
+          )
+      );
+    }, 500)
   }
-
-  private async searchPlayer(search: string) {
-    this.users = [];
-
-    const { data }: AxiosResponse<ServerResponse<UserInfoCard[]>> = await bhttp.get(
-      `Destiny2/SearchDestinyPlayer/${BungieMembershipType.All}/${encodeURIComponent(
-        search.trim()
-      )}/`
-    );
-
-    this.fetching = false;
-    this.users = data.Response.filter(
-      (user, index, self) =>
-        index ===
-        self.findIndex(
-          t => t.membershipType === user.membershipType && t.membershipId === user.membershipId
-        )
-    );
-  }
-}
+};
 </script>

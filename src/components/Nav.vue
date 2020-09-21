@@ -1,21 +1,20 @@
 <template>
-  <nav id="nav">
+  <div id="nav">
     <BungieGlobalAlerts />
     <PlayerSearch />
     <router-link to="/">Home</router-link>
-  </nav>
+  </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+<script>
 import BungieGlobalAlerts from '@/components/BungieGlobalAlerts.vue';
 import PlayerSearch from '@/components/PlayerSearch.vue';
 
-@Component({
+export default {
+  name: 'Nav',
   components: {
     BungieGlobalAlerts,
     PlayerSearch
   }
-})
-export default class Nav extends Vue {}
+};
 </script>

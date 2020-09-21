@@ -5,29 +5,21 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Vue, Component, Prop } from 'vue-property-decorator';
+<script>
+import Encounter from '@/classes/Encounter';
 
-// import { bhttp } from '@/http-common';
-import { PlayerEncounter } from '@/interfaces/PlayerEncounter';
-
-@Component
-export default class EncounterItem extends Vue {
-  @Prop(Object) readonly encounter: PlayerEncounter;
-
+export default {
+  name: 'EncounterItem',
+  props: {
+    encounter: Encounter
+  },
   async created() {
-    // add to queue
-    // const {
-    //   data
-    // } = await bhttp.get(
-    //   `Destiny2/${this.encounter.membershipType}/Profile/${this.encounter.membershipId}/`,
-    //   { params: { components: '100' } }
-    // );
-    // console.log(data);
+    // console.log(this.encounter);
+  },
+  computed: {
+    iconUrl() {
+      return `https://bungie.net${this.encounter.iconPath}`; // can be undefined
+    }
   }
-
-  get iconUrl() {
-    return `https://bungie.net${this.encounter.iconPath}`;
-  }
-}
+};
 </script>

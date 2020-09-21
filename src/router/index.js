@@ -1,15 +1,15 @@
 import Vue from 'vue';
-import VueRouter, { RouteConfig } from 'vue-router';
+import VueRouter from 'vue-router';
 
 import Home from '../views/Home.vue';
 import PlayerReport from '../views/PlayerReport.vue';
 
 Vue.use(VueRouter);
 
-const routes: Array<RouteConfig> = [
+const routes = [
   {
-    name: 'Home',
     path: '/',
+    name: 'Home',
     component: Home
   },
   {
