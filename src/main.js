@@ -8,6 +8,7 @@ import router from './router';
 
 Vue.config.productionTip = false;
 
+// add back Typescript when autocompletion and eslint can work with this next line
 Vue.prototype.$http = axios.create();
 
 // Bungie
