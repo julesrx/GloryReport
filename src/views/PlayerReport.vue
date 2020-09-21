@@ -2,8 +2,6 @@
   <div id="player-report">
     <p v-if="loading">Loading profile...</p>
 
-    <pre>{{ filteredEncounters.length }}</pre>
-
     <EncounterItem v-for="enc in filteredEncounters" :key="enc.membershipId" :encounter="enc" />
   </div>
 </template>
@@ -95,7 +93,10 @@ export default {
       }
     },
 
-    async getActivities(character, page, mode = 5, count = 250) {
+    async getActivities(character, page) {
+      const mode = 5;
+      const count = 250;
+
       const { data } = await this.$bhttp.get(
         `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
         {
@@ -111,7 +112,7 @@ export default {
             this.getPGCR(act.activityDetails.instanceId);
           });
 
-          this.getActivities(character, mode, (page += 1));
+          this.getActivities(character, (page += 1));
         }
       }
     },
