@@ -174,7 +174,10 @@ export default class PlayerReport extends Vue {
   }
 
   get filteredEncounters() {
-    return this.encounters.sort((a, b) => (a.count > b.count ? -1 : 1)).slice(0, 20);
+    return this.encounters
+      .sort((a, b) => a.count - b.count)
+      .reverse()
+      .slice(0, 50);
   }
 }
 </script>
