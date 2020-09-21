@@ -1,11 +1,8 @@
 <template>
   <div id="player-report">
     <p v-if="loading">Loading profile...</p>
-    <ul>
-      <li v-for="enc in filteredEncounters" :key="enc.membershipId">
-        {{ enc.displayName }} ({{ enc.count }})
-      </li>
-    </ul>
+
+    <EncounterItem v-for="enc in filteredEncounters" :key="enc.membershipId" :encounter="enc" />
   </div>
 </template>
 
@@ -24,9 +21,15 @@ import {
   DestinyProfileResponse
 } from 'bungie-api-ts/destiny2/interfaces';
 
+import EncounterItem from '@/components/EncounterItem.vue';
+import { PlayerEncounter } from '@/interfaces/PlayerEncounter';
 import { bhttp } from '@/http-common';
 
-@Component
+@Component({
+  components: {
+    EncounterItem
+  }
+})
 export default class PlayerReport extends Vue {
   private cancelTokenSource: CancelTokenSource;
 
@@ -35,7 +38,7 @@ export default class PlayerReport extends Vue {
   private profile: DestinyProfileComponent = null;
   private characters: DestinyCharacterComponent[] = [];
   // private activities: DestinyHistoricalStatsPeriodGroup[] = [];
-  private encounters: any[] = [];
+  private encounters: PlayerEncounter[] = [];
 
   private loading = true;
 
