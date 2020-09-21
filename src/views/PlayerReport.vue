@@ -2,15 +2,18 @@
   <div id="player-report">
     <p v-if="loading">Loading profile...</p>
 
+    <p>{{ encounters.length }} players</p>
     <EncounterItem v-for="enc in filteredEncounters" :key="enc.membershipId" :encounter="enc" />
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+// import localforage from 'localforage';
 
 import Encounter from '@/classes/Encounter';
 import EncounterItem from '@/components/EncounterItem.vue';
+import { getStorage, requestCacheKey } from '@/storage';
 
 export default {
   name: 'PlayerReport',
@@ -26,7 +29,9 @@ export default {
       profile: null,
       characters: [],
       encounters: [],
-      cancelToken: null
+      cancelToken: null,
+
+      store: getStorage(requestCacheKey)
     };
   },
   computed: {
@@ -117,50 +122,56 @@ export default {
       }
     },
 
-    async getPGCR(instanceId) {
-      await this.$bqueue.add(() =>
-        this.$bhttp
-          .get(`Destiny2/Stats/PostGameCarnageReport/${instanceId}/`, {
-            cancelToken: this.cancelToken.token
-          })
-          .then(res => res.data)
-          .then(res => {
-            const pgcr = res.Response;
-            pgcr.entries.forEach(entry => {
-              const player = entry.player;
+    getPGCR(instanceId) {
+      const requestUrl = `Destiny2/Stats/PostGameCarnageReport/${instanceId}/`;
 
-              if (
-                entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId
-              ) {
-                const enc = this.encounters.find(e => {
-                  return e.membershipId === player.destinyUserInfo.membershipId;
-                });
+      this.store.getItem(requestUrl).then(res => {
+        if (res) return this.pgcrCallback(res);
+        else
+          return this.$bqueue.add(() =>
+            this.$bhttp
+              .get(requestUrl, { cancelToken: this.cancelToken.token })
+              .then(res => res.data.Response)
+              .then(res => {
+                this.store.setItem(requestUrl, res);
+                this.pgcrCallback(res);
+              })
+          );
+      });
+    },
 
-                if (enc != null && enc.count) {
-                  enc.count++;
-                  enc.instanceIds.push(pgcr.activityDetails.instanceId);
+    pgcrCallback(pgcr) {
+      pgcr.entries.forEach(entry => {
+        const player = entry.player;
 
-                  if (!enc.displayName && player.destinyUserInfo.displayName) {
-                    enc.displayName = player.destinyUserInfo.displayName;
-                  }
-                  if (!enc.iconPath && player.destinyUserInfo.iconPath) {
-                    enc.iconPath = player.destinyUserInfo.iconPath;
-                  }
-                } else {
-                  this.encounters.push(
-                    new Encounter(
-                      player.destinyUserInfo.membershipId,
-                      player.destinyUserInfo.membershipType,
-                      player.destinyUserInfo.displayName,
-                      player.destinyUserInfo.iconPath,
-                      pgcr.activityDetails.instanceId
-                    )
-                  );
-                }
-              }
-            });
-          })
-      );
+        if (entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId) {
+          const enc = this.encounters.find(e => {
+            return e.membershipId === player.destinyUserInfo.membershipId;
+          });
+
+          if (enc != null && enc.count) {
+            enc.count++;
+            enc.instanceIds.push(pgcr.activityDetails.instanceId);
+
+            if (!enc.displayName && player.destinyUserInfo.displayName) {
+              enc.displayName = player.destinyUserInfo.displayName;
+            }
+            if (!enc.iconPath && player.destinyUserInfo.iconPath) {
+              enc.iconPath = player.destinyUserInfo.iconPath;
+            }
+          } else {
+            this.encounters.push(
+              new Encounter(
+                player.destinyUserInfo.membershipId,
+                player.destinyUserInfo.membershipType,
+                player.destinyUserInfo.displayName,
+                player.destinyUserInfo.iconPath,
+                pgcr.activityDetails.instanceId
+              )
+            );
+          }
+        }
+      });
     }
   }
 };
