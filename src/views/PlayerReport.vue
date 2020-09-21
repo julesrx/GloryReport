@@ -2,6 +2,7 @@
   <div id="player-report">
     <p v-if="loading">Loading profile...</p>
 
+    <input type="text" v-model="search" />
     <p>{{ encounters.length }} players</p>
     <EncounterItem v-for="enc in filteredEncounters" :key="enc.membershipId" :encounter="enc" />
   </div>
@@ -24,13 +25,15 @@ export default {
     return {
       loading: false,
       error: null,
+      search: '',
+
       membershipType: null,
       membershipId: null,
       profile: null,
       characters: [],
       encounters: [],
-      cancelToken: null,
 
+      cancelToken: null,
       store: getStorage(requestCacheKey)
     };
   },
@@ -38,6 +41,11 @@ export default {
     filteredEncounters() {
       return this.encounters
         .slice()
+        .filter(enc =>
+          !this.search.length
+            ? enc
+            : enc.displayName.toLowerCase().includes(this.search.toLowerCase())
+        )
         .sort((a, b) => a.count - b.count)
         .reverse()
         .slice(0, 50);
@@ -144,7 +152,10 @@ export default {
       pgcr.entries.forEach(entry => {
         const player = entry.player;
 
-        if (entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId) {
+        if (
+          player.destinyUserInfo.displayName &&
+          entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId
+        ) {
           const enc = this.encounters.find(e => {
             return e.membershipId === player.destinyUserInfo.membershipId;
           });
