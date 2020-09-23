@@ -20,3 +20,5 @@ export function getStorage(storeName) {
 
   return store;
 }
+
+export const requestCache = getStorage(requestCacheKey);

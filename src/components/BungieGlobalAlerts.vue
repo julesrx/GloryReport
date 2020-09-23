@@ -4,17 +4,17 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+import * as api from '@/api';
+
+export default defineComponent({
   name: 'BungieGlobalAlerts',
-  data() {
-    return {
-      alerts: []
-    };
-  },
-  async created() {
-    const { data } = await this.$bhttp.get('GlobalAlerts/');
-    this.alerts = data.Response;
+  async setup() {
+    const res = await api.bhttp.get('GlobalAlerts/');
+    const alerts = ref(res.data.Response);
+
+    return { alerts };
   }
-};
+});
 </script>

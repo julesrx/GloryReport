@@ -1,12 +1,9 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 import Home from '../views/Home.vue';
 import PlayerReport from '../views/PlayerReport.vue';
 
-Vue.use(VueRouter);
-
-const routes = [
+const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
     name: 'Home',
@@ -19,9 +16,8 @@ const routes = [
   }
 ];
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
   routes
 });
 

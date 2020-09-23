@@ -1,18 +1,15 @@
 <template>
-  <div id="app">
-    <Nav />
-    <router-view />
-  </div>
+  <Nav />
+  <router-view />
 </template>
 
-<script>
+<script lang="ts">
 import Nav from '@/components/Nav.vue';
+import { defineComponent } from 'vue';
 
-export default {
-  components: {
-    Nav
-  }
-};
+export default defineComponent({
+  components: { Nav }
+});
 </script>
 
 <style lang="scss" src="./App.scss"></style>

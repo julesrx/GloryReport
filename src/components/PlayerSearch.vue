@@ -16,35 +16,39 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, ref, watch } from 'vue';
+import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 import { debounce } from 'lodash';
 
-export default {
-  name: 'PlayerSearch',
-  data() {
-    return {
-      users: [],
-      search: '',
-      fetching: false
-    };
-  },
-  watch: {
-    search: debounce(async function(val) {
-      this.users = [];
+import { bhttp } from '@/api';
 
-      const { data } = await this.$bhttp.get(
-        `Destiny2/SearchDestinyPlayer/-1/${encodeURIComponent(val.trim())}/`
+export default defineComponent({
+  name: 'PlayerSearch',
+  setup() {
+    const fetching = ref(false);
+    const users = ref([] as UserInfoCard[]);
+
+    const search = ref('');
+    const debouncedOnSearch = debounce(async () => {
+      users.value = [];
+
+      const { data } = await bhttp.get(
+        `Destiny2/SearchDestinyPlayer/-1/${encodeURIComponent(search.value.trim())}/`
       );
 
-      this.fetching = false;
-      this.users = data.Response.filter(
-        (user, index, self) =>
+      fetching.value = false;
+      users.value = data.Response.filter(
+        (user: UserInfoCard, index: number, self: UserInfoCard[]) =>
           index ===
           self.findIndex(
             t => t.membershipType === user.membershipType && t.membershipId === user.membershipId
           )
       );
-    }, 500)
+    }, 500);
+    watch(search, debouncedOnSearch);
+
+    return { users, search, fetching };
   }
-};
+});
 </script>

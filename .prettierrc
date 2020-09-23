@@ -3,7 +3,7 @@
   "printWidth": 100,
   "overrides": [
     {
-      "files": ["*.js", "*.vue"],
+      "files": ["*.js", "*.ts", "*.vue"],
       "options": {
         "singleQuote": true
       }

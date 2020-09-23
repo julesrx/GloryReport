@@ -10,11 +10,11 @@
 
 <script>
 import axios from 'axios';
-// import localforage from 'localforage';
 
+import { bhttp, bqueue } from '@/api';
 import Encounter from '@/classes/Encounter';
 import EncounterItem from '@/components/EncounterItem.vue';
-import { getStorage, requestCacheKey } from '@/storage';
+import { requestCache } from '@/storage';
 
 export default {
   name: 'PlayerReport',
@@ -33,8 +33,7 @@ export default {
       characters: [],
       encounters: [],
 
-      cancelToken: null,
-      store: getStorage(requestCacheKey)
+      cancelToken: null
     };
   },
   computed: {
@@ -75,7 +74,7 @@ export default {
         this.membershipId = membershipId;
 
         this.cancelToken = axios.CancelToken.source();
-        this.$bqueue.clear();
+        bqueue.clear();
 
         this.loading = true;
 
@@ -83,7 +82,7 @@ export default {
         this.characters = [];
         this.encounters = [];
 
-        const { data } = await this.$bhttp.get(
+        const { data } = await bhttp.get(
           `Destiny2/${this.membershipType}/Profile/${this.membershipId}/`,
           {
             cancelToken: this.cancelToken.token,
@@ -110,7 +109,7 @@ export default {
       const mode = 5;
       const count = 250;
 
-      const { data } = await this.$bhttp.get(
+      const { data } = await bhttp.get(
         `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
         {
           cancelToken: this.cancelToken.token,
@@ -133,15 +132,15 @@ export default {
     getPGCR(instanceId) {
       const requestUrl = `Destiny2/Stats/PostGameCarnageReport/${instanceId}/`;
 
-      this.store.getItem(requestUrl).then(res => {
+      requestCache.getItem(requestUrl).then(res => {
         if (res) return this.pgcrCallback(res);
         else
-          return this.$bqueue.add(() =>
-            this.$bhttp
+          return bqueue.add(() =>
+            bhttp
               .get(requestUrl, { cancelToken: this.cancelToken.token })
               .then(res => res.data.Response)
               .then(res => {
-                this.store.setItem(requestUrl, res);
+                requestCache.setItem(requestUrl, res);
                 this.pgcrCallback(res);
               })
           );

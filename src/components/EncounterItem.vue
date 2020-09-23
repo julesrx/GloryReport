@@ -5,18 +5,22 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Encounter from '@/classes/Encounter';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   name: 'EncounterItem',
   props: {
-    encounter: Encounter
+    encounter: {
+      type: Encounter,
+      required: true
+    }
   },
   computed: {
-    iconUrl() {
-      return `https://bungie.net${this.encounter.iconPath}`; // can be undefined
+    iconUrl(): string {
+      return `https://bungie.net${this.encounter.iconPath}`;
     }
   }
-};
+});
 </script>
