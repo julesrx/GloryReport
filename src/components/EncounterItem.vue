@@ -1,13 +1,13 @@
 <template>
   <div class="encounter-item">
-    <img :src="iconUrl" :alt="encounter.displayName" height="48" width="48" />
+    <img :src="icon" :alt="encounter.displayName" height="48" width="48" />
     <span>{{ encounter.displayName }} ({{ encounter.count }})</span>
   </div>
 </template>
 
 <script lang="ts">
 import Encounter from '@/classes/Encounter';
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'EncounterItem',
@@ -17,10 +17,10 @@ export default defineComponent({
       required: true
     }
   },
-  computed: {
-    iconUrl(): string {
-      return `https://bungie.net${this.encounter.iconPath}`;
-    }
+  setup(props) {
+    const icon = computed(() => `https://bungie.net${props.encounter.iconPath}`);
+
+    return { icon };
   }
 });
 </script>
