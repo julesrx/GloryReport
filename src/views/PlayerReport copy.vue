@@ -8,17 +8,15 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import axios from 'axios';
 
 import { bhttp, bqueue } from '@/api';
 import Encounter from '@/classes/Encounter';
 import EncounterItem from '@/components/EncounterItem.vue';
 import { requestCache } from '@/storage';
-import { defineComponent } from 'vue';
-import { PlatformErrorCodes } from 'bungie-api-ts/app';
 
-export default defineComponent({
+export default {
   name: 'PlayerReport',
   components: {
     EncounterItem
@@ -31,15 +29,15 @@ export default defineComponent({
 
       membershipType: null,
       membershipId: null,
-      profile: null as any,
-      characters: [] as any[],
-      encounters: [] as Encounter[],
+      profile: null,
+      characters: [],
+      encounters: [],
 
-      cancelToken: axios.CancelToken.source()
+      cancelToken: null
     };
   },
   computed: {
-    filteredEncounters(): Encounter[] {
+    filteredEncounters() {
       return this.encounters
         .slice()
         .filter(enc =>
@@ -62,7 +60,7 @@ export default defineComponent({
 
         if (this.membershipType === membershipType && this.membershipId === membershipId) return;
 
-        if (!this.profile) {
+        if (this.cancelToken) {
           this.cancelToken.cancel('Operation canceled by the user.');
         }
         this.getProfile(membershipType, membershipId);
@@ -70,7 +68,7 @@ export default defineComponent({
     }
   },
   methods: {
-    async getProfile(membershipType: any, membershipId: any) {
+    async getProfile(membershipType, membershipId) {
       try {
         this.membershipType = membershipType;
         this.membershipId = membershipId;
@@ -107,7 +105,7 @@ export default defineComponent({
       }
     },
 
-    async getActivities(character: any, page: number) {
+    async getActivities(character, page) {
       const mode = 5;
       const count = 250;
 
@@ -119,9 +117,10 @@ export default defineComponent({
         }
       );
 
-      if (data.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+      if (data.ErrorCode != 1665) {
+        // PlatformErrorCodes.DestinyPrivacyRestriction
         if (data.Response.activities && data.Response.activities.length) {
-          data.Response.activities.forEach((act: any) => {
+          data.Response.activities.forEach(act => {
             this.getPGCR(act.activityDetails.instanceId);
           });
 
@@ -130,7 +129,7 @@ export default defineComponent({
       }
     },
 
-    getPGCR(instanceId: string) {
+    getPGCR(instanceId) {
       const requestUrl = `Destiny2/Stats/PostGameCarnageReport/${instanceId}/`;
 
       requestCache.getItem(requestUrl).then(res => {
@@ -148,8 +147,8 @@ export default defineComponent({
       });
     },
 
-    pgcrCallback(pgcr: any) {
-      pgcr.entries.forEach((entry: any) => {
+    pgcrCallback(pgcr) {
+      pgcr.entries.forEach(entry => {
         const player = entry.player;
 
         if (
@@ -185,5 +184,5 @@ export default defineComponent({
       });
     }
   }
-});
+};
 </script>
