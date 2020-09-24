@@ -4,19 +4,26 @@
 
     <input type="text" v-model="search" />
     <p>{{ encounters.length }} players</p>
-    <EncounterItem v-for="enc in filteredEncounters" :key="enc.membershipId" :encounter="enc" />
+
+    <EncounterItem
+      v-for="enc in filteredEncounters"
+      :key="enc.membershipId"
+      :encounter="enc"
+      :selected="selectedEncounter === enc"
+      @click="selectedEncounter = enc"
+    />
   </div>
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue';
 import axios from 'axios';
+import { PlatformErrorCodes } from 'bungie-api-ts/app';
 
 import { bhttp, bqueue } from '@/api';
 import Encounter from '@/classes/Encounter';
 import EncounterItem from '@/components/EncounterItem.vue';
 import { requestCache } from '@/storage';
-import { defineComponent } from 'vue';
-import { PlatformErrorCodes } from 'bungie-api-ts/app';
 
 export default defineComponent({
   name: 'PlayerReport',
@@ -35,7 +42,9 @@ export default defineComponent({
       characters: [] as any[],
       encounters: [] as Encounter[],
 
-      cancelToken: axios.CancelToken.source()
+      cancelToken: axios.CancelToken.source(),
+
+      selectedEncounter: (null as unknown) as Encounter
     };
   },
   computed: {
@@ -67,7 +76,7 @@ export default defineComponent({
         }
         this.getProfile(membershipType, membershipId);
       }
-    }
+    }   
   },
   methods: {
     async getProfile(membershipType: any, membershipId: any) {
