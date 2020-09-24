@@ -20,6 +20,7 @@ import { defineComponent } from 'vue';
 import axios from 'axios';
 import { BungieMembershipType, PlatformErrorCodes, ServerResponse } from 'bungie-api-ts/app';
 import {
+  DestinyActivityHistoryResults,
   DestinyCharacterComponent,
   DestinyPostGameCarnageReportData,
   DestinyProfileComponent
@@ -133,12 +134,11 @@ export default defineComponent({
         }
       );
 
-      const res: ServerResponse<any> = data; // find correct data type for any
-
+      const res: ServerResponse<DestinyActivityHistoryResults> = data;
       if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
         if (res.Response.activities && res.Response.activities.length) {
-          res.Response.activities.forEach((act: any) => {
-            getPGCR(act.activityDetails.instanceId, this.pgcrCallback, this.cancelToken.token);
+          res.Response.activities.forEach(act => {
+            getPGCR(act.activityDetails.instanceId, this.onPgcrResult, this.cancelToken.token);
           });
 
           this.getActivities(character, (page += 1));
@@ -146,7 +146,7 @@ export default defineComponent({
       }
     },
 
-    pgcrCallback(pgcr: DestinyPostGameCarnageReportData) {
+    onPgcrResult(pgcr: DestinyPostGameCarnageReportData) {
       pgcr.entries.forEach(entry => {
         const player = entry.player;
 
