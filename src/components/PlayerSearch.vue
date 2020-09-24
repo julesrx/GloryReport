@@ -5,7 +5,10 @@
       v-model="search"
       placeholder="Guardian..."
       autofocus
-      class="border border-light text-lg bg-dark py-1 px-2 rounded shadow mb-5 block w-full"
+      :class="[
+        'border border-light bg-dark py-1 px-2 rounded shadow mb-5 block w-full',
+        small ? null : 'text-lg'
+      ]"
     />
 
     <div class="flex justify-center flex-wrap" v-if="!noresult && users.length">
@@ -17,6 +20,7 @@
           params: { membershipType: user.membershipType, membershipId: user.membershipId }
         }"
         class="flex items-center mx-2 mb-4"
+        @click.passive="users = []"
       >
         <img
           :src="`https://bungie.net${user.iconPath}`"
@@ -26,7 +30,7 @@
         <span class="whitespace-no-wrap">{{ user.displayName }}</span>
       </router-link>
     </div>
-    <p v-if="noresult">No player found</p>
+    <p v-if="noresult" class="text-center">No player found</p>
   </div>
 </template>
 
@@ -40,6 +44,12 @@ import { ServerResponse } from 'bungie-api-ts/app';
 
 export default defineComponent({
   name: 'PlayerSearch',
+  props: {
+    small: {
+      type: Boolean,
+      default: false
+    }
+  },
   setup() {
     const users = ref([] as UserInfoCard[]);
 

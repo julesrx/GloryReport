@@ -1,20 +1,27 @@
 <template>
-  <div id="global-alerts" v-if="alerts.length">
-    <div v-for="alert in alerts" :key="alert.AlertKey" v-html="alert.AlertHtml"></div>
+  <div
+    id="global-alerts"
+    class="max-w-2xl mx-auto mb-4 text-center bg-red-900 border-l-4 border-red-500"
+    v-if="alerts.length"
+  >
+    <div class="py-2" v-for="alert in alerts" :key="alert.AlertKey" v-html="alert.AlertHtml"></div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 import * as api from '@/api';
 
 export default defineComponent({
   name: 'BungieGlobalAlerts',
-  async setup() {
+  data() {
+    return {
+      alerts: []
+    };
+  },
+  async created() {
     const res = await api.bhttp.get('GlobalAlerts/');
-    const alerts = ref(res.data.Response);
-
-    return { alerts };
+    this.alerts = res.data.Response;
   }
 });
 </script>
