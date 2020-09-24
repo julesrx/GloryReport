@@ -1,38 +1,49 @@
 <template>
-  <p v-if="loading">loading pgcr...</p>
-  <a :href="dtr" target="_blank" v-if="pgcr">{{ pgcr.period }}</a>
+  <div class="activity-item">
+    <p v-if="loading">Loading activity...</p>
+
+    <template v-if="pgcr">
+      <DateDistance :date="pgcr.period" />
+      <a :href="dtr" target="_blank">link</a>
+    </template>
+  </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 import { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2/interfaces';
 
 import { getCachedPGCR } from '@/api';
+import DateDistance from '@/components/utils/DateDistance.vue';
 
 export default defineComponent({
   name: 'ActivityItem',
+  components: {
+    DateDistance
+  },
   props: {
     instanceId: {
       type: String,
       required: true
     }
   },
-  async setup(props) {
-    const loading = ref(true);
-    const pgcr = ref((null as unknown) as DestinyPostGameCarnageReportData);
-
+  data() {
+    return {
+      loading: true,
+      pgcr: null as DestinyPostGameCarnageReportData | null
+    };
+  },
+  async created() {
     try {
-      const res = await getCachedPGCR(props.instanceId);
-      console.log(res);
-
-      if (res !== null) pgcr.value = res; // not working
+      this.pgcr = await getCachedPGCR(this.instanceId);
     } finally {
-      loading.value = true;
+      this.loading = false;
     }
-
-    const dtr = computed(() => `https://destinytracker.com/destiny-2/pgcr/${props.instanceId}`);
-
-    return { loading, pgcr, dtr };
+  },
+  computed: {
+    dtr(): string {
+      return `https://destinytracker.com/destiny-2/pgcr/${this.instanceId}`;
+    }
   }
 });
 </script>

@@ -18,13 +18,16 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import axios from 'axios';
-import { PlatformErrorCodes } from 'bungie-api-ts/app';
+import { BungieMembershipType, PlatformErrorCodes, ServerResponse } from 'bungie-api-ts/app';
+import {
+  DestinyCharacterComponent,
+  DestinyPostGameCarnageReportData,
+  DestinyProfileComponent
+} from 'bungie-api-ts/destiny2/interfaces';
 
 import { bhttp, bqueue, getPGCR } from '@/api';
 import Encounter from '@/classes/Encounter';
 import EncounterItem from '@/components/EncounterItem.vue';
-import { requestCache } from '@/storage';
-import { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2/interfaces';
 
 export default defineComponent({
   name: 'PlayerReport',
@@ -37,15 +40,15 @@ export default defineComponent({
       error: null,
       search: '',
 
-      membershipType: null,
-      membershipId: null,
-      profile: null as any,
-      characters: [] as any[],
+      membershipType: null as BungieMembershipType | null,
+      membershipId: null as string | null,
+      profile: null as DestinyProfileComponent | null,
+      characters: [] as DestinyCharacterComponent[],
       encounters: [] as Encounter[],
 
       cancelToken: axios.CancelToken.source(),
 
-      selectedEncounter: (null as unknown) as Encounter
+      selectedEncounter: null as Encounter | null
     };
   },
   computed: {
@@ -68,8 +71,9 @@ export default defineComponent({
       deep: true,
       handler: function() {
         const membershipType = Number(this.$route.params['membershipType']);
-        const membershipId = this.$route.params['membershipId'];
+        const membershipId = this.$route.params['membershipId'] as string;
 
+        // comparing number and BungieMembershipType
         if (this.membershipType === membershipType && this.membershipId === membershipId) return;
 
         if (!this.profile) {
@@ -80,7 +84,7 @@ export default defineComponent({
     }
   },
   methods: {
-    async getProfile(membershipType: any, membershipId: any) {
+    async getProfile(membershipType: BungieMembershipType, membershipId: string) {
       try {
         this.membershipType = membershipType;
         this.membershipId = membershipId;
@@ -117,7 +121,7 @@ export default defineComponent({
       }
     },
 
-    async getActivities(character: any, page: number) {
+    async getActivities(character: DestinyCharacterComponent, page: number) {
       const mode = 5;
       const count = 250;
 
@@ -129,9 +133,11 @@ export default defineComponent({
         }
       );
 
-      if (data.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
-        if (data.Response.activities && data.Response.activities.length) {
-          data.Response.activities.forEach((act: any) => {
+      const res: ServerResponse<any> = data; // find correct data type for any
+
+      if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+        if (res.Response.activities && res.Response.activities.length) {
+          res.Response.activities.forEach((act: any) => {
             getPGCR(act.activityDetails.instanceId, this.pgcrCallback, this.cancelToken.token);
           });
 
@@ -141,10 +147,11 @@ export default defineComponent({
     },
 
     pgcrCallback(pgcr: DestinyPostGameCarnageReportData) {
-      pgcr.entries.forEach((entry: any) => {
+      pgcr.entries.forEach(entry => {
         const player = entry.player;
 
         if (
+          this.profile &&
           player.destinyUserInfo.displayName &&
           entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId
         ) {
@@ -178,4 +185,4 @@ export default defineComponent({
     }
   }
 });
-</script>
+</script> 
