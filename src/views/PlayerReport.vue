@@ -20,10 +20,11 @@ import { defineComponent } from 'vue';
 import axios from 'axios';
 import { PlatformErrorCodes } from 'bungie-api-ts/app';
 
-import { bhttp, bqueue } from '@/api';
+import { bhttp, bqueue, getPGCR } from '@/api';
 import Encounter from '@/classes/Encounter';
 import EncounterItem from '@/components/EncounterItem.vue';
 import { requestCache } from '@/storage';
+import { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2/interfaces';
 
 export default defineComponent({
   name: 'PlayerReport',
@@ -76,7 +77,7 @@ export default defineComponent({
         }
         this.getProfile(membershipType, membershipId);
       }
-    }   
+    }
   },
   methods: {
     async getProfile(membershipType: any, membershipId: any) {
@@ -131,7 +132,7 @@ export default defineComponent({
       if (data.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
         if (data.Response.activities && data.Response.activities.length) {
           data.Response.activities.forEach((act: any) => {
-            this.getPGCR(act.activityDetails.instanceId);
+            getPGCR(act.activityDetails.instanceId, this.pgcrCallback, this.cancelToken.token);
           });
 
           this.getActivities(character, (page += 1));
@@ -139,25 +140,7 @@ export default defineComponent({
       }
     },
 
-    getPGCR(instanceId: string) {
-      const requestUrl = `Destiny2/Stats/PostGameCarnageReport/${instanceId}/`;
-
-      requestCache.getItem(requestUrl).then(res => {
-        if (res) return this.pgcrCallback(res);
-        else
-          return bqueue.add(() =>
-            bhttp
-              .get(requestUrl, { cancelToken: this.cancelToken.token })
-              .then(res => res.data.Response)
-              .then(res => {
-                requestCache.setItem(requestUrl, res);
-                this.pgcrCallback(res);
-              })
-          );
-      });
-    },
-
-    pgcrCallback(pgcr: any) {
+    pgcrCallback(pgcr: DestinyPostGameCarnageReportData) {
       pgcr.entries.forEach((entry: any) => {
         const player = entry.player;
 

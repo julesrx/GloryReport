@@ -1,4 +1,5 @@
 <template>
+  <p v-if="loading">loading pgcr...</p>
   <a :href="dtr" target="_blank" v-if="pgcr">{{ pgcr.period }}</a>
 </template>
 
@@ -16,13 +17,22 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props) {
+  async setup(props) {
+    const loading = ref(true);
     const pgcr = ref((null as unknown) as DestinyPostGameCarnageReportData);
-    getCachedPGCR(props.instanceId).then(res => (pgcr.value = res));
+
+    try {
+      const res = await getCachedPGCR(props.instanceId);
+      console.log(res);
+
+      if (res !== null) pgcr.value = res; // not working
+    } finally {
+      loading.value = true;
+    }
 
     const dtr = computed(() => `https://destinytracker.com/destiny-2/pgcr/${props.instanceId}`);
 
-    return { pgcr, dtr };
+    return { loading, pgcr, dtr };
   }
 });
 </script>
