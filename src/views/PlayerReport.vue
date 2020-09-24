@@ -11,6 +11,7 @@
       :encounter="enc"
       :selected="selectedEncounter === enc"
       @click="selectedEncounter = enc"
+      v-on:deselect="deselectEncounter"
     />
   </div>
 </template>
@@ -85,7 +86,7 @@ export default defineComponent({
     }
   },
   methods: {
-    async getProfile(membershipType: BungieMembershipType, membershipId: string) {
+    async getProfile(membershipType: BungieMembershipType, membershipId: string): Promise<void> {
       try {
         this.membershipType = membershipType;
         this.membershipId = membershipId;
@@ -122,7 +123,7 @@ export default defineComponent({
       }
     },
 
-    async getActivities(character: DestinyCharacterComponent, page: number) {
+    async getActivities(character: DestinyCharacterComponent, page: number): Promise<void> {
       const mode = 5;
       const count = 250;
 
@@ -146,7 +147,7 @@ export default defineComponent({
       }
     },
 
-    onPgcrResult(pgcr: DestinyPostGameCarnageReportData) {
+    onPgcrResult(pgcr: DestinyPostGameCarnageReportData): void {
       pgcr.entries.forEach(entry => {
         const player = entry.player;
 
@@ -182,7 +183,11 @@ export default defineComponent({
           }
         }
       });
+    },
+
+    deselectEncounter(): void {
+      this.selectedEncounter = null;
     }
   }
 });
-</script> 
+</script>

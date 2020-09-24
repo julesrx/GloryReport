@@ -4,6 +4,8 @@
     <span>{{ encounter.displayName }} ({{ encounter.count }})</span>
 
     <template v-if="selected">
+      <button @click.stop="$emit('deselect')">Deselect</button>
+
       <ActivityItem
         v-for="instanceId in encounter.instanceIds"
         :key="instanceId"
