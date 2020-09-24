@@ -1,18 +1,32 @@
 <template>
-  <div id="player-search">
-    <input type="search" v-model="search" placeholder="Gamertag..." />
-    <p v-if="fetching">fetching...</p>
-    <ul v-if="users.length">
-      <li v-for="user in users" :key="user.membershipType + '-' + user.membershipId">
-        <router-link
-          :to="{
-            name: 'PlayerReport',
-            params: { membershipType: user.membershipType, membershipId: user.membershipId }
-          }"
-          >{{ user.displayName }}</router-link
-        >
-      </li>
-    </ul>
+  <div id="player-search" class="max-w-xs mx-auto">
+    <input
+      type="search"
+      v-model="search"
+      placeholder="Guardian..."
+      autofocus
+      class="border border-light text-lg bg-dark py-1 px-2 rounded shadow mb-5 block w-full"
+    />
+
+    <div class="flex justify-center flex-wrap" v-if="!noresult && users.length">
+      <router-link
+        v-for="user in users"
+        :key="user.membershipType + '-' + user.membershipId"
+        :to="{
+          name: 'PlayerReport',
+          params: { membershipType: user.membershipType, membershipId: user.membershipId }
+        }"
+        class="flex items-center mx-2 mb-4"
+      >
+        <img
+          :src="`https://bungie.net${user.iconPath}`"
+          :alt="user.displayName"
+          class="h-5 w-auto pr-1 pointer-events-none"
+        />
+        <span class="whitespace-no-wrap">{{ user.displayName }}</span>
+      </router-link>
+    </div>
+    <p v-if="noresult">No player found</p>
   </div>
 </template>
 
@@ -22,33 +36,43 @@ import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 import { debounce } from 'lodash';
 
 import { bhttp } from '@/api';
+import { ServerResponse } from 'bungie-api-ts/app';
 
 export default defineComponent({
   name: 'PlayerSearch',
   setup() {
-    const fetching = ref(false);
     const users = ref([] as UserInfoCard[]);
 
     const search = ref('');
+    const noresult = ref(false);
     const debouncedOnSearch = debounce(async () => {
       users.value = [];
+      noresult.value = false;
+      if (!search.value) return;
 
-      const { data } = await bhttp.get(
-        `Destiny2/SearchDestinyPlayer/-1/${encodeURIComponent(search.value.trim())}/`
-      );
+      try {
+        const { data } = await bhttp.get(
+          `Destiny2/SearchDestinyPlayer/-1/${encodeURIComponent(search.value.trim())}/`
+        );
 
-      fetching.value = false;
-      users.value = data.Response.filter(
-        (user: UserInfoCard, index: number, self: UserInfoCard[]) =>
-          index ===
-          self.findIndex(
-            t => t.membershipType === user.membershipType && t.membershipId === user.membershipId
-          )
-      );
+        const res: ServerResponse<UserInfoCard[]> = data;
+        if (res.Response.length) {
+          users.value = res.Response.filter(
+            (user, index, self) =>
+              index ===
+              self.findIndex(
+                t =>
+                  t.membershipType === user.membershipType && t.membershipId === user.membershipId
+              )
+          );
+        } else noresult.value = true;
+      } catch (ex) {
+        users.value = [];
+      }
     }, 500);
     watch(search, debouncedOnSearch);
 
-    return { users, search, fetching };
+    return { users, search, noresult };
   }
 });
 </script>

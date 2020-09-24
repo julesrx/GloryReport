@@ -1,8 +1,12 @@
 <template>
   <nav>
     <BungieGlobalAlerts />
+
+    <div class="flex flex-wrap justify-center items-end mt-8 mb-4">
+      <img src="@/assets/logo.png" alt="Glory.report" class="h-24" />
+      <h1 class="text-3xl"><span class="text-5xl font-semibold">Glory</span>.report</h1>
+    </div>
     <PlayerSearch />
-    <router-link to="/">Home</router-link>
   </nav>
 </template>
 
