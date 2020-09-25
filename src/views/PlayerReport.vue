@@ -21,42 +21,17 @@
         </thead>
 
         <tbody>
-          <tr
+          <EncounterRow
             v-for="(enc, i) in slicedEncounters"
             :key="enc.membershipId"
-            :class="selectedEncounter !== enc ? 'hover:bg-dark-600 cursor-pointer' : null"
-            @click="selectEncounter(enc)"
-          >
-            <td
-              :class="[
-                'text-center',
-                i < slicedEncounters.length - 1 ? cellBorder : null,
-                cellSpacing
-              ]"
-            >
-              {{ sortedEncounters.indexOf(enc) + 1 }}
-            </td>
-            <td :class="[i < slicedEncounters.length - 1 ? cellBorder : null, cellSpacing]">
-              <div class="flex items-center">
-                <img
-                  :src="`https://bungie.net${enc.iconPath}`"
-                  :alt="enc.displayName"
-                  height="48"
-                  width="48"
-                />
-                <span class="ml-2">{{ enc.displayName }}</span>
-              </div>
-            </td>
-            <td
-              :class="[
-                'text-right',
-                i < slicedEncounters.length - 1 ? cellBorder : null,
-                cellSpacing
-              ]"
-            >
-              {{ enc.count }}
-            </td>
-          </tr>
+            :encounter="enc"
+            :ranking="sortedEncounters.indexOf(enc) + 1"
+            :isSelected="selectedEncounter === enc"
+            :isLast="i === slicedEncounters.length - 1"
+            :cellBorder="cellBorder"
+            :cellSpacing="cellSpacing"
+            @select="selectEncounter(enc)"
+          />
         </tbody>
       </table>
     </template>
@@ -76,9 +51,13 @@ import {
 
 import { bhttp, bqueue, getPGCR } from '@/api';
 import Encounter from '@/classes/Encounter';
+import EncounterRow from '@/components/EncounterRow.vue';
 
 export default defineComponent({
   name: 'PlayerReport',
+  components: {
+    EncounterRow
+  },
   data() {
     return {
       loading: false,
