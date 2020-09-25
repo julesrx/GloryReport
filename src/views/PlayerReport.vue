@@ -2,17 +2,18 @@
   <div id="player-report">
     <p v-if="loading">Loading profile...</p>
     <template v-else>
-      <h2 class="text-3xl mb-4 font-bold">{{ profile.userInfo.displayName }}</h2>
+      <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
+      <p class="text-light-700">Found {{ encounters.length }} players</p>
 
-      <table class="table-fixed w-full">
-        <thead class="text-dark-300">
+      <table class="table-fixed w-full mt-4">
+        <thead class="text-light-800">
           <tr>
             <td :class="['w-16 text-center', cellBorder, cellSpacing]">#</td>
             <td :class="[cellBorder, cellSpacing]">
               <input
                 type="search"
                 v-model="search"
-                class="ml-2 bg-dark-500 focus:outline-none placeholder-dark-400"
+                class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900"
                 placeholder="Search in encounters..."
               />
             </td>
