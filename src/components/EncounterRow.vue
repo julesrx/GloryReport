@@ -1,5 +1,5 @@
 <template>
-  <tr :class="isSelected ? null : 'hover:bg-dark-600 cursor-pointer'" @click="$emit('select')">
+  <tr class="hover:bg-dark-600 cursor-pointer" @click="$emit('select')">
     <td :class="['text-center', showBorders && !isSelected ? cellBorder : null, cellSpacing]">
       {{ ranking }}
     </td>

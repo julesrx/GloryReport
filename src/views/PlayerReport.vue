@@ -13,7 +13,7 @@
               <input
                 type="search"
                 v-model="search"
-                class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900"
+                class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full"
                 placeholder="Search in encounters..."
               />
             </td>
@@ -31,7 +31,7 @@
             :showBorders="i < slicedEncounters.length - 1"
             :cellBorder="cellBorder"
             :cellSpacing="cellSpacing"
-            @select="selectEncounter(enc)"
+            @select="onSelect(enc)"
           />
         </tbody>
       </table>
@@ -216,8 +216,12 @@ export default defineComponent({
       });
     },
 
-    selectEncounter(enc: Encounter): void {
-      this.selectedEncounter = enc;
+    onSelect(enc: Encounter): void {
+      if (this.selectedEncounter === enc) {
+        this.deselectEncounter();
+      } else {
+        this.selectedEncounter = enc;
+      }
     },
     deselectEncounter(): void {
       this.selectedEncounter = null;
