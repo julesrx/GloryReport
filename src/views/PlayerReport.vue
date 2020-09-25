@@ -1,41 +1,59 @@
 <template>
   <div id="player-report">
-    <p class="text-center" v-if="loading">Loading profile...</p>
-    <div class="mx-auto max-w-md flex flex-col items-center mb-4" v-if="profile">
-      <h2 class="text-2xl mb-2">{{ profile.userInfo.displayName }}</h2>
-      <div class="flex">
-        <img
-          v-for="char in characters"
-          :key="char.characterId"
-          :src="`https://bungie.net${char.emblemPath}`"
-          :alt="`Character ${char.characterId}`"
-          class="w-10 h-10"
-        />
-      </div>
-    </div>
+    <p v-if="loading">Loading profile...</p>
+    <template v-else>
+      <h2 class="text-3xl mb-4 font-bold">{{ profile.userInfo.displayName }}</h2>
 
-    <div v-if="encounters.length">
-      <div class="max-w-md mx-auto flex flex-col items-center">
-        <p class="text-center">Total of {{ encounters.length }} players.</p>
-        <input
-          type="search"
-          v-model="search"
-          class="mx-auto bg-dark border border-light rounded p-1 mt-1"
-        />
-      </div>
+      <table class="table-fixed w-full">
+        <thead>
+          <tr>
+            <td :class="['w-16 text-dark-300 text-center', cellBorder, cellSpacing]">#</td>
+            <td :class="['text-dark-300', cellBorder, cellSpacing]">
+              {{ sortedEncounters.length }} players
+            </td>
+            <td :class="['w-32 text-dark-300 text-right', cellBorder, cellSpacing]">Matches</td>
+          </tr>
+        </thead>
 
-      <div class="max-w-lg mx-auto mt-4 space-y-2">
-        <EncounterItem
-          v-for="enc in filteredEncounters"
-          :key="enc.membershipId"
-          :encounter="enc"
-          :selected="selectedEncounter === enc"
-          @click="selectEncounter(enc)"
-          v-on:deselect="deselectEncounter"
-          :ranking="sortedEncounters.indexOf(enc) + 1"
-        />
-      </div>
-    </div>
+        <tbody class="">
+          <tr
+            v-for="(enc, i) in slicedEncounters"
+            :key="enc.membershipId"
+            class="hover:bg-dark-600 cursor-pointer"
+          >
+            <td
+              :class="[
+                'text-center',
+                i < slicedEncounters.length - 1 ? cellBorder : null,
+                cellSpacing
+              ]"
+            >
+              {{ sortedEncounters.indexOf(enc) + 1 }}
+            </td>
+            <td :class="[i < slicedEncounters.length - 1 ? cellBorder : null, cellSpacing]">
+              <div class="flex items-center">
+                <img
+                  :src="`https://bungie.net${enc.iconPath}`"
+                  :alt="enc.displayName"
+                  height="48"
+                  width="48"
+                />
+                <span class="ml-2">{{ enc.displayName }}</span>
+              </div>
+            </td>
+            <td
+              :class="[
+                'text-right',
+                i < slicedEncounters.length - 1 ? cellBorder : null,
+                cellSpacing
+              ]"
+            >
+              {{ enc.count }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
   </div>
 </template>
 
@@ -52,13 +70,9 @@ import {
 
 import { bhttp, bqueue, getPGCR } from '@/api';
 import Encounter from '@/classes/Encounter';
-import EncounterItem from '@/components/EncounterItem.vue';
 
 export default defineComponent({
   name: 'PlayerReport',
-  components: {
-    EncounterItem
-  },
   data() {
     return {
       loading: false,
@@ -81,13 +95,21 @@ export default defineComponent({
       return this.encounters.slice().sort((a, b) => (a.count > b.count ? -1 : 1));
     },
     filteredEncounters(): Encounter[] {
-      return this.sortedEncounters
-        .filter(enc =>
-          !this.search.length
-            ? enc
-            : enc.displayName.toLowerCase().includes(this.search.toLowerCase())
-        )
-        .slice(0, 50);
+      return this.sortedEncounters.filter(enc =>
+        !this.search.length
+          ? enc
+          : enc.displayName.toLowerCase().includes(this.search.toLowerCase())
+      );
+    },
+    slicedEncounters(): Encounter[] {
+      return this.filteredEncounters.slice(0, 50);
+    },
+
+    cellSpacing(): string {
+      return 'px-4 py-2';
+    },
+    cellBorder(): string {
+      return 'border-b border-dark-400';
     }
   },
   watch: {
