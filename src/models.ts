@@ -1,6 +1,6 @@
 import { BungieMembershipType } from 'bungie-api-ts/app';
 
-export default class Encounter {
+export class Encounter {
   membershipId: string;
   membershipType: BungieMembershipType;
   displayName: string;

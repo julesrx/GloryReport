@@ -32,7 +32,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import Encounter from '@/classes/Encounter';
+import { Encounter } from '@/models';
 import ActivityItem from '@/components/ActivityItem.vue';
 
 export default defineComponent({

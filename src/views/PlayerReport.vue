@@ -51,7 +51,7 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 
 import { bhttp, bqueue, getPGCR } from '@/api';
-import Encounter from '@/classes/Encounter';
+import { Encounter } from '@/models';
 import EncounterRow from '@/components/EncounterRow.vue';
 
 export default defineComponent({
