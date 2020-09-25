@@ -1,11 +1,12 @@
 <template>
   <div class="activity-item">
     <p v-if="loading">Loading activity...</p>
-
-    <template v-if="pgcr">
+    <div class="flex" v-if="pgcr">
       <DateDistance :date="pgcr.period" />
-      <a :href="dtr" target="_blank">link</a>
-    </template>
+
+      <div class="flex-1"></div>
+      <a :href="dtr" target="_blank" class="text-sm">DestinyTracker</a>
+    </div>
   </div>
 </template>
 

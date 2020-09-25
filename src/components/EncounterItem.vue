@@ -1,17 +1,26 @@
 <template>
   <div class="encounter-item">
-    <img :src="icon" :alt="encounter.displayName" height="48" width="48" />
-    <span>{{ encounter.displayName }} ({{ encounter.count }})</span>
+    <div :class="['flex', selected ? null : 'cursor-pointer']">
+      <span class="text-lg text-right w-16 mr-2">#{{ ranking }}</span>
+      <img :src="icon" :alt="encounter.displayName" height="48" width="48" />
+      <div class="ml-2">
+        <div>{{ encounter.displayName }}</div>
+        <div class="mt-1 text-sm opacity-75">{{ encounter.count }} matches</div>
+      </div>
 
-    <template v-if="selected">
-      <button @click.stop="$emit('deselect')">Deselect</button>
+      <template v-if="selected">
+        <div class="flex-1"></div>
+        <button @click.stop="$emit('deselect')">&times;</button>
+      </template>
+    </div>
 
+    <div class="ml-20 mt-2" v-if="selected">
       <ActivityItem
         v-for="instanceId in encounter.instanceIds"
         :key="instanceId"
         :instanceId="instanceId"
       />
-    </template>
+    </div>
   </div>
 </template>
 
@@ -31,6 +40,7 @@ export default defineComponent({
       type: Encounter,
       required: true
     },
+    ranking: Number,
     selected: Boolean
   },
   computed: {

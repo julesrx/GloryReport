@@ -1,18 +1,41 @@
 <template>
   <div id="player-report">
-    <p v-if="loading">Loading profile...</p>
+    <p class="text-center" v-if="loading">Loading profile...</p>
+    <div class="mx-auto max-w-md flex flex-col items-center mb-4" v-if="profile">
+      <h2 class="text-2xl mb-2">{{ profile.userInfo.displayName }}</h2>
+      <div class="flex">
+        <img
+          v-for="char in characters"
+          :key="char.characterId"
+          :src="`https://bungie.net${char.emblemPath}`"
+          :alt="`Character ${char.characterId}`"
+          class="w-10 h-10"
+        />
+      </div>
+    </div>
 
-    <input type="text" v-model="search" />
-    <p>{{ encounters.length }} players</p>
+    <div v-if="encounters.length">
+      <div class="max-w-md mx-auto flex flex-col items-center">
+        <p class="text-center">Total of {{ encounters.length }} players.</p>
+        <input
+          type="search"
+          v-model="search"
+          class="mx-auto bg-dark border border-light rounded p-1 mt-1"
+        />
+      </div>
 
-    <EncounterItem
-      v-for="enc in filteredEncounters"
-      :key="enc.membershipId"
-      :encounter="enc"
-      :selected="selectedEncounter === enc"
-      @click="selectedEncounter = enc"
-      v-on:deselect="deselectEncounter"
-    />
+      <div class="max-w-lg mx-auto mt-4 space-y-2">
+        <EncounterItem
+          v-for="enc in filteredEncounters"
+          :key="enc.membershipId"
+          :encounter="enc"
+          :selected="selectedEncounter === enc"
+          @click="selectEncounter(enc)"
+          v-on:deselect="deselectEncounter"
+          :ranking="sortedEncounters.indexOf(enc) + 1"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -54,16 +77,16 @@ export default defineComponent({
     };
   },
   computed: {
+    sortedEncounters(): Encounter[] {
+      return this.encounters.slice().sort((a, b) => (a.count > b.count ? -1 : 1));
+    },
     filteredEncounters(): Encounter[] {
-      return this.encounters
-        .slice()
+      return this.sortedEncounters
         .filter(enc =>
           !this.search.length
             ? enc
             : enc.displayName.toLowerCase().includes(this.search.toLowerCase())
         )
-        .sort((a, b) => a.count - b.count)
-        .reverse()
         .slice(0, 50);
     }
   },
@@ -185,6 +208,9 @@ export default defineComponent({
       });
     },
 
+    selectEncounter(enc: Encounter): void {
+      this.selectedEncounter = enc;
+    },
     deselectEncounter(): void {
       this.selectedEncounter = null;
     }
