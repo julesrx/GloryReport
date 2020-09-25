@@ -16,11 +16,15 @@
 
   <tr v-if="isSelected">
     <td colspan="3" :class="['px-10 py-2', showBorders ? cellBorder : null]">
-      <ActivityItem
-        v-for="instanceId in encounter.instanceIds"
-        :key="instanceId"
-        :instanceId="instanceId"
-      />
+      <p>{{ encounter.instanceIds.length }} activities</p>
+      <div class="divide-y divide-dark-400">
+        <ActivityItem
+          v-for="instanceId in encounter.instanceIds"
+          :key="instanceId"
+          :instanceId="instanceId"
+          class="max-w-4xl mx-auto"
+        />
+      </div>
     </td>
   </tr>
 </template>
