@@ -5,21 +5,27 @@
       <h2 class="text-3xl mb-4 font-bold">{{ profile.userInfo.displayName }}</h2>
 
       <table class="table-fixed w-full">
-        <thead>
+        <thead class="text-dark-300">
           <tr>
-            <td :class="['w-16 text-dark-300 text-center', cellBorder, cellSpacing]">#</td>
-            <td :class="['text-dark-300', cellBorder, cellSpacing]">
-              {{ sortedEncounters.length }} players
+            <td :class="['w-16 text-center', cellBorder, cellSpacing]">#</td>
+            <td :class="[cellBorder, cellSpacing]">
+              <input
+                type="search"
+                v-model="search"
+                class="ml-2 bg-dark-500 focus:outline-none placeholder-dark-400"
+                placeholder="Search in encounters..."
+              />
             </td>
-            <td :class="['w-32 text-dark-300 text-right', cellBorder, cellSpacing]">Matches</td>
+            <td :class="['w-32 text-right', cellBorder, cellSpacing]">Matches</td>
           </tr>
         </thead>
 
-        <tbody class="">
+        <tbody>
           <tr
             v-for="(enc, i) in slicedEncounters"
             :key="enc.membershipId"
-            class="hover:bg-dark-600 cursor-pointer"
+            :class="selectedEncounter !== enc ? 'hover:bg-dark-600 cursor-pointer' : null"
+            @click="selectEncounter(enc)"
           >
             <td
               :class="[
