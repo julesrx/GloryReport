@@ -27,7 +27,7 @@
             :encounter="enc"
             :ranking="sortedEncounters.indexOf(enc) + 1"
             :isSelected="selectedEncounter === enc"
-            :isLast="i === slicedEncounters.length - 1"
+            :showBorders="i < slicedEncounters.length - 1"
             :cellBorder="cellBorder"
             :cellSpacing="cellSpacing"
             @select="selectEncounter(enc)"
