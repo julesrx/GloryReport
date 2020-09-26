@@ -61,7 +61,6 @@ import EncounterRow from '@/components/EncounterRow.vue';
 import EncountersStore from '@/stores/encounters-store';
 
 export default defineComponent({
-  name: 'PlayerReport',
   components: {
     EncounterRow
   },

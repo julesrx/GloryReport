@@ -5,8 +5,8 @@ import PlayerReport from '../views/PlayerReport.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
     name: 'Home',
+    path: '/',
     component: Home
   },
   {

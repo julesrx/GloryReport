@@ -36,7 +36,6 @@ import { Encounter } from '@/models';
 import ActivityItem from '@/components/ActivityItem.vue';
 
 export default defineComponent({
-  name: 'EncounterRow',
   components: {
     ActivityItem
   },

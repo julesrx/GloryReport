@@ -43,7 +43,6 @@ import { bhttp } from '@/api';
 import { ServerResponse } from 'bungie-api-ts/app';
 
 export default defineComponent({
-  name: 'PlayerSearch',
   props: {
     small: {
       type: Boolean,

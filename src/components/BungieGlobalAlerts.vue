@@ -13,7 +13,6 @@ import { defineComponent } from 'vue';
 import * as api from '@/api';
 
 export default defineComponent({
-  name: 'BungieGlobalAlerts',
   data() {
     return {
       alerts: []

@@ -39,7 +39,6 @@ import DateDistance from '@/components/utils/DateDistance.vue';
 import StatItem from '@/components/StatItem.vue';
 
 export default defineComponent({
-  name: 'ActivityItem',
   components: {
     DateDistance,
     StatItem

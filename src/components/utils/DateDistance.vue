@@ -7,7 +7,6 @@ import { defineComponent, ref } from 'vue';
 import { formatDistanceToNow, format } from 'date-fns';
 
 export default defineComponent({
-  name: 'DateDistance',
   props: {
     date: {
       type: String,

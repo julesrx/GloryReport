@@ -9,7 +9,6 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'StatItem',
   props: {
     title: String,
     value: String

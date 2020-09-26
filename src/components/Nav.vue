@@ -21,7 +21,6 @@ import PlayerSearch from '@/components/PlayerSearch.vue';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'Nav',
   components: {
     BungieGlobalAlerts,
     PlayerSearch
