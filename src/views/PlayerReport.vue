@@ -31,7 +31,7 @@
             :showBorders="i < slicedEncounters.length - 1"
             :cellBorder="cellBorder"
             :cellSpacing="cellSpacing"
-            @select="onSelect(enc)"
+            @select="selectEncounter(enc)"
           />
         </tbody>
       </table>
@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import axios from 'axios';
 import { BungieMembershipType, PlatformErrorCodes, ServerResponse } from 'bungie-api-ts/app';
 import {
@@ -59,53 +59,69 @@ import {
 import { Encounter } from '@/models';
 import EncounterRow from '@/components/EncounterRow.vue';
 import EncountersStore from '@/stores/encounters-store';
+import useSelectEncounter from '@/composables/useSelectEncounter';
 
 export default defineComponent({
   components: {
     EncounterRow
   },
-  data() {
-    return {
-      loading: false,
-      error: null,
-      search: '',
+  setup() {
+    const cancelToken = ref(axios.CancelToken.source());
+    const encountersState = ref(EncountersStore.state);
 
-      membershipType: null as BungieMembershipType | null,
-      membershipId: null as string | null,
-      profile: null as DestinyProfileComponent | null,
-      characters: [] as DestinyCharacterComponent[],
+    const loading = ref(false);
 
-      encountersState: EncountersStore.state,
+    const selectedEncounter = ref(null as Encounter | null);
+    const { selectEncounter } = useSelectEncounter(selectedEncounter);
 
-      cancelToken: axios.CancelToken.source(),
+    const membershipType = ref(null as BungieMembershipType | null);
+    const membershipId = ref(null as string | null);
+    const profile = ref(null as DestinyProfileComponent | null);
+    const characters = ref([] as DestinyCharacterComponent[]);
 
-      selectedEncounter: null as Encounter | null
-    };
-  },
-  computed: {
-    sortedEncounters(): Encounter[] {
-      const encounters = this.encountersState.encounters.slice() as Encounter[];
+    const sortedEncounters = computed(() => {
+      const encounters = encountersState.value.encounters.slice() as Encounter[];
       encounters.sort((a, b) => (a.count > b.count ? -1 : 1));
 
       return encounters;
-    },
-    filteredEncounters(): Encounter[] {
-      return this.sortedEncounters.filter(enc =>
-        !this.search.length
-          ? enc
-          : enc.displayName.toLowerCase().includes(this.search.toLowerCase())
-      );
-    },
-    slicedEncounters(): Encounter[] {
-      return this.filteredEncounters.slice(0, 50);
-    },
+    });
 
-    cellSpacing(): string {
-      return 'px-4 py-2';
-    },
-    cellBorder(): string {
-      return 'border-b border-dark-400';
-    }
+    const search = ref('');
+    const filteredEncounters = computed(() =>
+      sortedEncounters.value.filter(enc =>
+        !search.value.length
+          ? enc
+          : enc.displayName.toLowerCase().includes(search.value.toLowerCase())
+      )
+    );
+    const slicedEncounters = computed(() => filteredEncounters.value.slice(0, 50));
+
+    const cellSpacing = 'px-4 py-2';
+    const cellBorder = 'border-b border-dark-400';
+
+    return {
+      cancelToken,
+      encountersState,
+
+      loading,
+
+      selectedEncounter,
+      selectEncounter,
+
+      membershipType,
+      membershipId,
+      profile,
+      characters,
+
+      sortedEncounters,
+
+      search,
+      filteredEncounters,
+      slicedEncounters,
+
+      cellSpacing,
+      cellBorder
+    };
   },
   watch: {
     $route: {
@@ -200,17 +216,6 @@ export default defineComponent({
           EncountersStore.addEncounter(pgcr.activityDetails.instanceId, player);
         }
       });
-    },
-
-    onSelect(enc: Encounter): void {
-      if (this.selectedEncounter === enc) {
-        this.deselectEncounter();
-      } else {
-        this.selectedEncounter = enc;
-      }
-    },
-    deselectEncounter(): void {
-      this.selectedEncounter = null;
     }
   }
 });
