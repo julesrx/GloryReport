@@ -5,7 +5,7 @@
     </td>
     <td :class="[showBorders && !isSelected ? cellBorder : null, cellSpacing]">
       <div class="flex items-center">
-        <img :src="icon" :alt="encounter.displayName" height="48" width="48" />
+        <img :src="icon" :alt="encounter.displayName" height="48" width="48" loading="lazy" />
         <span class="ml-2">{{ encounter.displayName }}</span>
       </div>
     </td>
