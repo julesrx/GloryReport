@@ -83,12 +83,12 @@ export default defineComponent({
       selectedEncounter: null as Encounter | null
     };
   },
-  created() {
-    console.log(this.encountersState.encounters);
-  },
   computed: {
     sortedEncounters(): Encounter[] {
-      return EncountersStore.sortedEncounters.value;
+      const encounters = this.encountersState.encounters.slice() as Encounter[];
+      encounters.sort((a, b) => (a.count > b.count ? -1 : 1));
+
+      return encounters;
     },
     filteredEncounters(): Encounter[] {
       return this.sortedEncounters.filter(enc =>
