@@ -3,7 +3,7 @@
     <p v-if="loading">Loading profile...</p>
     <template v-else>
       <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
-      <p class="text-light-700">Found {{ encounters.length }} players</p>
+      <p class="text-light-700">Found {{ encountersState.encounters.length }} players</p>
 
       <table class="table-fixed w-full mt-4">
         <thead class="text-light-800">
@@ -14,7 +14,7 @@
                 type="search"
                 v-model="search"
                 class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full"
-                placeholder="Search in encounters..."
+                placeholder="Search..."
               />
             </td>
             <td :class="['w-32 text-right', cellBorder, cellSpacing]">Matches</td>
@@ -47,12 +47,18 @@ import {
   DestinyActivityHistoryResults,
   DestinyCharacterComponent,
   DestinyPostGameCarnageReportData,
-  DestinyProfileComponent
+  DestinyProfileComponent,
+  DestinyProfileResponse
 } from 'bungie-api-ts/destiny2/interfaces';
 
 import { bhttp, bqueue, getPGCR } from '@/api';
+import {
+  getDestinyCharacterComponents,
+  getDestinyProfileComponent
+} from '@/helpers/destiny-profile-response';
 import { Encounter } from '@/models';
 import EncounterRow from '@/components/EncounterRow.vue';
+import EncountersStore from '@/stores/encounters-store';
 
 export default defineComponent({
   name: 'PlayerReport',
@@ -69,16 +75,20 @@ export default defineComponent({
       membershipId: null as string | null,
       profile: null as DestinyProfileComponent | null,
       characters: [] as DestinyCharacterComponent[],
-      encounters: [] as Encounter[],
+
+      encountersState: EncountersStore.state,
 
       cancelToken: axios.CancelToken.source(),
 
       selectedEncounter: null as Encounter | null
     };
   },
+  created() {
+    console.log(this.encountersState.encounters);
+  },
   computed: {
     sortedEncounters(): Encounter[] {
-      return this.encounters.slice().sort((a, b) => (a.count > b.count ? -1 : 1));
+      return EncountersStore.sortedEncounters.value;
     },
     filteredEncounters(): Encounter[] {
       return this.sortedEncounters.filter(enc =>
@@ -101,7 +111,9 @@ export default defineComponent({
   watch: {
     $route: {
       immediate: true,
-      deep: true,
+      // deep: true,
+      // https://github.com/vuejs/vue-next/issues/2027
+      // warn: Avoid app logic that relies on enumerating keys on a component instance
       handler: function() {
         const membershipType = Number(this.$route.params['membershipType']);
         const membershipId = this.$route.params['membershipId'] as string;
@@ -129,7 +141,7 @@ export default defineComponent({
 
         this.profile = null;
         this.characters = [];
-        this.encounters = [];
+        EncountersStore.clearEncounters();
 
         const { data } = await bhttp.get(
           `Destiny2/${this.membershipType}/Profile/${this.membershipId}/`,
@@ -140,11 +152,10 @@ export default defineComponent({
         );
 
         if (!data.Response) throw new Error('Profile not found');
+        const res: DestinyProfileResponse = data.Response;
 
-        this.profile = data.Response.profile.data;
-        this.characters = Object.keys(data.Response.characters.data)
-          .map(key => data.Response.characters.data[key])
-          .sort((a, b) => (a.dateLastPlayed < b.dateLastPlayed ? 1 : -1));
+        this.profile = getDestinyProfileComponent(res);
+        this.characters = getDestinyCharacterComponents(res);
 
         this.characters.forEach(c => {
           this.getActivities(c, 0);
@@ -187,31 +198,7 @@ export default defineComponent({
           player.destinyUserInfo.displayName &&
           entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId
         ) {
-          const enc = this.encounters.find(e => {
-            return e.membershipId === player.destinyUserInfo.membershipId;
-          });
-
-          if (enc != null && enc.count) {
-            enc.count++;
-            enc.instanceIds.push(pgcr.activityDetails.instanceId);
-
-            if (!enc.displayName && player.destinyUserInfo.displayName) {
-              enc.displayName = player.destinyUserInfo.displayName;
-            }
-            if (!enc.iconPath && player.destinyUserInfo.iconPath) {
-              enc.iconPath = player.destinyUserInfo.iconPath;
-            }
-          } else {
-            this.encounters.push(
-              new Encounter(
-                player.destinyUserInfo.membershipId,
-                player.destinyUserInfo.membershipType,
-                player.destinyUserInfo.displayName,
-                player.destinyUserInfo.iconPath,
-                pgcr.activityDetails.instanceId
-              )
-            );
-          }
+          EncountersStore.addEncounter(pgcr.activityDetails.instanceId, player);
         }
       });
     },
