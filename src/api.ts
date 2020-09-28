@@ -11,7 +11,7 @@ export const bhttp = axios.create({
 
 export const bqueue = new PQueue({
   intervalCap: 20,
-  interval: 1000
+  interval: 2500
 });
 
 function getPGCRrequestUrl(instanceId: string): string {
