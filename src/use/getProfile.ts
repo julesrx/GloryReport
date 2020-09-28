@@ -47,6 +47,12 @@ export default function getProfile() {
 
       profile.value = getDestinyProfileComponent(res);
       characters.value = getDestinyCharacterComponents(res);
+    } catch (thrown) {
+      if (axios.isCancel(thrown)) {
+        console.log('profile fetch canceled: ', thrown.message);
+      } else {
+        console.error(thrown);
+      }
     } finally {
       loadingProfile.value = false;
     }

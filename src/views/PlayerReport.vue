@@ -40,7 +40,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, watch, watchEffect } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
+import axios from 'axios';
 import { BungieMembershipType, PlatformErrorCodes, ServerResponse } from 'bungie-api-ts/app';
 import {
   DestinyActivityHistoryResults,
@@ -54,7 +55,6 @@ import EncounterRow from '@/components/EncounterRow.vue';
 import EncountersStore from '@/stores/encounters-store';
 import useSelectEncounter from '@/use/selectEncounter';
 import useGetProfile from '@/use/getProfile';
-import { RouteLocationNormalizedLoaded, useRoute } from 'vue-router';
 
 export default defineComponent({
   components: {
@@ -89,22 +89,30 @@ export default defineComponent({
       const mode = 5;
       const count = 250;
 
-      const { data } = await bhttp.get(
-        `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
-        {
-          cancelToken: cancelToken.value.token,
-          params: { count: count, mode: mode, page: page }
+      try {
+        const { data } = await bhttp.get(
+          `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
+          {
+            cancelToken: cancelToken.value.token,
+            params: { count: count, mode: mode, page: page }
+          }
+        );
+
+        const res: ServerResponse<DestinyActivityHistoryResults> = data;
+        if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+          if (res.Response.activities && res.Response.activities.length) {
+            res.Response.activities.forEach(act => {
+              getPGCR(act.activityDetails.instanceId, onPgcrResult, cancelToken.value.token);
+            });
+
+            getActivities(character, (page += 1));
+          }
         }
-      );
-
-      const res: ServerResponse<DestinyActivityHistoryResults> = data;
-      if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
-        if (res.Response.activities && res.Response.activities.length) {
-          res.Response.activities.forEach(act => {
-            getPGCR(act.activityDetails.instanceId, onPgcrResult, cancelToken.value.token);
-          });
-
-          getActivities(character, (page += 1));
+      } catch (thrown) {
+        if (axios.isCancel(thrown)) {
+          console.log('activities canceled: ', thrown.message);
+        } else {
+          console.error(thrown);
         }
       }
     };
@@ -137,7 +145,7 @@ export default defineComponent({
     const cellBorder = 'border-b border-dark-400';
 
     return {
-      cancelToken,
+      cancelToken, // delete
       encountersState,
 
       loadingProfile,
@@ -177,6 +185,8 @@ export default defineComponent({
               this.profile.userInfo.membershipId !== membershipId))
         ) {
           if (membershipType && membershipId) {
+            this.cancelToken.cancel('Cancelled by new profile fetch');
+
             this.getProfile(membershipType, membershipId, true).then(() => {
               this.characters.forEach(c => {
                 this.getActivities(c, 0);

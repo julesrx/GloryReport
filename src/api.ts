@@ -46,6 +46,13 @@ export function getPGCR(
             requestCache.setItem(requestUrl, res);
             callback(res);
           })
+          .catch(thrown => {
+            if (axios.isCancel(thrown)) {
+              console.log('pgcr canceled', thrown.message);
+            } else {
+              console.error(thrown);
+            }
+          })
       );
     }
   });
