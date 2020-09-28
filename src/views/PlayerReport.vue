@@ -1,7 +1,7 @@
 <template>
   <div id="player-report">
-    <p v-if="loading">Loading profile...</p>
-    <template v-else>
+    <p v-if="loadingProfile">Loading profile...</p>
+    <template v-if="!loadingProfile && profile">
       <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
       <p class="text-light-700">Found {{ encountersState.encounters.length }} players</p>
 
@@ -40,45 +40,99 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
-import axios from 'axios';
+import { computed, defineComponent, onMounted, ref } from 'vue';
 import { BungieMembershipType, PlatformErrorCodes, ServerResponse } from 'bungie-api-ts/app';
 import {
   DestinyActivityHistoryResults,
   DestinyCharacterComponent,
-  DestinyPostGameCarnageReportData,
-  DestinyProfileComponent,
-  DestinyProfileResponse
+  DestinyPostGameCarnageReportData
 } from 'bungie-api-ts/destiny2/interfaces';
 
-import { bhttp, bqueue, getPGCR } from '@/api';
-import {
-  getDestinyCharacterComponents,
-  getDestinyProfileComponent
-} from '@/helpers/destiny-profile-response';
+import { bhttp, getPGCR } from '@/api';
 import { Encounter } from '@/models';
 import EncounterRow from '@/components/EncounterRow.vue';
 import EncountersStore from '@/stores/encounters-store';
-import useSelectEncounter from '@/composables/useSelectEncounter';
+import useSelectEncounter from '@/use/selectEncounter';
+import useGetProfile from '@/use/getProfile';
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
   components: {
     EncounterRow
   },
   setup() {
-    const cancelToken = ref(axios.CancelToken.source());
+    // state
     const encountersState = ref(EncountersStore.state);
 
-    const loading = ref(false);
+    // profile fetching
+    const { getProfile, profile, characters, loadingProfile, cancelToken } = useGetProfile();
 
-    const selectedEncounter = ref(null as Encounter | null);
-    const { selectEncounter } = useSelectEncounter(selectedEncounter);
+    // Get PGCRs
+    const onPgcrResult = (pgcr: DestinyPostGameCarnageReportData): void => {
+      pgcr.entries.forEach(entry => {
+        const player = entry.player;
 
-    const membershipType = ref(null as BungieMembershipType | null);
-    const membershipId = ref(null as string | null);
-    const profile = ref(null as DestinyProfileComponent | null);
-    const characters = ref([] as DestinyCharacterComponent[]);
+        if (
+          profile.value &&
+          player.destinyUserInfo.displayName &&
+          entry.player.destinyUserInfo.membershipId !== profile.value.userInfo.membershipId
+        ) {
+          EncountersStore.addEncounter(pgcr.activityDetails.instanceId, player);
+        }
+      });
+    };
 
+    const getActivities = async (
+      character: DestinyCharacterComponent,
+      page: number
+    ): Promise<void> => {
+      const mode = 5;
+      const count = 250;
+
+      const { data } = await bhttp.get(
+        `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
+        {
+          cancelToken: cancelToken.value.token,
+          params: { count: count, mode: mode, page: page }
+        }
+      );
+
+      const res: ServerResponse<DestinyActivityHistoryResults> = data;
+      if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
+        if (res.Response.activities && res.Response.activities.length) {
+          res.Response.activities.forEach(act => {
+            getPGCR(act.activityDetails.instanceId, onPgcrResult, cancelToken.value.token);
+          });
+
+          getActivities(character, (page += 1));
+        }
+      }
+    };
+
+    // on component access
+    onMounted(async () => {
+      const route = useRoute();
+
+      const membershipType = (route.params['membershipType'] as unknown) as BungieMembershipType;
+      const membershipId = route.params['membershipId'] as string;
+
+      if (
+        !profile.value ||
+        (profile &&
+          (profile.value.userInfo.membershipType !== membershipType ||
+            profile.value.userInfo.membershipId !== membershipId))
+      ) {
+        if (membershipType && membershipId) {
+          await getProfile(membershipType, membershipId, true);
+
+          characters.value.forEach(c => {
+            getActivities(c, 0);
+          });
+        }
+      }
+    });
+
+    // sorting
     const sortedEncounters = computed(() => {
       const encounters = encountersState.value.encounters.slice() as Encounter[];
       encounters.sort((a, b) => (a.count > b.count ? -1 : 1));
@@ -86,6 +140,7 @@ export default defineComponent({
       return encounters;
     });
 
+    // filtering
     const search = ref('');
     const filteredEncounters = computed(() =>
       sortedEncounters.value.filter(enc =>
@@ -96,6 +151,11 @@ export default defineComponent({
     );
     const slicedEncounters = computed(() => filteredEncounters.value.slice(0, 50));
 
+    // selecting encounters
+    const selectedEncounter = ref(null as Encounter | null);
+    const { selectEncounter } = useSelectEncounter(selectedEncounter);
+
+    // styling
     const cellSpacing = 'px-4 py-2';
     const cellBorder = 'border-b border-dark-400';
 
@@ -103,15 +163,8 @@ export default defineComponent({
       cancelToken,
       encountersState,
 
-      loading,
-
-      selectedEncounter,
-      selectEncounter,
-
-      membershipType,
-      membershipId,
+      loadingProfile,
       profile,
-      characters,
 
       sortedEncounters,
 
@@ -119,104 +172,12 @@ export default defineComponent({
       filteredEncounters,
       slicedEncounters,
 
+      selectedEncounter,
+      selectEncounter,
+
       cellSpacing,
       cellBorder
     };
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      // deep: true,
-      // https://github.com/vuejs/vue-next/issues/2027
-      // warn: Avoid app logic that relies on enumerating keys on a component instance
-      handler: function() {
-        const membershipType = Number(this.$route.params['membershipType']);
-        const membershipId = this.$route.params['membershipId'] as string;
-
-        // comparing number and BungieMembershipType
-        if (this.membershipType === membershipType && this.membershipId === membershipId) return;
-
-        if (!this.profile) {
-          this.cancelToken.cancel('Operation canceled by the user.');
-        }
-        this.getProfile(membershipType, membershipId);
-      }
-    }
-  },
-  methods: {
-    async getProfile(membershipType: BungieMembershipType, membershipId: string): Promise<void> {
-      try {
-        this.membershipType = membershipType;
-        this.membershipId = membershipId;
-
-        this.cancelToken = axios.CancelToken.source();
-        bqueue.clear();
-
-        this.loading = true;
-
-        this.profile = null;
-        this.characters = [];
-        EncountersStore.clearEncounters();
-
-        const { data } = await bhttp.get(
-          `Destiny2/${this.membershipType}/Profile/${this.membershipId}/`,
-          {
-            cancelToken: this.cancelToken.token,
-            params: { components: '100,200' }
-          }
-        );
-
-        if (!data.Response) throw new Error('Profile not found');
-        const res: DestinyProfileResponse = data.Response;
-
-        this.profile = getDestinyProfileComponent(res);
-        this.characters = getDestinyCharacterComponents(res);
-
-        this.characters.forEach(c => {
-          this.getActivities(c, 0);
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async getActivities(character: DestinyCharacterComponent, page: number): Promise<void> {
-      const mode = 5;
-      const count = 250;
-
-      const { data } = await bhttp.get(
-        `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
-        {
-          cancelToken: this.cancelToken.token,
-          params: { count: count, mode: mode, page: page }
-        }
-      );
-
-      const res: ServerResponse<DestinyActivityHistoryResults> = data;
-      if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
-        if (res.Response.activities && res.Response.activities.length) {
-          res.Response.activities.forEach(act => {
-            getPGCR(act.activityDetails.instanceId, this.onPgcrResult, this.cancelToken.token);
-          });
-
-          this.getActivities(character, (page += 1));
-        }
-      }
-    },
-
-    onPgcrResult(pgcr: DestinyPostGameCarnageReportData): void {
-      pgcr.entries.forEach(entry => {
-        const player = entry.player;
-
-        if (
-          this.profile &&
-          player.destinyUserInfo.displayName &&
-          entry.player.destinyUserInfo.membershipId !== this.profile.userInfo.membershipId
-        ) {
-          EncountersStore.addEncounter(pgcr.activityDetails.instanceId, player);
-        }
-      });
-    }
   }
 });
 </script>
