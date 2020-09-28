@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref, watch, watchEffect } from 'vue';
 import { BungieMembershipType, PlatformErrorCodes, ServerResponse } from 'bungie-api-ts/app';
 import {
   DestinyActivityHistoryResults,
@@ -54,7 +54,7 @@ import EncounterRow from '@/components/EncounterRow.vue';
 import EncountersStore from '@/stores/encounters-store';
 import useSelectEncounter from '@/use/selectEncounter';
 import useGetProfile from '@/use/getProfile';
-import { useRoute } from 'vue-router';
+import { RouteLocationNormalizedLoaded, useRoute } from 'vue-router';
 
 export default defineComponent({
   components: {
@@ -109,29 +109,6 @@ export default defineComponent({
       }
     };
 
-    // on component access
-    onMounted(async () => {
-      const route = useRoute();
-
-      const membershipType = (route.params['membershipType'] as unknown) as BungieMembershipType;
-      const membershipId = route.params['membershipId'] as string;
-
-      if (
-        !profile.value ||
-        (profile &&
-          (profile.value.userInfo.membershipType !== membershipType ||
-            profile.value.userInfo.membershipId !== membershipId))
-      ) {
-        if (membershipType && membershipId) {
-          await getProfile(membershipType, membershipId, true);
-
-          characters.value.forEach(c => {
-            getActivities(c, 0);
-          });
-        }
-      }
-    });
-
     // sorting
     const sortedEncounters = computed(() => {
       const encounters = encountersState.value.encounters.slice() as Encounter[];
@@ -165,6 +142,9 @@ export default defineComponent({
 
       loadingProfile,
       profile,
+      characters, // delete
+      getProfile, // delete
+      getActivities, // delete
 
       sortedEncounters,
 
@@ -178,6 +158,34 @@ export default defineComponent({
       cellSpacing,
       cellBorder
     };
+  },
+  watch: {
+    '$route.params': {
+      immediate: true,
+      // deep: true,
+      // https://github.com/vuejs/vue-next/issues/2027
+      // warn: Avoid app logic that relies on enumerating keys on a component instance
+      // create search state and listen to the value instead
+      handler: function(params) {
+        const membershipType = (params['membershipType'] as unknown) as BungieMembershipType;
+        const membershipId = params['membershipId'] as string;
+
+        if (
+          !this.profile ||
+          (this.profile &&
+            (this.profile.userInfo.membershipType !== membershipType ||
+              this.profile.userInfo.membershipId !== membershipId))
+        ) {
+          if (membershipType && membershipId) {
+            this.getProfile(membershipType, membershipId, true).then(() => {
+              this.characters.forEach(c => {
+                this.getActivities(c, 0);
+              });
+            });
+          }
+        }
+      }
+    }
   }
 });
 </script>
