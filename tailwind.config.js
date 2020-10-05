@@ -1,40 +1,42 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
-  purge: [
-    './src/**/*.html',
-    './src/**/*.ts'
-  ],
+  purge: ['./public/**/*.html', './src/**/*.html', './src/**/*.vue', './src/**/*.jsx'],
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['Inter var', ...defaultTheme.fontFamily.sans]
+        sans: ['Inter var', ...defaultTheme.fontFamily.sans]
       },
       colors: {
         brand: '#c51611',
-        lime: '#99ff00',
-        oyster: {
-          '100': '#fefefe',
-          '200': '#fdfdfd',
-          '300': '#fcfcfc',
-          '400': '#f9f9f9',
-          '500': '#f7f7f7',
-          '600': '#dedede',
-          '700': '#949494',
-          '800': '#6f6f6f',
-          '900': '#4a4a4a'
+        dark: {
+          50: '#F3F3F3',
+          100: '#E7E7E7',
+          200: '#C4C4C4',
+          300: '#A0A0A0',
+          400: '#595959',
+          500: '#121212',
+          600: '#101010',
+          700: '#0B0B0B',
+          800: '#080808',
+          900: '#050505'
         },
-        xbox: '#107c10',
-        playstation: '#003891',
-        steam: '#000000',
-        stadia: '#e4362e'
-      },
-      spacing: {
-        'char': '96px',
-        'char-lg': '474px'
+        light: {
+          50: '#FFFFFF',
+          100: '#FFFFFF',
+          200: '#FEFEFE',
+          300: '#FDFDFD',
+          400: '#FCFCFC',
+          500: '#FAFAFA',
+          600: '#E1E1E1',
+          700: '#969696',
+          800: '#717171',
+          900: '#4B4B4B'
+        }
       }
     }
   },
   variants: {},
-  plugins: [],
-}
+  plugins: []
+};
