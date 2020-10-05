@@ -2,7 +2,9 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
-  purge: ['./public/**/*.html', './src/**/*.html', './src/**/*.vue', './src/**/*.jsx'],
+  purge: {
+    content: ['./public/**/*.html', './src/**/*.html', './src/**/*.vue']
+  },
   theme: {
     extend: {
       fontFamily: {
@@ -38,5 +40,8 @@ module.exports = {
     }
   },
   variants: {},
-  plugins: []
+  plugins: [],
+  future: {
+    purgeLayersByDefault: true
+  }
 };
