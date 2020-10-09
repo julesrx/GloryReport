@@ -24,6 +24,7 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   // history: createWebHistory(process.env.BASE_URL),
   // the app is deployed on GitHub Pages atm, so legacy mode is required
+  // Netlify or Vercel could be nice
   history: createWebHashHistory(process.env.BASE_URL),
   routes
 });
