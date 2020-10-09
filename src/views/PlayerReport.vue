@@ -40,7 +40,9 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+
 import axios from 'axios';
 import { BungieMembershipType, PlatformErrorCodes, ServerResponse } from 'bungie-api-ts/app';
 import {
@@ -144,15 +146,39 @@ export default defineComponent({
     const cellSpacing = 'px-4 py-2';
     const cellBorder = 'border-b border-dark-400';
 
+    // route watching
+    const route = useRoute();
+    watch(
+      () => route.params,
+      async params => {
+        const membershipType = (params['membershipType'] as unknown) as BungieMembershipType;
+        const membershipId = params['membershipId'] as string;
+
+        if (
+          !profile.value ||
+          (profile.value &&
+            (profile.value.userInfo.membershipType !== membershipType ||
+              profile.value.userInfo.membershipId !== membershipId))
+        ) {
+          if (membershipType && membershipId) {
+            cancelToken.value.cancel('Cancelled by new profile fetch');
+
+            getProfile(membershipType, membershipId, true).then(() => {
+              characters.value.forEach(c => {
+                getActivities(c, 0);
+              });
+            });
+          }
+        }
+      },
+      { immediate: true }
+    );
+
     return {
-      cancelToken, // delete
       encountersState,
 
       loadingProfile,
       profile,
-      characters, // delete
-      getProfile, // delete
-      getActivities, // delete
 
       sortedEncounters,
 
@@ -166,36 +192,6 @@ export default defineComponent({
       cellSpacing,
       cellBorder
     };
-  },
-  watch: {
-    '$route.params': {
-      immediate: true,
-      // deep: true,
-      // https://github.com/vuejs/vue-next/issues/2027
-      // warn: Avoid app logic that relies on enumerating keys on a component instance
-      // create search state and listen to the value instead
-      handler: function(params) {
-        const membershipType = (params['membershipType'] as unknown) as BungieMembershipType;
-        const membershipId = params['membershipId'] as string;
-
-        if (
-          !this.profile ||
-          (this.profile &&
-            (this.profile.userInfo.membershipType !== membershipType ||
-              this.profile.userInfo.membershipId !== membershipId))
-        ) {
-          if (membershipType && membershipId) {
-            this.cancelToken.cancel('Cancelled by new profile fetch');
-
-            this.getProfile(membershipType, membershipId, true).then(() => {
-              this.characters.forEach(c => {
-                this.getActivities(c, 0);
-              });
-            });
-          }
-        }
-      }
-    }
   }
 });
 </script>
