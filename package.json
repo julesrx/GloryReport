@@ -8,6 +8,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "prod": "vue-cli-service build --modern && cp CNAME dist/CNAME",
+    "preview": "vue-cli-service build --modern && serve -s dist",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "node-sass": "^4.12.0",
     "prettier": "^1.19.1",
     "sass-loader": "^8.0.2",
+    "serve": "^11.3.2",
     "typescript": "~3.9.3"
   }
 }
