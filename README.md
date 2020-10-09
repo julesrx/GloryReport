@@ -1,24 +1,21 @@
-# glory.report
+# Glory.report
 
-## Project setup
+PvP encounters and stats.  
+Built with [Vue 3](https://v3.vuejs.org/) and [Vue CLI](https://cli.vuejs.org/).
+
+## How to run
 ```
+git clone git@github.com:julesrx/glory.report.git
+cd glory.report
 npm install
-```
-
-### Compiles and hot-reloads for development
-```
 npm run serve
 ```
 
-### Compiles and minifies for production
+## How to contribute
 ```
-npm run build
-```
-
-### Lints and fixes files
-```
+# fork it
+# clone it
+# dev it
 npm run lint
+# make a pull request
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
