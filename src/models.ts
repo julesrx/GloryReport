@@ -5,6 +5,7 @@ export class Encounter {
   membershipType: BungieMembershipType;
   displayName: string;
   iconPath: string;
+  characterClass: string;
 
   instanceIds: string[];
   count: number;
@@ -14,6 +15,7 @@ export class Encounter {
     membershipType: BungieMembershipType,
     displayName: string,
     iconPath: string,
+    characterClass: string, // class during the first encounter
     instanceId: string
   ) {
     // displayName and iconPath can sometimes be undefined
@@ -21,6 +23,7 @@ export class Encounter {
     this.membershipType = membershipType;
     this.displayName = displayName;
     this.iconPath = iconPath;
+    this.characterClass = characterClass;
 
     this.instanceIds = [instanceId];
     this.count = 1;
