@@ -36,6 +36,9 @@ module.exports = {
           800: '#717171',
           900: '#4B4B4B'
         }
+      },
+      maxHeight: {
+        '56': '14rem'
       }
     }
   },

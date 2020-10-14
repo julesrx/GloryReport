@@ -21,6 +21,7 @@ const createStore = () => {
     if (enc != null && enc.count) {
       enc.count++;
       enc.instanceIds.push(instanceId);
+      // this is slowing the app a lot, and storing way to much information.
 
       if (!enc.displayName && player.destinyUserInfo.displayName) {
         enc.displayName = player.destinyUserInfo.displayName;
@@ -35,6 +36,7 @@ const createStore = () => {
           player.destinyUserInfo.membershipType,
           player.destinyUserInfo.displayName,
           player.destinyUserInfo.iconPath,
+          player.characterClass,
           instanceId
         )
       );

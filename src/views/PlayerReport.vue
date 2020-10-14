@@ -2,20 +2,37 @@
   <div id="player-report">
     <p v-if="loadingProfile">Loading profile...</p>
     <template v-if="!loadingProfile && profile">
-      <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
-      <p class="text-light-700">Found {{ encountersState.encounters.length }} players</p>
+      <div class="flex items-baseline space-x-2">
+        <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
+        <span v-if="isLoading" class="text-sm text-light-800">fetching activities...</span>
+      </div>
+      <div class="flex justify-between text-light-700">
+        <p>
+          Found {{ encountersState.encounters.length }} players
+          <span v-if="wasCanceled">(search canceled)</span>
+        </p>
+        <X
+          v-if="isLoading"
+          @click="cancelAll(true)"
+          class="cursor-pointer"
+          title="Cancel non-cached requests"
+        />
+      </div>
 
       <table class="table-fixed w-full mt-4">
         <thead class="text-light-800">
           <tr>
             <td :class="['w-16 text-center', cellBorder, cellSpacing]">#</td>
             <td :class="[cellBorder, cellSpacing]">
-              <input
-                type="search"
-                v-model="search"
-                class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full"
-                placeholder="Search..."
-              />
+              <div class="relative">
+                <Search class="absolute left-0 inset-y-0 text-light-900" />
+                <input
+                  type="search"
+                  v-model="search"
+                  class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full pl-6"
+                  placeholder="Search..."
+                />
+              </div>
             </td>
             <td :class="['w-32 text-right', cellBorder, cellSpacing]">Matches</td>
           </tr>
@@ -54,13 +71,17 @@ import {
 import { bhttp, getPGCR } from '@/api';
 import { Encounter } from '@/models';
 import EncounterRow from '@/components/EncounterRow.vue';
+import X from '@/components/icons/X.vue';
+import Search from '@/components/icons/Search.vue';
 import EncountersStore from '@/stores/encounters-store';
 import useSelectEncounter from '@/use/selectEncounter';
 import useGetProfile from '@/use/getProfile';
 
 export default defineComponent({
   components: {
-    EncounterRow
+    EncounterRow,
+    X,
+    Search
   },
   setup() {
     // state
@@ -68,6 +89,32 @@ export default defineComponent({
 
     // profile fetching
     const { getProfile, profile, characters, loadingProfile, cancelToken } = useGetProfile();
+
+    // Loadings
+    class Loading {
+      constructor(characterId: string) {
+        this.characterId = characterId;
+        this.loading = true;
+      }
+
+      characterId: string;
+      loading: boolean;
+    }
+    const loadings = ref([] as Loading[]);
+    const isLoading = computed(() => {
+      if (!characters.value.length) return false;
+      else {
+        return loadings.value.filter(l => l.loading).length > 0;
+      }
+    });
+
+    // cancel
+    const wasCanceled = ref(false);
+    const cancelAll = (isManualCancel: boolean) => {
+      cancelToken.value.cancel('Cancelled by new profile fetch');
+      loadings.value.forEach(l => (l.loading = false));
+      wasCanceled.value = isManualCancel;
+    };
 
     // Get PGCRs
     const onPgcrResult = (pgcr: DestinyPostGameCarnageReportData): void => {
@@ -108,6 +155,11 @@ export default defineComponent({
             });
 
             getActivities(character, (page += 1));
+          } else {
+            const loading = loadings.value.find(l => l.characterId === character.characterId);
+            if (loading) {
+              loading.loading = false;
+            }
           }
         }
       } catch (thrown) {
@@ -161,10 +213,11 @@ export default defineComponent({
               profile.value.userInfo.membershipId !== membershipId))
         ) {
           if (membershipType && membershipId) {
-            cancelToken.value.cancel('Cancelled by new profile fetch');
+            cancelAll(false);
 
             getProfile(membershipType, membershipId, true).then(() => {
               characters.value.forEach(c => {
+                loadings.value.push(new Loading(c.characterId));
                 getActivities(c, 0);
               });
             });
@@ -179,6 +232,11 @@ export default defineComponent({
 
       loadingProfile,
       profile,
+
+      isLoading,
+
+      wasCanceled,
+      cancelAll,
 
       sortedEncounters,
 
