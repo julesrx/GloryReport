@@ -1,7 +1,7 @@
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
 const appTitle = 'Glory.report';
-const appDescription = 'Destiny 2 player encounters and PvP stats.';
+const appDescription = 'Destiny 2 player encounters and PvP stats';
 const appUrl = 'https://glory.report/';
 
 module.exports = {
