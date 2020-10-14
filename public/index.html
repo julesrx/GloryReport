@@ -7,7 +7,24 @@
 
     <link rel="icon" href="<%= BASE_URL %>img/icons/favicon.ico" />
 
+    <!-- Primary Meta Tags -->
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <meta name="title" content="<%= htmlWebpackPlugin.options.title %>" />
+    <meta name="description" content="<%= htmlWebpackPlugin.options.description %>" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<%= htmlWebpackPlugin.options.url %>" />
+    <meta property="og:title" content="<%= htmlWebpackPlugin.options.title %>" />
+    <meta property="og:description" content="<%= htmlWebpackPlugin.options.description %>" />
+    <meta property="og:image" content="<%= htmlWebpackPlugin.options.url %>img/summary.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content="<%= htmlWebpackPlugin.options.url %>" />
+    <meta property="twitter:title" content="<%= htmlWebpackPlugin.options.title %>" />
+    <meta property="twitter:description" content="<%= htmlWebpackPlugin.options.description %>" />
+    <meta property="twitter:image" content="<%= htmlWebpackPlugin.options.url %>img/summary.jpg" />
   </head>
 
   <body class="bg-dark-500 text-light-500 pt-2 pb-4">
