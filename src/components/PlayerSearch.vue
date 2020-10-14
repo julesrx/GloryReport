@@ -1,15 +1,22 @@
 <template>
   <div :id="elId" class="relative max-w-xs mx-auto mb-5">
-    <input
-      type="search"
-      v-model="search"
-      placeholder="Guardian..."
-      @click="debouncedOnSearch"
-      :class="[
-        'text-dark-500 placeholder-dark-300 bg-light-100 py-1 px-2 rounded shadow block w-full focus:outline-none',
-        sizeClasses
-      ]"
-    />
+    <div class="relative text-dark-500">
+      <input
+        type="text"
+        v-model="search"
+        placeholder="Guardian..."
+        @click="debouncedOnSearch"
+        :class="[
+          'placeholder-dark-300 bg-light-100 py-1 pl-2 pr-8 rounded shadow block w-full focus:outline-none',
+          sizeClasses
+        ]"
+      />
+      <X
+        v-if="search"
+        class="absolute inset-y-0 right-0 cursor-pointer h-full mr-1"
+        @click="search = ''"
+      />
+    </div>
 
     <div :class="['bg-light-100 rounded shadow absolute w-full mt-1 text-dark-500', sizeClasses]">
       <ul class="max-h-56 overflow-auto">
@@ -49,12 +56,16 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
+import { ServerResponse } from 'bungie-api-ts/app';
 import { debounce } from 'lodash';
 
 import { bhttp } from '@/api';
-import { ServerResponse } from 'bungie-api-ts/app';
+import X from '@/components/icons/X.vue';
 
 export default defineComponent({
+  components: {
+    X
+  },
   props: {
     small: {
       type: Boolean,
