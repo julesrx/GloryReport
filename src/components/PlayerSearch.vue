@@ -4,7 +4,6 @@
       type="search"
       v-model="search"
       placeholder="Guardian..."
-      autofocus
       :class="[
         'text-dark-500 placeholder-dark-300 border py-1 px-2 rounded shadow mb-5 block w-full focus:outline-none',
         small ? null : 'text-lg'
