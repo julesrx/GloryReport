@@ -1,6 +1,8 @@
 # Glory.report
 
-PvP encounters and stats.  
+![](https://travis-ci.com/julesrx/glory.report.svg?branch=master)
+
+Destiny 2 player encounters and PvP stats.  
 Built with [Vue 3](https://v3.vuejs.org/) and [Vue CLI](https://cli.vuejs.org/).
 
 ## How to run
