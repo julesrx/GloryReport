@@ -6,7 +6,18 @@
         <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
         <span v-if="isLoading" class="text-sm text-light-800">fetching activities...</span>
       </div>
-      <p class="text-light-700">Found {{ encountersState.encounters.length }} players</p>
+      <div class="flex justify-between text-light-700">
+        <p>
+          Found {{ encountersState.encounters.length }} players
+          <span v-if="wasCanceled">(search canceled)</span>
+        </p>
+        <X
+          v-if="isLoading"
+          @click="cancelAll(true)"
+          class="cursor-pointer"
+          title="Cancel non-cached requests"
+        />
+      </div>
 
       <table class="table-fixed w-full mt-4">
         <thead class="text-light-800">
@@ -57,13 +68,15 @@ import {
 import { bhttp, getPGCR } from '@/api';
 import { Encounter } from '@/models';
 import EncounterRow from '@/components/EncounterRow.vue';
+import X from '@/components/icons/X.vue';
 import EncountersStore from '@/stores/encounters-store';
 import useSelectEncounter from '@/use/selectEncounter';
 import useGetProfile from '@/use/getProfile';
 
 export default defineComponent({
   components: {
-    EncounterRow
+    EncounterRow,
+    X
   },
   setup() {
     // state
@@ -89,6 +102,14 @@ export default defineComponent({
         return loadings.value.filter(l => l.loading).length > 0;
       }
     });
+
+    // cancel
+    const wasCanceled = ref(false);
+    const cancelAll = (isManualCancel: boolean) => {
+      cancelToken.value.cancel('Cancelled by new profile fetch');
+      loadings.value.forEach(l => (l.loading = false));
+      wasCanceled.value = isManualCancel;
+    };
 
     // Get PGCRs
     const onPgcrResult = (pgcr: DestinyPostGameCarnageReportData): void => {
@@ -187,7 +208,7 @@ export default defineComponent({
               profile.value.userInfo.membershipId !== membershipId))
         ) {
           if (membershipType && membershipId) {
-            cancelToken.value.cancel('Cancelled by new profile fetch');
+            cancelAll(false);
 
             getProfile(membershipType, membershipId, true).then(() => {
               characters.value.forEach(c => {
@@ -208,6 +229,9 @@ export default defineComponent({
       profile,
 
       isLoading,
+
+      wasCanceled,
+      cancelAll,
 
       sortedEncounters,
 
