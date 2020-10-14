@@ -24,12 +24,15 @@
           <tr>
             <td :class="['w-16 text-center', cellBorder, cellSpacing]">#</td>
             <td :class="[cellBorder, cellSpacing]">
-              <input
-                type="search"
-                v-model="search"
-                class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full"
-                placeholder="Search..."
-              />
+              <div class="relative">
+                <Search class="absolute left-0 inset-y-0 text-light-900" />
+                <input
+                  type="search"
+                  v-model="search"
+                  class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full pl-6"
+                  placeholder="Search..."
+                />
+              </div>
             </td>
             <td :class="['w-32 text-right', cellBorder, cellSpacing]">Matches</td>
           </tr>
@@ -69,6 +72,7 @@ import { bhttp, getPGCR } from '@/api';
 import { Encounter } from '@/models';
 import EncounterRow from '@/components/EncounterRow.vue';
 import X from '@/components/icons/X.vue';
+import Search from '@/components/icons/Search.vue';
 import EncountersStore from '@/stores/encounters-store';
 import useSelectEncounter from '@/use/selectEncounter';
 import useGetProfile from '@/use/getProfile';
@@ -76,7 +80,8 @@ import useGetProfile from '@/use/getProfile';
 export default defineComponent({
   components: {
     EncounterRow,
-    X
+    X,
+    Search
   },
   setup() {
     // state
