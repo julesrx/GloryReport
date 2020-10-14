@@ -2,7 +2,10 @@
   <div id="player-report">
     <p v-if="loadingProfile">Loading profile...</p>
     <template v-if="!loadingProfile && profile">
-      <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
+      <div class="flex items-baseline space-x-2">
+        <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
+        <span v-if="isLoading" class="text-sm text-light-800">fetching activities...</span>
+      </div>
       <p class="text-light-700">Found {{ encountersState.encounters.length }} players</p>
 
       <table class="table-fixed w-full mt-4">
@@ -69,6 +72,24 @@ export default defineComponent({
     // profile fetching
     const { getProfile, profile, characters, loadingProfile, cancelToken } = useGetProfile();
 
+    // Loadings
+    class Loading {
+      constructor(characterId: string) {
+        this.characterId = characterId;
+        this.loading = true;
+      }
+
+      characterId: string;
+      loading: boolean;
+    }
+    const loadings = ref([] as Loading[]);
+    const isLoading = computed(() => {
+      if (!characters.value.length) return false;
+      else {
+        return loadings.value.filter(l => l.loading).length > 0;
+      }
+    });
+
     // Get PGCRs
     const onPgcrResult = (pgcr: DestinyPostGameCarnageReportData): void => {
       pgcr.entries.forEach(entry => {
@@ -108,6 +129,11 @@ export default defineComponent({
             });
 
             getActivities(character, (page += 1));
+          } else {
+            const loading = loadings.value.find(l => l.characterId === character.characterId);
+            if (loading) {
+              loading.loading = false;
+            }
           }
         }
       } catch (thrown) {
@@ -165,6 +191,7 @@ export default defineComponent({
 
             getProfile(membershipType, membershipId, true).then(() => {
               characters.value.forEach(c => {
+                loadings.value.push(new Loading(c.characterId));
                 getActivities(c, 0);
               });
             });
@@ -179,6 +206,8 @@ export default defineComponent({
 
       loadingProfile,
       profile,
+
+      isLoading,
 
       sortedEncounters,
 
