@@ -31,7 +31,7 @@
         >
           <router-link
             :to="{
-              name: 'PlayerReport',
+              name: 'ReportEncounters',
               params: { membershipType: user.membershipType, membershipId: user.membershipId }
             }"
             class="flex items-center space-x-2 px-2 py-1 hover:bg-light-600 rounded"

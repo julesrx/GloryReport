@@ -6,6 +6,7 @@
         <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
         <span v-if="isLoading" class="text-sm text-light-800">fetching activities...</span>
       </div>
+
       <div class="flex justify-between text-light-700">
         <p>
           Found {{ encountersState.encounters.length }} players
@@ -19,39 +20,7 @@
         />
       </div>
 
-      <table class="table-fixed w-full mt-4">
-        <thead class="text-light-800">
-          <tr>
-            <td :class="['w-16 text-center', cellBorder, cellSpacing]">#</td>
-            <td :class="[cellBorder, cellSpacing]">
-              <div class="relative">
-                <Search class="absolute left-0 inset-y-0 text-light-900" />
-                <input
-                  type="search"
-                  v-model="search"
-                  class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full pl-6"
-                  placeholder="Search..."
-                />
-              </div>
-            </td>
-            <td :class="['w-32 text-right', cellBorder, cellSpacing]">Matches</td>
-          </tr>
-        </thead>
-
-        <tbody>
-          <EncounterRow
-            v-for="(enc, i) in slicedEncounters"
-            :key="enc.membershipId"
-            :encounter="enc"
-            :ranking="sortedEncounters.indexOf(enc) + 1"
-            :isSelected="selectedEncounter === enc"
-            :showBorders="i < slicedEncounters.length - 1"
-            :cellBorder="cellBorder"
-            :cellSpacing="cellSpacing"
-            @select="selectEncounter(enc)"
-          />
-        </tbody>
-      </table>
+      <router-view></router-view>
     </template>
   </div>
 </template>
@@ -69,19 +38,13 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 
 import { bhttp, getPGCR } from '@/api';
-import { Encounter } from '@/models';
-import EncounterRow from '@/components/EncounterRow.vue';
-import X from '@/components/icons/X.vue';
-import Search from '@/components/icons/Search.vue';
 import EncountersStore from '@/stores/encounters-store';
-import useSelectEncounter from '@/use/selectEncounter';
 import useGetProfile from '@/use/getProfile';
+import X from '@/components/icons/X.vue';
 
 export default defineComponent({
   components: {
-    EncounterRow,
-    X,
-    Search
+    X
   },
   setup() {
     // state
@@ -107,14 +70,6 @@ export default defineComponent({
         return loadings.value.filter(l => l.loading).length > 0;
       }
     });
-
-    // cancel
-    const wasCanceled = ref(false);
-    const cancelAll = (isManualCancel: boolean) => {
-      cancelToken.value.cancel('Cancelled by new profile fetch');
-      loadings.value.forEach(l => (l.loading = false));
-      wasCanceled.value = isManualCancel;
-    };
 
     // Get PGCRs
     const onPgcrResult = (pgcr: DestinyPostGameCarnageReportData): void => {
@@ -171,32 +126,13 @@ export default defineComponent({
       }
     };
 
-    // sorting
-    const sortedEncounters = computed(() => {
-      const encounters = encountersState.value.encounters.slice() as Encounter[];
-      encounters.sort((a, b) => (a.count > b.count ? -1 : 1));
-
-      return encounters;
-    });
-
-    // filtering
-    const search = ref('');
-    const filteredEncounters = computed(() =>
-      sortedEncounters.value.filter(enc =>
-        !search.value.length
-          ? enc
-          : enc.displayName.toLowerCase().includes(search.value.toLowerCase())
-      )
-    );
-    const slicedEncounters = computed(() => filteredEncounters.value.slice(0, 50));
-
-    // selecting encounters
-    const selectedEncounter = ref(null as Encounter | null);
-    const { selectEncounter } = useSelectEncounter(selectedEncounter);
-
-    // styling
-    const cellSpacing = 'px-4 py-2';
-    const cellBorder = 'border-b border-dark-400';
+    // cancel
+    const wasCanceled = ref(false); // todo useCancel
+    const cancelAll = (isManualCancel: boolean) => {
+      cancelToken.value.cancel('Cancelled by new profile fetch');
+      loadings.value.forEach(l => (l.loading = false));
+      wasCanceled.value = isManualCancel;
+    };
 
     // route watching
     const route = useRoute();
@@ -209,7 +145,7 @@ export default defineComponent({
         if (
           !profile.value ||
           (profile.value &&
-            (profile.value.userInfo.membershipType !== membershipType ||
+            (profile.value.userInfo.membershipType.toString() !== membershipType.toString() ||
               profile.value.userInfo.membershipId !== membershipId))
         ) {
           if (membershipType && membershipId) {
@@ -236,19 +172,7 @@ export default defineComponent({
       isLoading,
 
       wasCanceled,
-      cancelAll,
-
-      sortedEncounters,
-
-      search,
-      filteredEncounters,
-      slicedEncounters,
-
-      selectedEncounter,
-      selectEncounter,
-
-      cellSpacing,
-      cellBorder
+      cancelAll
     };
   }
 });

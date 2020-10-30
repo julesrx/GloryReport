@@ -1,7 +1,10 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 
 import Home from './views/Home.vue';
-import PlayerReport from './views/PlayerReport.vue';
+
+import Report from './views/Report/Report.vue';
+import ReportEncounters from './views/Report/ReportEncounters.vue';
+import ReportEncounter from './views/Report/ReportEncounter.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,9 +13,21 @@ const routes: Array<RouteRecordRaw> = [
     component: Home
   },
   {
-    name: 'PlayerReport',
+    name: 'Report',
     path: '/:membershipType/:membershipId',
-    component: PlayerReport
+    component: Report,
+    children: [
+      {
+        name: 'ReportEncounters',
+        path: '',
+        component: ReportEncounters
+      },
+      {
+        name: 'ReportEncounter',
+        path: ':selectedMembershipId',
+        component: ReportEncounter
+      }
+    ]
   },
   {
     name: 'NotFound',
