@@ -5,7 +5,7 @@
       params: parentParams
     }"
   >
-    <ArrowNarrowLeft title="Back to all encounters"/>
+    <ArrowNarrowLeft title="Back to all encounters" class="inline-block" />
   </router-link>
 
   <template v-if="encounter">
