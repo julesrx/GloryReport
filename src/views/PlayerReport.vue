@@ -6,52 +6,55 @@
         <h2 class="text-3xl font-bold">{{ profile.userInfo.displayName }}</h2>
         <span v-if="isLoading" class="text-sm text-light-800">fetching activities...</span>
       </div>
-      <div class="flex justify-between text-light-700">
-        <p>
-          Found {{ encountersState.encounters.length }} players
-          <span v-if="wasCanceled">(search canceled)</span>
-        </p>
-        <X
-          v-if="isLoading"
-          @click="cancelAll(true)"
-          class="cursor-pointer"
-          title="Cancel non-cached requests"
-        />
-      </div>
 
-      <table class="table-fixed w-full mt-4">
-        <thead class="text-light-800">
-          <tr>
-            <td :class="['w-16 text-center', cellBorder, cellSpacing]">#</td>
-            <td :class="[cellBorder, cellSpacing]">
-              <div class="relative">
-                <Search class="absolute left-0 inset-y-0 text-light-900" />
-                <input
-                  type="search"
-                  v-model="search"
-                  class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full pl-6"
-                  placeholder="Search..."
-                />
-              </div>
-            </td>
-            <td :class="['w-32 text-right', cellBorder, cellSpacing]">Matches</td>
-          </tr>
-        </thead>
-
-        <tbody>
-          <EncounterRow
-            v-for="(enc, i) in slicedEncounters"
-            :key="enc.membershipId"
-            :encounter="enc"
-            :ranking="sortedEncounters.indexOf(enc) + 1"
-            :isSelected="selectedEncounter === enc"
-            :showBorders="i < slicedEncounters.length - 1"
-            :cellBorder="cellBorder"
-            :cellSpacing="cellSpacing"
-            @select="selectEncounter(enc)"
+      <template v-if="showEncounters">
+        <div class="flex justify-between text-light-700">
+          <p>
+            Found {{ encountersState.encounters.length }} players
+            <span v-if="wasCanceled">(search canceled)</span>
+          </p>
+          <X
+            v-if="isLoading"
+            @click="cancelAll(true)"
+            class="cursor-pointer"
+            title="Cancel non-cached requests"
           />
-        </tbody>
-      </table>
+        </div>
+
+        <table class="table-fixed w-full mt-4">
+          <thead class="text-light-800">
+            <tr>
+              <td :class="['w-16 text-center', cellBorder, cellSpacing]">#</td>
+              <td :class="[cellBorder, cellSpacing]">
+                <div class="relative">
+                  <Search class="absolute left-0 inset-y-0 text-light-900" />
+                  <input
+                    type="search"
+                    v-model="search"
+                    class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full pl-6"
+                    placeholder="Search..."
+                  />
+                </div>
+              </td>
+              <td :class="['w-32 text-right', cellBorder, cellSpacing]">Matches</td>
+            </tr>
+          </thead>
+
+          <tbody>
+            <EncounterRow
+              v-for="(enc, i) in slicedEncounters"
+              :key="enc.membershipId"
+              :encounter="enc"
+              :ranking="sortedEncounters.indexOf(enc) + 1"
+              :showBorders="i < slicedEncounters.length - 1"
+              :cellBorder="cellBorder"
+              :cellSpacing="cellSpacing"
+            />
+          </tbody>
+        </table>
+      </template>
+
+      <router-view></router-view>
     </template>
   </div>
 </template>
@@ -74,7 +77,6 @@ import EncounterRow from '@/components/EncounterRow.vue';
 import X from '@/components/icons/X.vue';
 import Search from '@/components/icons/Search.vue';
 import EncountersStore from '@/stores/encounters-store';
-import useSelectEncounter from '@/use/selectEncounter';
 import useGetProfile from '@/use/getProfile';
 
 export default defineComponent({
@@ -190,15 +192,12 @@ export default defineComponent({
     );
     const slicedEncounters = computed(() => filteredEncounters.value.slice(0, 50));
 
-    // selecting encounters
-    const selectedEncounter = ref(null as Encounter | null);
-    const { selectEncounter } = useSelectEncounter(selectedEncounter);
-
     // styling
     const cellSpacing = 'px-4 py-2';
     const cellBorder = 'border-b border-dark-400';
 
     // route watching
+    const showEncounters = ref(false);
     const route = useRoute();
     watch(
       () => route.params,
@@ -209,7 +208,7 @@ export default defineComponent({
         if (
           !profile.value ||
           (profile.value &&
-            (profile.value.userInfo.membershipType !== membershipType ||
+            (profile.value.userInfo.membershipType.toString() !== membershipType.toString() ||
               profile.value.userInfo.membershipId !== membershipId))
         ) {
           if (membershipType && membershipId) {
@@ -223,6 +222,9 @@ export default defineComponent({
             });
           }
         }
+
+        const selectedMembershipId = params['selectedMembershipId'] as string;
+        showEncounters.value = !selectedMembershipId;
       },
       { immediate: true }
     );
@@ -244,8 +246,7 @@ export default defineComponent({
       filteredEncounters,
       slicedEncounters,
 
-      selectedEncounter,
-      selectEncounter,
+      showEncounters,
 
       cellSpacing,
       cellBorder

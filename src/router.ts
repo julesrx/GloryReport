@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 
 import Home from './views/Home.vue';
 import PlayerReport from './views/PlayerReport.vue';
+import EncounterDetail from './views/EncounterDetail.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -12,7 +13,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     name: 'PlayerReport',
     path: '/:membershipType/:membershipId',
-    component: PlayerReport
+    component: PlayerReport,
+    children: [
+      // add children with '' as path (like home)
+      // this will the the root of the report view
+      // store the current profile in the state to be able to route back to home
+      {
+        name: 'EncounterDetail',
+        path: ':selectedMembershipId',
+        component: EncounterDetail
+      }
+    ]
   },
   {
     name: 'NotFound',
