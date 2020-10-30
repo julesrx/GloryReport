@@ -1,6 +1,12 @@
 <template>
-  <!-- <router-link :to={}></router-link> -->
-  <!-- <ArrowNarrowLeft /> -->
+  <router-link
+    :to="{
+      name: 'ReportEncounters',
+      params: parentParams
+    }"
+  >
+    <ArrowNarrowLeft />
+  </router-link>
 
   <template v-if="encounter">
     <div class="flex justify-center items-center space-x-3">
@@ -35,7 +41,7 @@ export default defineComponent({
   components: {
     EncounterIcon,
     ActivityItem,
-    // ArrowNarrowLeft
+    ArrowNarrowLeft
   },
   setup() {
     const encountersState = ref(EncountersStore.state);
@@ -49,7 +55,14 @@ export default defineComponent({
         );
     });
 
-    return { encounter };
+    const parentParams = computed(() => {
+      return {
+        membershipType: route.params['membershipType'],
+        membershipId: route.params['membershipId']
+      };
+    });
+
+    return { encountersState, encounter, parentParams };
   }
 });
 </script>

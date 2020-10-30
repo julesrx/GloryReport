@@ -38,11 +38,11 @@ export default defineComponent({
     showBorders: Boolean,
     cellBorder: String,
     cellSpacing: String
-  },  
+  },
   methods: {
     navigateToEncounter(encounter: Encounter) {
       this.$router.push({
-        name: 'EncounterDetail',
+        name: 'ReportEncounter',
         params: { selectedMembershipId: encounter.membershipId }
       });
     }
