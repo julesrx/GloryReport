@@ -30,30 +30,32 @@ export function getCachedPGCR(
 
 export function getPGCR(
   instanceId: string,
-  callback: (pgcr: DestinyPostGameCarnageReportData) => void,
   cancelToken?: CancelToken
-) {
-  getCachedPGCR(instanceId).then(res => {
-    if (res) return callback(res);
-    else {
-      const requestUrl = getPGCRrequestUrl(instanceId);
+): Promise<DestinyPostGameCarnageReportData> {
+  return new Promise<DestinyPostGameCarnageReportData>((resolve, reject) => {
+    getCachedPGCR(instanceId).then(res => {
+      if (res) resolve(res);
+      else {
+        const url = getPGCRrequestUrl(instanceId);
 
-      return bqueue.add(() =>
-        bhttp
-          .get(requestUrl, { cancelToken: cancelToken })
-          .then(res => res.data.Response)
-          .then(res => {
-            requestCache.setItem(requestUrl, res);
-            callback(res);
-          })
-          .catch(thrown => {
-            if (axios.isCancel(thrown)) {
-              console.log('pgcr canceled', thrown.message);
-            } else {
-              console.error(thrown);
-            }
-          })
-      );
-    }
+        bqueue.add(() =>
+          bhttp
+            .get(url, { cancelToken: cancelToken })
+            .then(res => res.data.Response)
+            .then(res => {
+              requestCache.setItem(url, res);
+              resolve(res);
+            })
+            .catch(thrown => {
+              if (axios.isCancel(thrown)) {
+                console.log('pgcr canceled', thrown.message);
+              } else {
+                console.error(thrown);
+              }
+              reject(thrown);
+            })
+        );
+      }
+    });
   });
 }

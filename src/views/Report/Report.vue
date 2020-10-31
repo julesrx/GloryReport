@@ -106,7 +106,7 @@ export default defineComponent({
         if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
           if (res.Response.activities && res.Response.activities.length) {
             res.Response.activities.forEach(act => {
-              getPGCR(act.activityDetails.instanceId, onPgcrResult, cancelToken.value.token);
+              getPGCR(act.activityDetails.instanceId, cancelToken.value.token).then(onPgcrResult);
             });
 
             getActivities(character, (page += 1));
