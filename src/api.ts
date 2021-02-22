@@ -6,7 +6,7 @@ import { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2/interfa
 
 export const bhttp = axios.create({
   baseURL: 'https://stats.bungie.net/Platform/',
-  headers: { 'X-Api-Key': process.env.VUE_APP_BUNGIE_API_KEY }
+  headers: { 'X-Api-Key': import.meta.env.VITE_BUNGIE_API_KEY }
 });
 
 export const bqueue = new PQueue({
@@ -33,7 +33,7 @@ export function getPGCR(
   cancelToken?: CancelToken
 ): Promise<DestinyPostGameCarnageReportData> {
   return new Promise<DestinyPostGameCarnageReportData>((resolve, reject) => {
-    getCachedPGCR(instanceId).then(res => {
+    getCachedPGCR(instanceId).then((res) => {
       if (res) resolve(res);
       else {
         const url = getPGCRrequestUrl(instanceId);
@@ -41,12 +41,12 @@ export function getPGCR(
         bqueue.add(() =>
           bhttp
             .get(url, { cancelToken: cancelToken })
-            .then(res => res.data.Response)
-            .then(res => {
+            .then((res) => res.data.Response)
+            .then((res) => {
               requestCache.setItem(url, res);
               resolve(res);
             })
-            .catch(thrown => {
+            .catch((thrown) => {
               if (axios.isCancel(thrown)) {
                 console.log('pgcr canceled', thrown.message);
               } else {

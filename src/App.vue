@@ -7,12 +7,11 @@
 </template>
 
 <script lang="ts">
-import Nav from '@/components/Nav.vue';
 import { defineComponent } from 'vue';
+
+import Nav from '@/components/Nav.vue';
 
 export default defineComponent({
   components: { Nav }
 });
 </script>
-
-<style lang="scss" src="./App.scss"></style>

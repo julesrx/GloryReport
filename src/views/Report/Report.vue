@@ -38,8 +38,8 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 
 import { bhttp, getPGCR } from '@/api';
-import EncountersStore from '@/stores/encounters-store';
-import useGetProfile from '@/use/getProfile';
+import EncountersStore from '@/stores/encounters';
+import useGetProfile from '@/composables/useGetProfile';
 import X from '@/components/icons/X.vue';
 
 export default defineComponent({

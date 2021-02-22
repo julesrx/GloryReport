@@ -32,7 +32,7 @@
 import { computed, defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-import EncountersStore from '@/stores/encounters-store';
+import EncountersStore from '@/stores/encounters';
 import EncounterIcon from '@/components/EncounterIcon.vue';
 import ActivityItem from '@/components/ActivityItem.vue';
 import ArrowNarrowLeft from '@/components/icons/ArrowNarrowLeft.vue';

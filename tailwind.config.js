@@ -1,14 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const defaultTheme = require('tailwindcss/defaultTheme');
-
 module.exports = {
-  purge: {
-    content: ['./public/**/*.html', './src/**/*.html', './src/**/*.vue']
-  },
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter var', ...defaultTheme.fontFamily.sans]
+        sans: ['Inter var', '-apple-system', 'Segoe UI', 'Open Sans', 'sans-serif']
       },
       colors: {
         brand: '#c51611',
@@ -38,13 +32,8 @@ module.exports = {
         }
       },
       maxHeight: {
-        '56': '14rem'
+        56: '14rem'
       }
     }
-  },
-  variants: {},
-  plugins: [],
-  future: {
-    purgeLayersByDefault: true
   }
 };

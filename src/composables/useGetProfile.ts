@@ -7,14 +7,14 @@ import {
   DestinyProfileResponse
 } from 'bungie-api-ts/destiny2/interfaces';
 
-import EncountersStore from '@/stores/encounters-store';
+import EncountersStore from '@/stores/encounters';
 import { bqueue, bhttp } from '@/api';
 import {
   getDestinyCharacterComponents,
   getDestinyProfileComponent
 } from '@/helpers/destiny-profile-response';
 
-export default function getProfile() {
+export default function useGetProfile() {
   const cancelToken = ref(axios.CancelToken.source());
   const loadingProfile = ref(false);
 

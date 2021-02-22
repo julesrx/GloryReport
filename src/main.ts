@@ -1,8 +1,9 @@
-import { createApp } from 'vue';
-import App from './App.vue';
-import './registerServiceWorker';
-import router from './router';
+import { createApp } from "vue";
+import App from "./App.vue";
 
-createApp(App)
-  .use(router)
-  .mount('#app');
+import "./main.css";
+import "windi.css";
+
+import router from "./router";
+
+createApp(App).use(router).mount("#app");
