@@ -51,7 +51,7 @@ export default defineComponent({
       if (!route.params['selectedMembershipId']) return null;
       else
         return encountersState.value.encounters.find(
-          e => e.membershipId === route.params['selectedMembershipId']
+          (e) => e.membershipId === route.params['selectedMembershipId']
         );
     });
 

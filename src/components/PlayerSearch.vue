@@ -95,7 +95,7 @@ export default defineComponent({
             (user, index, self) =>
               index ===
               self.findIndex(
-                t =>
+                (t) =>
                   t.membershipType === user.membershipType && t.membershipId === user.membershipId
               )
           );

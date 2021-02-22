@@ -18,7 +18,7 @@ const createStore = () => {
     state.encounters = [];
   };
   const addEncounter = (instanceId: string, player: DestinyPlayer): void => {
-    const enc = state.encounters.find(e => {
+    const enc = state.encounters.find((e) => {
       return e.membershipId === player.destinyUserInfo.membershipId;
     });
 

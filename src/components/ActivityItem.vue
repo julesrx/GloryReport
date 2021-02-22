@@ -70,7 +70,7 @@ export default defineComponent({
     if (this.pgcr) {
       const membershipId = this.$route.params['membershipId'] as string;
       const entry = this.pgcr.entries.find(
-        e => e.player.destinyUserInfo.membershipId === membershipId
+        (e) => e.player.destinyUserInfo.membershipId === membershipId
       );
       if (entry) {
         this.win = entry.values['standing'].basic.value === 0;

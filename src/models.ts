@@ -1,4 +1,4 @@
-import { BungieMembershipType } from "bungie-api-ts/app";
+import { BungieMembershipType } from 'bungie-api-ts/app';
 
 export class Encounter {
   membershipId: string;

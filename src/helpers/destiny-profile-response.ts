@@ -17,6 +17,6 @@ export const getDestinyCharacterComponents = (
   if (!res.characters.data) throw new Error('Characters not found on response');
 
   return Object.keys(res.characters.data)
-    .map(key => (res.characters.data ?? {})[key])
+    .map((key) => (res.characters.data ?? {})[key])
     .sort((a, b) => (a.dateLastPlayed < b.dateLastPlayed ? 1 : -1));
 };

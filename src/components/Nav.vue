@@ -24,8 +24,8 @@ export default defineComponent({
   },
   computed: {
     isHome(): boolean {
-      const homeRoute = this.$router.options.routes.find(r => r.path === '/');
-      return homeRoute ? this.$route.matched.some(m => m.name === homeRoute.name) : false;
+      const homeRoute = this.$router.options.routes.find((r) => r.path === '/');
+      return homeRoute ? this.$route.matched.some((m) => m.name === homeRoute.name) : false;
     }
   }
 });

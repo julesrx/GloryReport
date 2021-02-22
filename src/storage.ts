@@ -1,16 +1,16 @@
-import localforage from "localforage";
+import localforage from 'localforage';
 
-import { version } from "../package.json";
+import { version } from '../package.json';
 
-const dbName = "Glory.report";
-const appVersionKey = "app-version";
+const dbName = 'Glory.report';
+const appVersionKey = 'app-version';
 
-export const requestCacheKey = "request-cache";
+export const requestCacheKey = 'request-cache';
 
 export function getStorage(storeName: string) {
   const store = localforage.createInstance({
     name: dbName,
-    storeName,
+    storeName
   });
 
   const localVersion = localStorage.getItem(appVersionKey);

@@ -59,7 +59,7 @@ export default defineComponent({
     // filtering
     const search = ref('');
     const filteredEncounters = computed(() =>
-      sortedEncounters.value.filter(enc =>
+      sortedEncounters.value.filter((enc) =>
         !search.value.length
           ? enc
           : enc.displayName.toLowerCase().includes(search.value.toLowerCase())
