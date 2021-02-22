@@ -1,5 +1,4 @@
 <template>
-  <!-- img is loading very late -->
   <img
     :src="icon"
     :data-class="encounter.characterClass"
