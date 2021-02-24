@@ -1,6 +1,6 @@
 # Glory.report
 
-[![Build Status](https://travis-ci.com/julesrx/glory.report.svg?branch=master)](https://travis-ci.com/julesrx/glory.report)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/3cee23ff-467e-42d1-bdc5-0f0edd96de21/deploy-status)](https://app.netlify.com/sites/glory-report/deploys)
 
 Destiny 2 player encounters and PvP stats.  
 Built with [Vue 3](https://v3.vuejs.org/), [Vite](https://vitejs.dev/) and [Windi CSS](https://windicss.netlify.app/).
