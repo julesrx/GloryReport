@@ -1,58 +1,38 @@
 {
   "name": "glory.report",
-  "version": "1.1.3",
+  "version": "1.2.0",
   "private": true,
   "author": "julesrx (https://julesrx.fr)",
   "homepage": "https://glory.report",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "prod": "vue-cli-service build --modern && cp CNAME dist/CNAME",
-    "preview": "vue-cli-service build --modern && serve -s dist",
-    "lint": "vue-cli-service lint"
+    "dev": "vite",
+    "build": "npm run lint && vite build",
+    "serve": "vite preview",
+    "lint": "eslint --ext .vue,.ts,.js ./src/ --fix"
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "bungie-api-ts": "^4.7.0",
-    "core-js": "^3.6.5",
-    "date-fns": "^2.16.1",
+    "bungie-api-ts": "^4.8.0",
+    "date-fns": "^2.17.0",
     "localforage": "^1.9.0",
-    "lodash": "^4.17.20",
     "p-queue": "^6.6.2",
-    "register-service-worker": "^1.7.1",
-    "tailwindcss": "^1.9.6",
     "vue": "^3.0.5",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.4"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.167",
-    "@typescript-eslint/eslint-plugin": "^2.33.0",
-    "@typescript-eslint/parser": "^2.33.0",
-    "@vue/cli-plugin-babel": "~4.5.0",
-    "@vue/cli-plugin-eslint": "~4.5.0",
-    "@vue/cli-plugin-pwa": "~4.5.0",
-    "@vue/cli-plugin-router": "~4.5.0",
-    "@vue/cli-plugin-typescript": "~4.5.0",
-    "@vue/cli-service": "~4.5.0",
-    "@vue/compiler-sfc": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.15.2",
+    "@typescript-eslint/parser": "^4.15.2",
+    "@vitejs/plugin-vue": "^1.1.4",
+    "@vue/compiler-sfc": "^3.0.5",
     "@vue/eslint-config-prettier": "^6.0.0",
-    "@vue/eslint-config-typescript": "^5.0.2",
-    "eslint": "^6.7.2",
-    "eslint-plugin-prettier": "^3.1.3",
-    "eslint-plugin-vue": "^7.0.0-0",
-    "lint-staged": "^9.5.0",
-    "prettier": "^1.19.1",
-    "sass": "^1.26.5",
-    "sass-loader": "^8.0.2",
-    "typescript": "~3.9.3"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,jsx,vue,ts,tsx}": [
-      "vue-cli-service lint",
-      "git add"
-    ]
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "eslint": "^7.20.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^7.6.0",
+    "prettier": "^2.2.1",
+    "typescript": "^4.1.3",
+    "vite": "^2.0.1",
+    "vite-plugin-windicss": "^0.4.7"
   }
 }

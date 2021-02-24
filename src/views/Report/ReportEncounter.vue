@@ -32,7 +32,7 @@
 import { computed, defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-import EncountersStore from '@/stores/encounters-store';
+import EncountersStore from '@/stores/encounters';
 import EncounterIcon from '@/components/EncounterIcon.vue';
 import ActivityItem from '@/components/ActivityItem.vue';
 import ArrowNarrowLeft from '@/components/icons/ArrowNarrowLeft.vue';
@@ -51,7 +51,7 @@ export default defineComponent({
       if (!route.params['selectedMembershipId']) return null;
       else
         return encountersState.value.encounters.find(
-          e => e.membershipId === route.params['selectedMembershipId']
+          (e) => e.membershipId === route.params['selectedMembershipId']
         );
     });
 

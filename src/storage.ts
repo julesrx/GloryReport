@@ -1,12 +1,13 @@
 import localforage from 'localforage';
 
+import { version } from '../package.json';
+
 const dbName = 'Glory.report';
 const appVersionKey = 'app-version';
 
 export const requestCacheKey = 'request-cache';
 
 export function getStorage(storeName: string) {
-  const version = process.env.VUE_APP_VERSION;
   const store = localforage.createInstance({
     name: dbName,
     storeName

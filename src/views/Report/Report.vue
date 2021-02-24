@@ -38,8 +38,8 @@ import {
 } from 'bungie-api-ts/destiny2/interfaces';
 
 import { bhttp, getPGCR } from '@/api';
-import EncountersStore from '@/stores/encounters-store';
-import useGetProfile from '@/use/getProfile';
+import EncountersStore from '@/stores/encounters';
+import useGetProfile from '@/composables/useGetProfile';
 import X from '@/components/icons/X.vue';
 
 export default defineComponent({
@@ -67,13 +67,13 @@ export default defineComponent({
     const isLoading = computed(() => {
       if (!characters.value.length) return false;
       else {
-        return loadings.value.filter(l => l.loading).length > 0;
+        return loadings.value.filter((l) => l.loading).length > 0;
       }
     });
 
     // Get PGCRs
     const onPgcrResult = (pgcr: DestinyPostGameCarnageReportData): void => {
-      pgcr.entries.forEach(entry => {
+      pgcr.entries.forEach((entry) => {
         const player = entry.player;
 
         if (
@@ -105,13 +105,13 @@ export default defineComponent({
         const res: ServerResponse<DestinyActivityHistoryResults> = data;
         if (res.ErrorCode != PlatformErrorCodes.DestinyPrivacyRestriction) {
           if (res.Response.activities && res.Response.activities.length) {
-            res.Response.activities.forEach(act => {
+            res.Response.activities.forEach((act) => {
               getPGCR(act.activityDetails.instanceId, cancelToken.value.token).then(onPgcrResult);
             });
 
             getActivities(character, (page += 1));
           } else {
-            const loading = loadings.value.find(l => l.characterId === character.characterId);
+            const loading = loadings.value.find((l) => l.characterId === character.characterId);
             if (loading) {
               loading.loading = false;
             }
@@ -130,7 +130,7 @@ export default defineComponent({
     const wasCanceled = ref(false); // todo useCancel
     const cancelAll = (isManualCancel: boolean) => {
       cancelToken.value.cancel('Cancelled by new profile fetch');
-      loadings.value.forEach(l => (l.loading = false));
+      loadings.value.forEach((l) => (l.loading = false));
       wasCanceled.value = isManualCancel;
     };
 
@@ -138,7 +138,7 @@ export default defineComponent({
     const route = useRoute();
     watch(
       () => route.params,
-      async params => {
+      async (params) => {
         const membershipType = (params['membershipType'] as unknown) as BungieMembershipType;
         const membershipId = params['membershipId'] as string;
 
@@ -152,7 +152,7 @@ export default defineComponent({
             cancelAll(false);
 
             getProfile(membershipType, membershipId, true).then(() => {
-              characters.value.forEach(c => {
+              characters.value.forEach((c) => {
                 loadings.value.push(new Loading(c.characterId));
                 getActivities(c, 0);
               });

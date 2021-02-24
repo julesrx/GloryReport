@@ -35,7 +35,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
 
-import EncountersStore from '@/stores/encounters-store';
+import EncountersStore from '@/stores/encounters';
 import EncounterRow from '@/components/EncounterRow.vue';
 import Search from '@/components/icons/Search.vue';
 import { Encounter } from '@/models';
@@ -59,7 +59,7 @@ export default defineComponent({
     // filtering
     const search = ref('');
     const filteredEncounters = computed(() =>
-      sortedEncounters.value.filter(enc =>
+      sortedEncounters.value.filter((enc) =>
         !search.value.length
           ? enc
           : enc.displayName.toLowerCase().includes(search.value.toLowerCase())

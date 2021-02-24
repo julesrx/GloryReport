@@ -15,7 +15,7 @@ export class Encounter {
     membershipType: BungieMembershipType,
     displayName: string,
     iconPath: string,
-    characterClass: string, // class during the first encounter
+    characterClass: string, // class on the first encounter
     instanceId: string
   ) {
     // displayName and iconPath can sometimes be undefined
