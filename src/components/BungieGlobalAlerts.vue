@@ -4,7 +4,7 @@
     class="max-w-2xl mx-auto mb-4 text-center bg-red-900 border-l-4 border-red-500"
     v-if="alerts.length"
   >
-    <div class="py-2" v-for="alert in alerts" :key="alert.AlertKey" v-html="alert.AlertHtml"></div>
+    <div class="p-2" v-for="alert in alerts" :key="alert.AlertKey" v-html="alert.AlertHtml"></div>
   </div>
 </template>
 
