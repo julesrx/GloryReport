@@ -15,6 +15,7 @@
     "bungie-api-ts": "^4.8.0",
     "date-fns": "^2.17.0",
     "localforage": "^1.9.0",
+    "lodash-es": "^4.17.21",
     "p-queue": "^6.6.2",
     "vue": "^3.0.5",
     "vue-router": "^4.0.4"
@@ -26,6 +27,7 @@
     "@vue/compiler-sfc": "^3.0.5",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^7.0.0",
+    "crypto-js": "^4.0.0",
     "eslint": "^7.20.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.3.1",
