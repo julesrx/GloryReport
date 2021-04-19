@@ -57,7 +57,7 @@
 import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 import { ServerResponse } from 'bungie-api-ts/app';
-import { debounce } from 'lodash';
+import { debounce } from 'lodash-es';
 
 import { bhttp } from '@/api';
 import X from '@/components/icons/X.vue';
