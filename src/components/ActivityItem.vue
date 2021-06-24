@@ -1,5 +1,5 @@
 <template>
-  <a :href="dtr" target="_blank" class="activity-item flex items-center py-2 hover:bg-dark-600">
+  <a :href="dtr" target="_blank" rel="noopener noreferrer" class="activity-item flex items-center py-2 hover:bg-dark-600">
     <p v-if="loading">Loading details...</p>
     <template v-if="!loading && pgcr">
       <div :class="['h-6 w-1 mr-2', win ? 'bg-green-600' : null]"></div>
