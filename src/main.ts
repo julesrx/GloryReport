@@ -1,9 +1,10 @@
 import { createApp } from 'vue';
-import { loadManifest } from './manifest';
-import App from './App.vue';
+import { loadManifest } from '~/manifest';
+import App from '~/App.vue';
+import router from '~/router';
 
 import 'virtual:windi.css';
 
-createApp(App).mount('#app');
+createApp(App).use(router).mount('#app');
 
 loadManifest();
