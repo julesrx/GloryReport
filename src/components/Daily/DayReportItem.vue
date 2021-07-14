@@ -10,7 +10,10 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, ref, watch } from 'vue';
 import { debounce, groupBy } from 'lodash-es';
-import { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2';
+import {
+  DestinyPostGameCarnageReportData,
+  DestinyPostGameCarnageReportEntry
+} from 'bungie-api-ts/destiny2';
 
 import DestinyInventoryItem from 'components/common/DestinyInventoryItem.vue';
 import { getPGCR } from '~/api';
@@ -51,9 +54,20 @@ export default defineComponent({
             e.player.destinyUserInfo.membershipType == props.profile.membershipType
         );
 
-      const score = entries.map(e => e.score.basic.value).reduce((a, b) => a + b, 0);
+      return {
+        score: getResultScore(entries),
+        weapons: getResultWeapons(entries)
+      };
+    });
 
-      const weapons = groupBy(
+    const getResultScore = (entries: DestinyPostGameCarnageReportEntry[]): number => {
+      return entries.map(e => e.score.basic.value).reduce((a, b) => a + b, 0);
+    };
+
+    const getResultWeapons = (
+      entries: DestinyPostGameCarnageReportEntry[]
+    ): DayReportResultWeapon[] => {
+      const groupedWeapons = groupBy(
         entries
           .map(e => e.extended.weapons)
           .reduce((a, b) => a.concat(b), [])
@@ -67,18 +81,17 @@ export default defineComponent({
             };
           })
           .filter(w => !!w),
-        'referenceId'
+        w => w?.referenceId
       );
 
-      return {
-        score,
-        weapons: Object.keys(weapons).map(k => {
-          const uniqueWeaponKills = weapons[k]
-            .map(w => w.uniqueWeaponKills)
+      return Object.keys(groupedWeapons)
+        .map(k => {
+          const uniqueWeaponKills = groupedWeapons[k]
+            .map(w => w?.uniqueWeaponKills ?? 0)
             .reduce((a, b) => a + b);
 
-          const uniqueWeaponPrecisionKills = weapons[k]
-            .map(w => w.uniqueWeaponPrecisionKills)
+          const uniqueWeaponPrecisionKills = groupedWeapons[k]
+            .map(w => w?.uniqueWeaponPrecisionKills ?? 0)
             .reduce((a, b) => a + b);
 
           return {
@@ -87,8 +100,8 @@ export default defineComponent({
             uniqueWeaponPrecisionKills
           };
         })
-      };
-    });
+        .sort((a, b) => (a.uniqueWeaponKills > b.uniqueWeaponKills ? -1 : 1));
+    };
 
     const getWeaponPrecision = (weapon: DayReportResultWeapon): number => {
       return Math.round((weapon.uniqueWeaponPrecisionKills / weapon.uniqueWeaponKills) * 100);
