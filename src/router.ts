@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import Home from 'views/Home.vue';
 
-// import Report from '@/views/Report/Report.vue';
+import Encounters from 'views/Encounters/Encounters.vue';
 // import ReportEncounters from '@/views/Report/ReportEncounters.vue';
 // import ReportEncounter from '@/views/Report/ReportEncounter.vue';
 
@@ -13,7 +13,13 @@ export default createRouter({
       name: 'Home',
       path: '/',
       component: Home
+    },
+    {
+      name: 'Encounters',
+      path: '/:membershipType/:membershipId',
+      component: Encounters
     }
+
     //   {
     //     name: 'Report',
     //     path: '/:membershipType/:membershipId',

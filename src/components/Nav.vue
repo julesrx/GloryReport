@@ -8,7 +8,7 @@
         <span :class="['font-semibold', isHome ? 'text-5xl' : 'text-4xl']">Glory</span>.report
       </h1>
     </div>
-    <!-- <PlayerSearch :small="!isHome" /> -->
+    <PlayerSearch :small="!isHome" />
   </nav>
 </template>
 
@@ -16,17 +16,17 @@
 import { defineComponent } from 'vue';
 
 import BungieGlobalAlerts from 'components/BungieGlobalAlerts.vue';
-// import PlayerSearch from '@/components/PlayerSearch.vue';
+import PlayerSearch from 'components/PlayerSearch.vue';
 
 export default defineComponent({
   components: {
-    BungieGlobalAlerts
-    // PlayerSearch
+    BungieGlobalAlerts,
+    PlayerSearch
   },
   computed: {
     isHome(): boolean {
-      const homeRoute = this.$router.options.routes.find((r) => r.path === '/');
-      return homeRoute ? this.$route.matched.some((m) => m.name === homeRoute.name) : false;
+      const homeRoute = this.$router.options.routes.find(r => r.path === '/');
+      return homeRoute ? this.$route.matched.some(m => m.name === homeRoute.name) : false;
     }
   }
 });

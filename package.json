@@ -8,9 +8,10 @@
     "dev": "vite",
     "build": "npm run lint && vue-tsc --noEmit && vite build",
     "serve": "vite preview",
-    "lint": "eslint src/ *.config.* --fix"
+    "lint": "eslint --ext .js,.vue,.ts ./ --fix"
   },
   "dependencies": {
+    "@heroicons/vue": "^1.0.2",
     "axios": "^0.21.1",
     "bungie-api-ts": "^4.9.0",
     "date-fns": "^2.22.1",
@@ -21,6 +22,7 @@
     "vue-router": "^4.0.10"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.4",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
     "@vitejs/plugin-vue": "^1.2.5",
