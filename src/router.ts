@@ -2,9 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import Home from 'views/Home.vue';
 
-import Encounters from 'views/Encounters/Encounters.vue';
-// import ReportEncounters from '@/views/Report/ReportEncounters.vue';
-// import ReportEncounter from '@/views/Report/ReportEncounter.vue';
+import Profile from 'views/Profile/Profile.vue';
+import ProfileHome from 'views/Profile/ProfileHome.vue';
+
+import Daily from 'views/Profile/Daily/Daily.vue';
 
 export default createRouter({
   history: createWebHistory(),
@@ -15,32 +16,33 @@ export default createRouter({
       component: Home
     },
     {
-      name: 'Encounters',
+      name: 'Profile',
       path: '/:membershipType/:membershipId',
-      component: Encounters
+      component: Profile,
+      children: [
+        {
+          name: 'ProfileHome',
+          path: '',
+          component: ProfileHome
+        },
+        {
+          name: 'Daily',
+          path: 'daily',
+          component: Daily
+        }
+        // {
+        //   name: 'Encounters',
+        //   path: 'encounters',
+        //   component: Encounters,
+        //   children: [
+        //     {
+        //       name: 'Encounter',
+        //       path: ':selectedMembershipId',
+        //       component: Encounter
+        //     }
+        //   ]
+        // }
+      ]
     }
-
-    //   {
-    //     name: 'Report',
-    //     path: '/:membershipType/:membershipId',
-    //     component: Report,
-    //     children: [
-    //       {
-    //         name: 'ReportEncounters',
-    //         path: '',
-    //         component: ReportEncounters
-    //       },
-    //       {
-    //         name: 'ReportEncounter',
-    //         path: ':selectedMembershipId',
-    //         component: ReportEncounter
-    //       }
-    //     ]
-    //   },
-    //   {
-    //     name: 'NotFound',
-    //     path: '/:pathMatch(.*)*',
-    //     component: () => import('@/views/NotFound.vue')
-    //   }
   ]
 });

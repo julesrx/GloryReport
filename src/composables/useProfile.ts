@@ -5,8 +5,9 @@ import {
   DestinyProfileComponent,
   DestinyProfileResponse
 } from 'bungie-api-ts/destiny2';
-import { reactive } from 'vue';
+import { reactive, watch, WatchOptions } from 'vue';
 
+import { ProfileState } from '~/interfaces';
 import api from '~/api';
 
 const getMembershipFromRouteParams = (params: RouteParams): [BungieMembershipType, number] => {
@@ -15,13 +16,6 @@ const getMembershipFromRouteParams = (params: RouteParams): [BungieMembershipTyp
     params['membershipId'] as unknown as number
   ];
 };
-
-interface ProfileState {
-  membershipType: BungieMembershipType;
-  membershipId: number;
-  profile: DestinyProfileComponent | null;
-  characters: DestinyCharacterComponent[];
-}
 
 const useProfile = (): ProfileState => {
   const route = useRoute();
@@ -40,6 +34,21 @@ const useProfile = (): ProfileState => {
   });
 
   return profile;
+};
+
+const useWatchProfile = (
+  profile: ProfileState,
+  callback: (profile: ProfileState) => any,
+  options?: WatchOptions
+): void => {
+  watch(
+    profile,
+    profile => {
+      if (profile.profile === null) return;
+      callback(profile);
+    },
+    options ?? { immediate: true }
+  );
 };
 
 const fetchProfile = async (
@@ -65,3 +74,4 @@ const fetchProfile = async (
 };
 
 export default useProfile;
+export { useWatchProfile };
