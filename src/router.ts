@@ -5,8 +5,6 @@ import Home from 'views/Home.vue';
 import Profile from 'views/Profile/Profile.vue';
 import ProfileHome from 'views/Profile/ProfileHome.vue';
 
-import Daily from 'views/Profile/Daily/Daily.vue';
-
 export default createRouter({
   history: createWebHistory(),
   routes: [
@@ -28,7 +26,7 @@ export default createRouter({
         {
           name: 'Daily',
           path: 'daily',
-          component: Daily
+          component: () => import('views/Profile/Daily/Daily.vue')
         }
         // {
         //   name: 'Encounters',
