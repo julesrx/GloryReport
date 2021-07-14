@@ -31,10 +31,7 @@
           :key="`${user.membershipType}-${user.membershipId}`"
         >
           <router-link
-            :to="{
-              name: 'Encounters',
-              params: { membershipType: user.membershipType, membershipId: user.membershipId }
-            }"
+            :to="`/${user.membershipType}/${user.membershipId}`"
             class="flex items-center space-x-2 px-2 py-1 hover:bg-light-600 rounded"
             @click.passive="users = []"
           >
