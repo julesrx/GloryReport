@@ -9,19 +9,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
+import { GlobalAlert, ServerResponse } from 'bungie-api-ts/core';
 
 import api from '~/api';
 
 export default defineComponent({
-  data() {
-    return {
-      alerts: []
-    };
-  },
-  async created() {
-    const res = await api.get('GlobalAlerts/');
-    this.alerts = res.data.Response;
+  setup() {
+    const alerts = ref<GlobalAlert[]>([]);
+    onMounted(async () => {
+      const res = await api.get<ServerResponse<GlobalAlert[]>>('GlobalAlerts/');
+      alerts.value = res.data.Response;
+    });
+
+    return { alerts };
   }
 });
 </script>
