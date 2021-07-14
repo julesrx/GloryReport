@@ -3,8 +3,8 @@
     :to="{
       name: 'Daily',
       params: {
-        membershipType: 1,
-        membershipId: '4611686018430712353'
+        membershipType: profile.membershipType,
+        membershipId: profile.membershipId
       }
     }"
     >Daily report</router-link
@@ -12,3 +12,15 @@
 
   <router-view></router-view>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import useProfile from '~/composables/useProfile';
+
+export default defineComponent({
+  setup() {
+    return { profile: useProfile() };
+  }
+});
+</script>

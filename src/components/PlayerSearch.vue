@@ -69,7 +69,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const users = ref([] as UserInfoCard[]);
+    const users = ref<UserInfoCard[]>([]);
 
     const search = ref('');
     const noresult = ref(false);

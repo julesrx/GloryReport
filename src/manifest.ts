@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import api from '~/api';
 import { getStore } from '~/storage';
+import { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 const versionKey = 'd2-manifest-version';
 const store = getStore('d2-manifest');
@@ -12,12 +13,12 @@ interface ManifestStatus {
   message: string | null;
 }
 
-export const status = reactive<ManifestStatus>({
+const status = reactive<ManifestStatus>({
   isLoading: false,
   message: null
 });
 
-export const loadManifest = async (): Promise<void> => {
+const loadManifest = async (): Promise<void> => {
   status.isLoading = true;
 
   status.message = 'fetching definitions...';
@@ -56,3 +57,11 @@ export const loadManifest = async (): Promise<void> => {
 
   localStorage.setItem(versionKey, version);
 };
+
+const getDefinition = async (
+  referenceId: string
+): Promise<DestinyInventoryItemDefinition | null> => {
+  return await store.getItem<DestinyInventoryItemDefinition>(referenceId);
+};
+
+export { status, loadManifest, getDefinition };

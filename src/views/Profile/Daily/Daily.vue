@@ -1,8 +1,14 @@
 <template>
   <pre>found {{ activitiesLength }} activities</pre>
-  <!-- <pre>{{ groupedActivities }}</pre> -->
 
-  <DayReport v-for="day in groupedActivities" :key="day" :activities="groupedActivities[day]" />
+  <template v-for="day in daysarr" :key="day.toString()">
+    <DayReportItem :day="day" :report="getDayReport(day)" :profile="profile" />
+    <hr />
+  </template>
+
+  <div class="mt-3 text-center">
+    <button type="button" class="bg-dark-50" @click="() => (days += 3)">See more</button>
+  </div>
 </template>
 
 <script lang="ts">
@@ -11,16 +17,17 @@ import { addDays, format } from 'date-fns';
 import {
   DestinyActivityHistoryResults,
   DestinyCharacterComponent,
-  ServerResponse
+  ServerResponse,
+  DestinyActivityModeType
 } from 'bungie-api-ts/destiny2';
 
-import DayReport from 'components/Daily/DayReport.vue';
-import { DestinyHistoricalStatsPeriodGroupShort, ProfileState } from '~/interfaces';
+import DayReportItem from '~/components/Daily/DayReportItem.vue';
+import { DayReport, DestinyHistoricalStatsPeriodGroupShort, ProfileState } from '~/interfaces';
 import api from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
 
 export default defineComponent({
-  components: { DayReport },
+  components: { DayReportItem },
   setup() {
     const activities = ref<DestinyHistoricalStatsPeriodGroupShort[]>([]);
 
@@ -40,13 +47,15 @@ export default defineComponent({
       return res;
     });
 
+    //TODO: use global cancel token and cancel alkl requests on route change
+
     const profile = useProfile();
     useWatchProfile(profile, async (profile: ProfileState): Promise<void> => {
       await Promise.all(profile.characters.map(c => fetchActivities(c)));
     });
 
     const fetchActivities = async (character: DestinyCharacterComponent, page = 0) => {
-      const mode = 5;
+      const mode = DestinyActivityModeType.AllPvP;
       const count = 250;
 
       const res = await api.get<ServerResponse<DestinyActivityHistoryResults>>(
@@ -69,43 +78,31 @@ export default defineComponent({
       await fetchActivities(character, page + 1);
     };
 
-    const groupedActivities = computed<{ [key: string]: DestinyHistoricalStatsPeriodGroupShort[] }>(
-      () => {
-        const res = {};
+    const getDayReport = (day: Date): DayReport => {
+      return {
+        day: format(day, 'yyyy-MM-dd'),
+        activities: activities.value.filter(a => {
+          const date = new Date(a.period);
 
-        // FIXME: typescript error here
-        daysarr.value.forEach(d => {
-          res[format(d, 'yyyy-MM-dd')] = activities.value.filter(a => {
-            const date = new Date(a.period);
+          return (
+            date.getFullYear() === day.getFullYear() &&
+            date.getMonth() === day.getMonth() &&
+            date.getDate() === day.getDate()
+          );
+        })
+      };
+    };
 
-            return (
-              date.getFullYear() === d.getFullYear() &&
-              date.getMonth() === d.getMonth() &&
-              date.getDate() === d.getDate()
-            );
-          });
-        });
+    return {
+      days,
 
-        return res;
+      activitiesLength: computed(() => activities.value.length),
 
-        //   return daysarr.value.map(d => {
-        //     return {
-        //       date: format(d, 'yyyy-MM-dd'),
-        //       activities: activities.value.filter(a => {
-        //         const date = new Date(a.period);
+      daysarr,
+      getDayReport,
 
-        //         return (
-        //           date.getFullYear() === d.getFullYear() &&
-        //           date.getMonth() === d.getMonth() &&
-        //           date.getDate() === d.getDate()
-        //         );
-        //       })
-        //     };
-        //   });
-      }
-    );
-
-    return { activitiesLength: activities.value.length, groupedActivities };
+      profile
+    };
   }
 });
 </script>

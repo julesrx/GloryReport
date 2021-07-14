@@ -10,28 +10,36 @@ import { reactive, watch, WatchOptions } from 'vue';
 import { ProfileState } from '~/interfaces';
 import api from '~/api';
 
-const getMembershipFromRouteParams = (params: RouteParams): [BungieMembershipType, number] => {
+const getMembershipFromRouteParams = (params: RouteParams): [BungieMembershipType, string] => {
   return [
     params['membershipType'] as unknown as BungieMembershipType,
-    params['membershipId'] as unknown as number
+    params['membershipId'] as unknown as string
   ];
 };
 
 const useProfile = (): ProfileState => {
-  const route = useRoute();
-  const [membershipType, membershipId] = getMembershipFromRouteParams(route.params);
-
   const profile = reactive<ProfileState>({
-    membershipType,
-    membershipId,
+    membershipType: null,
+    membershipId: null,
     profile: null,
     characters: []
   });
 
-  fetchProfile(profile.membershipType, profile.membershipId).then(([p, c]) => {
-    profile.profile = p;
-    profile.characters = c;
-  });
+  const route = useRoute();
+  watch(
+    () => route.params,
+    async params => {
+      const [membershipType, membershipId] = getMembershipFromRouteParams(params);
+
+      profile.membershipType = membershipType;
+      profile.membershipId = membershipId;
+
+      const [p, c] = await fetchProfile(profile.membershipType, profile.membershipId);
+      profile.profile = p;
+      profile.characters = c;
+    },
+    { immediate: true }
+  );
 
   return profile;
 };
@@ -53,7 +61,7 @@ const useWatchProfile = (
 
 const fetchProfile = async (
   membershipType: BungieMembershipType,
-  membershipId: number
+  membershipId: string
 ): Promise<[DestinyProfileComponent, DestinyCharacterComponent[]]> => {
   const res = await api.get<ServerResponse<DestinyProfileResponse>>(
     `Destiny2/${membershipType}/Profile/${membershipId}/`,
