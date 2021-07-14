@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "npm run lint && vue-tsc --noEmit && vite build",
     "serve": "vite preview",
-    "lint": "eslint --ext .vue,.ts,.js ./src/ --fix"
+    "lint": "eslint src/ *.config.* --fix"
   },
   "dependencies": {
     "axios": "^0.21.1",

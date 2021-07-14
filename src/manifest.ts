@@ -49,7 +49,7 @@ export const loadManifest = async (): Promise<void> => {
 
   status.message = 'saving data...';
 
-  await Promise.all(Object.keys(defs.data).map((k) => store.setItem(k, defs.data[k])));
+  await Promise.all(Object.keys(defs.data).map(k => store.setItem(k, defs.data[k])));
 
   status.isLoading = false;
   status.message = null;

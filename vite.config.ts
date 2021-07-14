@@ -6,7 +6,11 @@ import md5 from 'crypto-js/md5';
 export default defineConfig({
   plugins: [vue(), WindiCSS()],
   resolve: {
-    alias: [{ find: '~', replacement: '/src' }]
+    alias: [
+      { find: '~', replacement: '/src' },
+      { find: 'components', replacement: '/src/components' },
+      { find: 'views', replacement: '/src/views' }
+    ]
   },
   build: {
     rollupOptions: {
