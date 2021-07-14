@@ -12,7 +12,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref, onBeforeUnmount } from 'vue';
+import axios from 'axios';
 import { addDays, format } from 'date-fns';
 import {
   DestinyActivityHistoryResults,
@@ -47,7 +48,10 @@ export default defineComponent({
       return res;
     });
 
-    //TODO: use global cancel token and cancel alkl requests on route change
+    const cancelToken = axios.CancelToken.source();
+    onBeforeUnmount(() => {
+      cancelToken.cancel();
+    });
 
     const profile = useProfile();
     useWatchProfile(profile, async (profile: ProfileState): Promise<void> => {
@@ -61,7 +65,8 @@ export default defineComponent({
       const res = await api.get<ServerResponse<DestinyActivityHistoryResults>>(
         `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
         {
-          params: { count: count, mode: mode, page: page }
+          params: { count: count, mode: mode, page: page },
+          cancelToken: cancelToken.token
         }
       );
 
