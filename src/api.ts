@@ -11,6 +11,7 @@ const api = axios.create({
 
 const pgcrs = getStore('d2-pgcr-datas');
 
+// TODO: use p-queue ?
 const getPGCR = async (instanceId: string): Promise<DestinyPostGameCarnageReportData> => {
   const uri = `Destiny2/Stats/PostGameCarnageReport/${instanceId}/`;
 
@@ -25,15 +26,3 @@ const getPGCR = async (instanceId: string): Promise<DestinyPostGameCarnageReport
 
 export default api;
 export { getPGCR };
-
-// export const getPGCR = async (instanceId) => {
-//   const uri = `Destiny2/Stats/PostGameCarnageReport/${instanceId}/`;
-
-//   const cache = localStorage.getItem(uri);
-//   if (cache) return JSON.parse(cache);
-
-//   const res = await api.get(uri);
-//   localStorage.setItem(uri, JSON.stringify(res.data.Response));
-
-//   return res.data.Response;
-// };
