@@ -1,6 +1,8 @@
 import { BungieMembershipType } from 'bungie-api-ts/common';
 import { DestinyCharacterComponent, DestinyProfileComponent } from 'bungie-api-ts/destiny2';
 
+import { Encounter } from './models';
+
 export interface ProfileState {
   membershipType: BungieMembershipType | null;
   membershipId: string | null;
@@ -27,4 +29,9 @@ export interface DayReportResultWeapon {
   readonly referenceId: string;
   readonly uniqueWeaponKills: number;
   readonly uniqueWeaponPrecisionKills: number;
+}
+
+export interface EncountersState {
+  membershipId: string | null;
+  encounters: Encounter[];
 }

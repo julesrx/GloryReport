@@ -27,6 +27,23 @@ export default createRouter({
           name: 'Daily',
           path: 'daily',
           component: () => import('views/Profile/Daily/Daily.vue')
+        },
+        {
+          name: 'Encounters',
+          path: 'encounters',
+          component: () => import('views/Profile/Encounters/Encounters.vue'),
+          children: [
+            {
+              name: 'EncountersRecap',
+              path: '',
+              component: () => import('views/Profile/Encounters/EncountersRecap.vue')
+            },
+            {
+              name: 'EncountersDetail',
+              path: ':selectedMembershipId',
+              component: () => import('views/Profile/Encounters/EncountersDetail.vue')
+            }
+          ]
         }
         // {
         //   name: 'Encounters',

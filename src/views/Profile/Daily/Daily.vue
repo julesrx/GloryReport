@@ -58,6 +58,7 @@ export default defineComponent({
       await Promise.all(profile.characters.map(c => fetchActivities(c)));
     });
 
+    // put in common with encounters
     const fetchActivities = async (character: DestinyCharacterComponent, page = 0) => {
       const mode = DestinyActivityModeType.AllPvP;
       const count = 250;
