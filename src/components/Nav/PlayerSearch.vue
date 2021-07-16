@@ -56,7 +56,7 @@ import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 import { ServerResponse } from 'bungie-api-ts/app';
 import { debounce } from 'lodash-es';
-import { XIcon } from '@heroicons/vue/solid';
+import { XIcon } from 'heroicons-vue3/solid';
 
 import api from '~/api';
 

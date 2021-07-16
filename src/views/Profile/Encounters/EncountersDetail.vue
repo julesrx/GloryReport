@@ -5,8 +5,7 @@
       params: parentParams
     }"
   >
-    Back to all encounters
-    <!-- <ArrowNarrowLeft title="Back to all encounters" class="inline-block" /> -->
+    <span class="text-sm opacity-50 flex items-center"> Back to all encounters </span>
   </router-link>
 
   <template v-if="encounter">
