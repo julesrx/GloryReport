@@ -30,12 +30,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { useRoute } from 'vue-router';
 
 import useProfile from '~/composables/useProfile';
 
 export default defineComponent({
   setup() {
-    return { profile: useProfile() };
+    return { profile: useProfile(useRoute()) };
   }
 });
 </script>

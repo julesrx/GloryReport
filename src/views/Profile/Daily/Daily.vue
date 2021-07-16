@@ -13,6 +13,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref, onBeforeUnmount } from 'vue';
+import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { addDays, format } from 'date-fns';
 import {
@@ -53,7 +54,7 @@ export default defineComponent({
       cancelToken.cancel();
     });
 
-    const profile = useProfile();
+    const profile = useProfile(useRoute());
     useWatchProfile(profile, async (profile: ProfileState): Promise<void> => {
       await Promise.all(profile.characters.map(c => fetchActivities(c)));
     });

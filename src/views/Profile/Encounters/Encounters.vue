@@ -27,6 +27,7 @@
 
 <script lang="ts">
 import { ref, computed, defineComponent } from 'vue';
+import { useRoute } from 'vue-router';
 import {
   DestinyActivityHistoryResults,
   DestinyActivityModeType,
@@ -86,7 +87,7 @@ export default defineComponent({
       await fetchActivities(character, page + 1);
     };
 
-    const profile = useProfile();
+    const profile = useProfile(useRoute());
     useWatchProfile(profile, async (profile: ProfileState) => {
       if (!profile.membershipId || !profile.characters.length) return;
 
