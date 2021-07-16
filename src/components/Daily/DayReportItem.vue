@@ -18,6 +18,7 @@ import {
 import DestinyInventoryItem from 'components/common/DestinyInventoryItem.vue';
 import { getPGCR } from '~/api';
 import { DayReport, DayReportResult, DayReportResultWeapon, ProfileState } from '~/interfaces';
+import useCancelToken from '~/composables/useCancelToken';
 
 export default defineComponent({
   props: {
@@ -34,11 +35,15 @@ export default defineComponent({
   },
   components: { DestinyInventoryItem },
   setup(props) {
+    const cancelToken = useCancelToken();
+
     const pgcrs = ref<DestinyPostGameCarnageReportData[]>([]);
     watch(
       () => props.report.activities.length,
       debounce(async () => {
-        const res = await Promise.all(props.report.activities.map(a => getPGCR(a.instanceId)));
+        const res = await Promise.all(
+          props.report.activities.map(a => getPGCR(a.instanceId, cancelToken.token))
+        );
         pgcrs.value = res;
       }, 250),
       { immediate: true }

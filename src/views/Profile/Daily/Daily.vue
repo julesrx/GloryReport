@@ -12,25 +12,22 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, onBeforeUnmount } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
 import { addDays, format } from 'date-fns';
-import {
-  DestinyActivityHistoryResults,
-  DestinyCharacterComponent,
-  ServerResponse,
-  DestinyActivityModeType
-} from 'bungie-api-ts/destiny2';
+import { DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
 
 import DayReportItem from 'components/Daily/DayReportItem.vue';
 import { DayReport, DestinyHistoricalStatsPeriodGroupShort, ProfileState } from '~/interfaces';
-import api from '~/api';
+import { getActivities } from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
+import useCancelToken from '~/composables/useCancelToken';
 
 export default defineComponent({
   components: { DayReportItem },
   setup() {
+    const cancelToken = useCancelToken();
+
     const activities = ref<DestinyHistoricalStatsPeriodGroupShort[]>([]);
 
     const days = ref(3);
@@ -49,24 +46,13 @@ export default defineComponent({
       return res;
     });
 
-    // put in common with encounters
     const fetchActivities = async (character: DestinyCharacterComponent, page = 0) => {
-      const mode = DestinyActivityModeType.AllPvP;
-      const count = 250;
-
-      const res = await api.get<ServerResponse<DestinyActivityHistoryResults>>(
-        `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
-        {
-          params: { count: count, mode: mode, page: page },
-          cancelToken: cancelToken.token
-        }
-      );
-
-      if (!res.data.Response.activities) return;
+      const acts = await getActivities(character, page, cancelToken.token);
+      if (!acts.length) return;
 
       activities.value = [
         ...activities.value,
-        ...res.data.Response.activities.map(a => ({
+        ...acts.map(a => ({
           instanceId: a.activityDetails.instanceId,
           period: a.period
         }))
@@ -74,11 +60,6 @@ export default defineComponent({
 
       await fetchActivities(character, page + 1);
     };
-
-    const cancelToken = axios.CancelToken.source();
-    onBeforeUnmount(() => {
-      cancelToken.cancel();
-    });
 
     const profile = useProfile(useRoute());
     useWatchProfile(profile, async (profile: ProfileState): Promise<void> => {

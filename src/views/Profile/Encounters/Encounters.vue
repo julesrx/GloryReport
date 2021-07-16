@@ -24,23 +24,19 @@
 <script lang="ts">
 import { ref, computed, defineComponent } from 'vue';
 import { useRoute } from 'vue-router';
-import {
-  DestinyActivityHistoryResults,
-  DestinyActivityModeType,
-  DestinyCharacterComponent,
-  ServerResponse
-} from 'bungie-api-ts/destiny2';
+import { DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
 
-import api, { getPGCR } from '~/api';
+import { getPGCR, getActivities } from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
+import useCancelToken from '~/composables/useCancelToken';
 import EncountersStore from '~/stores/encounters';
 import { ProfileState } from '~/interfaces';
 import { CharacterLoading } from '~/models';
 
-// cancel token here
-
 export default defineComponent({
   setup() {
+    const cancelToken = useCancelToken();
+
     const encountersState = ref(EncountersStore.state);
 
     const loadings = ref<CharacterLoading[]>([]);
@@ -51,26 +47,17 @@ export default defineComponent({
     });
 
     const fetchActivities = async (character: DestinyCharacterComponent, page = 0) => {
-      const mode = DestinyActivityModeType.AllPvP;
-      const count = 250;
+      const acts = await getActivities(character, page, cancelToken.token);
 
-      const res = await api.get<ServerResponse<DestinyActivityHistoryResults>>(
-        `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
-        {
-          params: { count: count, mode: mode, page: page }
-          // cancelToken: cancelToken.token
-        }
-      );
-
-      if (!res.data.Response.activities) {
+      if (!acts.length) {
         const loading = loadings.value.find(l => l.characterId === character.characterId);
         if (loading) loading.loading = false;
 
         return;
       }
 
-      res.data.Response.activities.forEach(async act => {
-        const pgcr = await getPGCR(act.activityDetails.instanceId);
+      acts.forEach(async act => {
+        const pgcr = await getPGCR(act.activityDetails.instanceId, cancelToken.token);
         pgcr.entries.forEach(entry => {
           const player = entry.player;
 
