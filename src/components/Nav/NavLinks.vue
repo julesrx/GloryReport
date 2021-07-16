@@ -7,17 +7,13 @@
 
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue';
-import { DeepReadonly, UnwrapNestedRefs } from '@vue/reactivity';
 
 import NavLink from './NavLink.vue';
 import { ProfileState } from '~/interfaces';
 
 export default defineComponent({
   props: {
-    profile: {
-      type: Object as PropType<DeepReadonly<UnwrapNestedRefs<ProfileState>>>,
-      required: true
-    }
+    profile: { type: Object as PropType<ProfileState>, required: true }
   },
   components: { NavLink },
   setup(props) {

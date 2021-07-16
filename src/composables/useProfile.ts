@@ -1,5 +1,4 @@
 import { watch, WatchOptions } from 'vue';
-import { DeepReadonly, UnwrapNestedRefs } from '@vue/reactivity';
 import { RouteParams, RouteLocationNormalizedLoaded } from 'vue-router';
 import { BungieMembershipType } from 'bungie-api-ts/common';
 
@@ -13,9 +12,7 @@ const getMembershipFromRouteParams = (params: RouteParams): [BungieMembershipTyp
   ];
 };
 
-const useProfile = (
-  route: RouteLocationNormalizedLoaded
-): DeepReadonly<UnwrapNestedRefs<ProfileState>> => {
+const useProfile = (route: RouteLocationNormalizedLoaded): ProfileState => {
   watch(
     () => route.params,
     async params => {
@@ -27,7 +24,7 @@ const useProfile = (
     { immediate: true }
   );
 
-  return profile;
+  return profile as ProfileState;
 };
 
 const useWatchProfile = (
