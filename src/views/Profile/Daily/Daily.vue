@@ -49,16 +49,6 @@ export default defineComponent({
       return res;
     });
 
-    const cancelToken = axios.CancelToken.source();
-    onBeforeUnmount(() => {
-      cancelToken.cancel();
-    });
-
-    const profile = useProfile(useRoute());
-    useWatchProfile(profile, async (profile: ProfileState): Promise<void> => {
-      await Promise.all(profile.characters.map(c => fetchActivities(c)));
-    });
-
     // put in common with encounters
     const fetchActivities = async (character: DestinyCharacterComponent, page = 0) => {
       const mode = DestinyActivityModeType.AllPvP;
@@ -84,6 +74,16 @@ export default defineComponent({
 
       await fetchActivities(character, page + 1);
     };
+
+    const cancelToken = axios.CancelToken.source();
+    onBeforeUnmount(() => {
+      cancelToken.cancel();
+    });
+
+    const profile = useProfile(useRoute());
+    useWatchProfile(profile, async (profile: ProfileState): Promise<void> => {
+      await Promise.all(profile.characters.map(c => fetchActivities(c)));
+    });
 
     const getDayReport = (day: Date): DayReport => {
       return {
