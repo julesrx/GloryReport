@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-center space-x-3">
-    <NavLink name="Daily" :params="routeParams">Daily</NavLink>
     <NavLink name="EncountersRecap" :params="routeParams">Encounters</NavLink>
+    <NavLink name="Daily" :params="routeParams">Daily</NavLink>
   </div>
 </template>
 
