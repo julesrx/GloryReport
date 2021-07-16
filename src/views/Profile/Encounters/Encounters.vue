@@ -5,16 +5,7 @@
     }}</span>
 
     <div class="flex justify-between text-light-700">
-      <p>
-        Found {{ encountersState.encounters.length }} players
-        <!-- <span v-if="wasCanceled">(search canceled)</span> -->
-      </p>
-      <!-- <X
-          v-if="isLoading"
-          @click="cancelAll(true)"
-          class="cursor-pointer"
-          title="Cancel non-cached requests"
-        /> -->
+      <p>Found {{ encountersState.encounters.length }} players</p>
     </div>
 
     <router-view></router-view>
@@ -37,7 +28,7 @@ export default defineComponent({
   setup() {
     const cancelToken = useCancelToken();
 
-    const encountersState = ref(EncountersStore.state);
+    const encountersState = EncountersStore.state;
 
     const loadings = ref<CharacterLoading[]>([]);
     const isLoading = computed(() => {
@@ -74,7 +65,7 @@ export default defineComponent({
     useWatchProfile(profile, async (profile: ProfileState) => {
       if (!profile.membershipId || !profile.characters.length) return;
 
-      if (encountersState.value.membershipId === profile.membershipId) return;
+      if (encountersState.membershipId === profile.membershipId) return;
       EncountersStore.setCurrentUser(profile.membershipId);
 
       await Promise.all(
@@ -91,9 +82,6 @@ export default defineComponent({
       profile,
 
       isLoading
-
-      // wasCanceled,
-      // cancelAll
     };
   }
 });

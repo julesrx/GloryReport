@@ -5,7 +5,6 @@
         <td :class="['w-16 text-center', cellBorder, cellSpacing]">#</td>
         <td :class="[cellBorder, cellSpacing]">
           <div class="relative">
-            <!-- <Search class="absolute left-0 inset-y-0 text-light-900" /> -->
             <input
               type="search"
               v-model="search"
@@ -42,11 +41,11 @@ import { Encounter } from '~/models';
 export default defineComponent({
   components: { EncounterRow },
   setup() {
-    const encountersState = ref(EncountersStore.state);
+    const encountersState = EncountersStore.state;
 
     // sorting
     const sortedEncounters = computed(() => {
-      const encounters = encountersState.value.encounters.slice() as Encounter[];
+      const encounters = encountersState.encounters.slice() as Encounter[];
       encounters.sort((a, b) => (a.count > b.count ? -1 : 1));
 
       return encounters;
