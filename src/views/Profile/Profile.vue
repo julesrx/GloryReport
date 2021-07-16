@@ -4,7 +4,7 @@
 
   <hr class="opacity-10 mt-2 mb-5" />
 
-  <router-view></router-view>
+  <router-view v-if="profile.profile"></router-view>
 </template>
 
 <script lang="ts">
