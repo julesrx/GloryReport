@@ -1,5 +1,5 @@
 <template>
-  <div :id="elId" class="relative max-w-xs mx-auto mb-5">
+  <div :id="elId" class="relative max-w-xs mx-auto">
     <div class="relative text-dark-500">
       <input
         type="text"

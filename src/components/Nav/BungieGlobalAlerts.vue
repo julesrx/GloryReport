@@ -14,6 +14,7 @@ import { GlobalAlert, ServerResponse } from 'bungie-api-ts/core';
 
 import api from '~/api';
 
+// TODO: use suspense + async setup ?
 export default defineComponent({
   setup() {
     const alerts = ref<GlobalAlert[]>([]);

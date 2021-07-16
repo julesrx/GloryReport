@@ -1,30 +1,4 @@
 <template>
-  <ul>
-    <li>
-      <router-link
-        :to="{
-          name: 'Daily',
-          params: {
-            membershipType: profile.membershipType,
-            membershipId: profile.membershipId
-          }
-        }"
-        >Daily report</router-link
-      >
-    </li>
-    <li>
-      <router-link
-        :to="{
-          name: 'EncountersRecap',
-          params: {
-            membershipType: profile.membershipType,
-            membershipId: profile.membershipId
-          }
-        }"
-        >Encounters</router-link
-      >
-    </li>
-  </ul>
   <router-view></router-view>
 </template>
 
