@@ -20,6 +20,8 @@ const useProfile = (
     () => route.params,
     async params => {
       const [membershipType, membershipId] = getMembershipFromRouteParams(params);
+      if (!membershipType || !membershipId) return;
+
       refreshProfile(membershipType, membershipId);
     },
     { immediate: true }
