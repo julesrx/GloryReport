@@ -1,5 +1,5 @@
 <template>
-  <tr class="hover:bg-dark-600 cursor-pointer" @click="navigateToEncounter(encounter)">
+  <tr class="hover:bg-dark-700 cursor-pointer" @click="navigateToEncounter(encounter)">
     <td :class="['text-center', showBorders ? cellBorder : null, cellSpacing]">
       {{ ranking }}
     </td>

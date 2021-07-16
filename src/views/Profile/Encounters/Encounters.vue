@@ -1,27 +1,23 @@
 <template>
   <div id="encounters">
-    <p v-if="!profile.profile">Loading profile...</p>
-    <template v-else>
-      <div class="flex items-baseline space-x-2">
-        <h2 class="text-3xl font-bold">{{ profile.profile.userInfo.displayName }}</h2>
-        <span v-if="isLoading" class="text-sm text-light-800">fetching activities...</span>
-      </div>
+    <span class="text-sm opacity-50">{{
+      isLoading ? 'fetching activities...' : 'all activities found'
+    }}</span>
 
-      <div class="flex justify-between text-light-700">
-        <p>
-          Found {{ encountersState.encounters.length }} players
-          <!-- <span v-if="wasCanceled">(search canceled)</span> -->
-        </p>
-        <!-- <X
+    <div class="flex justify-between text-light-700">
+      <p>
+        Found {{ encountersState.encounters.length }} players
+        <!-- <span v-if="wasCanceled">(search canceled)</span> -->
+      </p>
+      <!-- <X
           v-if="isLoading"
           @click="cancelAll(true)"
           class="cursor-pointer"
           title="Cancel non-cached requests"
         /> -->
-      </div>
+    </div>
 
-      <router-view></router-view>
-    </template>
+    <router-view></router-view>
   </div>
 </template>
 

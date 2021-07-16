@@ -1,4 +1,9 @@
 <template>
+  <p v-if="!profile.profile">Loading profile...</p>
+  <h2 v-else class="text-3xl font-bold">{{ profile.profile.userInfo.displayName }}</h2>
+
+  <hr class="opacity-10 mt-2 mb-5" />
+
   <router-view></router-view>
 </template>
 

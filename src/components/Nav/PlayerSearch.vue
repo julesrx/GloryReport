@@ -1,13 +1,13 @@
 <template>
   <div :id="elId" class="relative max-w-xs mx-auto">
-    <div class="relative text-dark-500">
+    <div class="relative text-light-500">
       <input
         type="text"
         v-model="search"
         placeholder="Guardian..."
         @click="debouncedOnSearch"
         :class="[
-          'placeholder-dark-300 bg-light-100 py-1 pl-2 pr-8 rounded shadow block w-full focus:outline-none',
+          'placeholder-dark-50 bg-dark-500 py-1 pl-2 pr-8 rounded shadow block w-full focus:outline-none',
           sizeClasses
         ]"
       />
@@ -18,11 +18,11 @@
 
     <div
       v-if="search"
-      :class="['bg-light-100 rounded shadow absolute w-full mt-1 text-dark-500', sizeClasses]"
+      :class="['bg-dark-500 rounded shadow absolute w-full mt-1 z-10', sizeClasses]"
     >
       <ul class="max-h-56 overflow-auto">
-        <li v-if="loading" class="px-2 py-1 text-dark-300">Searching...</li>
-        <li v-else-if="!loading && noresult && !users.length" class="px-2 py-1 text-dark-300">
+        <li v-if="loading" class="px-2 py-1 text-dark-50">Searching...</li>
+        <li v-else-if="!loading && noresult && !users.length" class="px-2 py-1 text-dark-50">
           No player found...
         </li>
         <li
@@ -32,7 +32,7 @@
         >
           <router-link
             :to="`/${user.membershipType}/${user.membershipId}`"
-            class="flex items-center space-x-2 px-2 py-1 hover:bg-light-600 rounded"
+            class="flex items-center space-x-2 px-2 py-1 hover:bg-dark-300 rounded"
             @click.passive="users = []"
           >
             <img
