@@ -3,7 +3,9 @@ import { ServerResponse, BungieMembershipType } from 'bungie-api-ts/common';
 import {
   DestinyCharacterComponent,
   DestinyProfileComponent,
-  DestinyProfileResponse
+  DestinyProfileResponse,
+  DestinyComponentType,
+  ComponentPrivacySetting
 } from 'bungie-api-ts/destiny2';
 
 import api from '~/api';
@@ -34,14 +36,25 @@ const fetchProfile = async (
   membershipType: BungieMembershipType,
   membershipId: string
 ): Promise<[DestinyProfileComponent, DestinyCharacterComponent[]]> => {
+  const components = [
+    DestinyComponentType.Profiles,
+    DestinyComponentType.Characters
+    // DestinyComponentType.Metrics // TODO :later
+  ];
+
   const res = await api.get<ServerResponse<DestinyProfileResponse>>(
     `Destiny2/${membershipType}/Profile/${membershipId}/`,
     {
-      params: { components: '100,200' }
+      params: {
+        components: components.join(',')
+      }
     }
   );
 
   const response = res.data.Response;
+
+  if (response.profile.privacy === ComponentPrivacySetting.Private)
+    throw new Error('profile is set to private');
 
   if (!response.profile.data) throw new Error('Profile not found');
   if (!response.characters.data) throw new Error('No characters found');
