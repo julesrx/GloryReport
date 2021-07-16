@@ -21,17 +21,14 @@ export default createRouter({
         {
           name: 'ProfileHome',
           path: '',
-          component: ProfileHome
-        },
-        {
-          name: 'Daily',
-          path: 'daily',
-          component: () => import('views/Profile/Daily/Daily.vue')
+          component: ProfileHome,
+          redirect: { name: 'EncountersRecap' }
         },
         {
           name: 'Encounters',
           path: 'encounters',
           component: () => import('views/Profile/Encounters/Encounters.vue'),
+          redirect: { name: 'EncountersRecap' },
           children: [
             {
               name: 'EncountersRecap',
@@ -44,19 +41,12 @@ export default createRouter({
               component: () => import('views/Profile/Encounters/EncountersDetail.vue')
             }
           ]
+        },
+        {
+          name: 'Daily',
+          path: 'daily',
+          component: () => import('views/Profile/Daily/Daily.vue')
         }
-        // {
-        //   name: 'Encounters',
-        //   path: 'encounters',
-        //   component: Encounters,
-        //   children: [
-        //     {
-        //       name: 'Encounter',
-        //       path: ':selectedMembershipId',
-        //       component: Encounter
-        //     }
-        //   ]
-        // }
       ]
     }
   ]
