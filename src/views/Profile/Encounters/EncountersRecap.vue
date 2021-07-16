@@ -9,7 +9,7 @@
             <input
               type="search"
               v-model="search"
-              class="ml-2 bg-dark-500 focus:outline-none placeholder-light-900 w-full pl-6"
+              class="ml-2 bg-transparent focus:outline-none placeholder-light-900 w-full pl-6"
               placeholder="Search..."
             />
           </div>
@@ -58,7 +58,7 @@ export default defineComponent({
       sortedEncounters.value.filter(enc =>
         !search.value.length
           ? enc
-          : enc.displayName.toLowerCase().includes(search.value.toLowerCase())
+          : enc.displayName?.toLowerCase().includes(search.value.toLowerCase())
       )
     );
     const slicedEncounters = computed(() => filteredEncounters.value.slice(0, 50));
