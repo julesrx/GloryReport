@@ -41,8 +41,8 @@ import { useRoute } from 'vue-router';
 import { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2/interfaces';
 
 import { getPGCR } from '~/api';
-import DateDistance from '~/components/DateDistance.vue';
-import StatItem from '~/components/StatItem.vue';
+import DateDistance from 'components/DateDistance.vue';
+import StatItem from 'components/StatItem.vue';
 
 export default defineComponent({
   components: { DateDistance, StatItem },

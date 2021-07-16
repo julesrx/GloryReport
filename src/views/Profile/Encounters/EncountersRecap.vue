@@ -35,7 +35,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
 
-import EncounterRow from '~/components/Encounters/EncounterRow.vue';
+import EncounterRow from 'components/Encounters/EncounterRow.vue';
 import EncountersStore from '~/stores/encounters';
 import { Encounter } from '~/models';
 

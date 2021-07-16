@@ -34,8 +34,8 @@ import { computed, defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import EncountersStore from '~/stores/encounters';
-import EncounterIcon from '~/components/Encounters/EncounterIcon.vue';
-import ActivityItem from '~/components/ActivityItem.vue';
+import EncounterIcon from 'components/Encounters/EncounterIcon.vue';
+import ActivityItem from 'components/ActivityItem.vue';
 
 export default defineComponent({
   components: { EncounterIcon, ActivityItem },

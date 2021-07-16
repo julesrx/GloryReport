@@ -23,7 +23,7 @@ import {
   DestinyActivityModeType
 } from 'bungie-api-ts/destiny2';
 
-import DayReportItem from '~/components/Daily/DayReportItem.vue';
+import DayReportItem from 'components/Daily/DayReportItem.vue';
 import { DayReport, DestinyHistoricalStatsPeriodGroupShort, ProfileState } from '~/interfaces';
 import api from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
