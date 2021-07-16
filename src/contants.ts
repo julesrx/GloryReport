@@ -1,3 +1,1 @@
-export default {
-  APP_NAME: 'Glory.report'
-};
+export const APP_NAME = 'Glory.report';
