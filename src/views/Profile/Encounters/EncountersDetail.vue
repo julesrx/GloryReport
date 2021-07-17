@@ -33,20 +33,18 @@ import { computed, defineComponent } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { Encounter } from '~/models';
-import EncountersStore from '~/stores/encounters';
+import encounters from '~/stores/encounters';
 import EncounterIcon from 'components/Encounters/EncounterIcon.vue';
 import ActivityItem from 'components/ActivityItem.vue';
 
 export default defineComponent({
   components: { EncounterIcon, ActivityItem },
   setup() {
-    const encountersState = EncountersStore.state;
-
     const route = useRoute();
     const encounter = computed(() => {
       if (!route.params['selectedMembershipId']) return null;
 
-      return EncountersStore.state.encounters.find(
+      return encounters.encounters.find(
         e => e.membershipId === route.params['selectedMembershipId']
       ) as Encounter;
     });
@@ -56,7 +54,7 @@ export default defineComponent({
       membershipId: route.params['membershipId']
     }));
 
-    return { encountersState, encounter, parentParams };
+    return { encounter, parentParams };
   }
 });
 </script>

@@ -35,20 +35,18 @@
 import { computed, defineComponent, ref } from 'vue';
 
 import EncounterRow from 'components/Encounters/EncounterRow.vue';
-import EncountersStore from '~/stores/encounters';
+import encounters from '~/stores/encounters';
 import { Encounter } from '~/models';
 
 export default defineComponent({
   components: { EncounterRow },
   setup() {
-    const encountersState = EncountersStore.state;
-
     // sorting
     const sortedEncounters = computed(() => {
-      const encounters = encountersState.encounters.slice() as Encounter[];
-      encounters.sort((a, b) => (a.count > b.count ? -1 : 1));
+      const res = encounters.encounters.slice() as Encounter[];
+      res.sort((a, b) => (a.count > b.count ? -1 : 1));
 
-      return encounters;
+      return res;
     });
 
     // filtering
@@ -67,8 +65,6 @@ export default defineComponent({
     const cellBorder = 'border-b border-dark-400';
 
     return {
-      encountersState,
-
       sortedEncounters,
 
       search,

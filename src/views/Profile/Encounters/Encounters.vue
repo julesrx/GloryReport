@@ -5,7 +5,7 @@
     }}</span>
 
     <div class="flex justify-between text-light-700">
-      <p>Found {{ encountersState.encounters.length }} players</p>
+      <p>Found {{ encounterssCount }} players</p>
     </div>
 
     <router-view></router-view>
@@ -20,15 +20,13 @@ import { DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
 import { getPGCR, getActivities } from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
 import useCancelToken from '~/composables/useCancelToken';
-import EncountersStore from '~/stores/encounters';
+import encounters, { addEncounter, setCurrentUser } from '~/stores/encounters';
 import { ProfileState } from '~/interfaces';
 import { CharacterLoading } from '~/models';
 
 export default defineComponent({
   setup() {
     const cancelToken = useCancelToken();
-
-    const encountersState = EncountersStore.state;
 
     const loadings = ref<CharacterLoading[]>([]);
     const isLoading = computed(() => {
@@ -53,7 +51,7 @@ export default defineComponent({
           const player = entry.player;
 
           if (entry.player.destinyUserInfo.membershipId !== profile.membershipId) {
-            EncountersStore.addEncounter(pgcr.activityDetails.instanceId, player);
+            addEncounter(pgcr.activityDetails.instanceId, player);
           }
         });
       });
@@ -65,8 +63,8 @@ export default defineComponent({
     useWatchProfile(profile, async (profile: ProfileState) => {
       if (!profile.membershipId || !profile.characters.length) return;
 
-      if (encountersState.membershipId === profile.membershipId) return;
-      EncountersStore.setCurrentUser(profile.membershipId);
+      if (encounters.membershipId === profile.membershipId) return;
+      setCurrentUser(profile.membershipId);
 
       await Promise.all(
         profile.characters.map(c => {
@@ -76,8 +74,10 @@ export default defineComponent({
       );
     });
 
+    const encounterssCount = computed(() => encounters.encounters.length);
+
     return {
-      encountersState,
+      encounterssCount,
 
       profile,
 
