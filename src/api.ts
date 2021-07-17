@@ -7,6 +7,7 @@ import {
   DestinyHistoricalStatsPeriodGroup,
   DestinyPostGameCarnageReportData
 } from 'bungie-api-ts/destiny2';
+import PQueue from 'p-queue';
 
 import { getStore } from '~/storage';
 
@@ -15,23 +16,9 @@ const api = axios.create({
   headers: { 'X-Api-Key': import.meta.env.VITE_BUNGIE_API_KEY }
 });
 
+const queue = new PQueue({ interval: 2500, intervalCap: 20 });
+
 const pgcrs = getStore('d2-pgcr-datas');
-
-// TODO: use p-queue ?
-const getPGCR = async (
-  instanceId: string,
-  cancelToken: CancelToken
-): Promise<DestinyPostGameCarnageReportData> => {
-  const uri = `Destiny2/Stats/PostGameCarnageReport/${instanceId}/`;
-
-  const cache = await pgcrs.getItem<DestinyPostGameCarnageReportData>(uri);
-  if (cache) return cache;
-
-  const res = await api.get<ServerResponse<DestinyPostGameCarnageReportData>>(uri, { cancelToken });
-  await pgcrs.setItem(uri, res.data.Response);
-
-  return res.data.Response;
-};
 
 const getActivities = async (
   character: DestinyCharacterComponent,
@@ -54,5 +41,30 @@ const getActivities = async (
   return res.data.Response.activities;
 };
 
+const getPGCR = (
+  instanceId: string,
+  cancelToken: CancelToken
+): Promise<DestinyPostGameCarnageReportData> => {
+  const uri = `Destiny2/Stats/PostGameCarnageReport/${instanceId}/`;
+
+  return new Promise<DestinyPostGameCarnageReportData>(resolve => {
+    pgcrs.getItem<DestinyPostGameCarnageReportData>(uri).then(cache => {
+      if (cache) resolve(cache);
+      else {
+        const callback = async () => {
+          const res = await api.get<ServerResponse<DestinyPostGameCarnageReportData>>(uri, {
+            cancelToken
+          });
+
+          const pgcr = await pgcrs.setItem(uri, res.data.Response);
+          resolve(pgcr);
+        };
+
+        queue.add(() => callback());
+      }
+    });
+  });
+};
+
 export default api;
-export { getPGCR, getActivities };
+export { getActivities, getPGCR };
