@@ -1,52 +1,58 @@
 import { reactive, readonly } from 'vue';
 import { DestinyPlayer } from 'bungie-api-ts/destiny2';
 
-import { Encounter } from '~/models';
-import { EncountersState } from '~/interfaces';
+import { Encounter, EncountersState } from '~/interfaces/encounters';
+import { getStore } from '~/storage';
 
-// store the encounters in the indexeddb ?
-// https://stackoverflow.com/questions/22577199/indexeddb-access-speed-and-efficiency
-// https://github.com/vuejs/vue/issues/4083#issuecomment-257823208
+const instanceIds = getStore('encounter-instance-ids');
 
 const state = reactive<EncountersState>({
   membershipId: null,
   encounters: []
 });
 
-const addEncounter = (instanceId: string, player: DestinyPlayer): void => {
-  const enc = state.encounters.find(e => e.membershipId === player.destinyUserInfo.membershipId);
+const addEncounter = async (player: DestinyPlayer, instanceId: string): Promise<void> => {
+  const encounter = state.encounters.find(
+    e => e.membershipId === player.destinyUserInfo.membershipId
+  );
 
-  if (enc != null && enc.count) {
-    enc.count++;
-    enc.instanceIds.push(instanceId);
-
-    if (!enc.displayName && player.destinyUserInfo.displayName)
-      enc.displayName = player.destinyUserInfo.displayName;
-
-    if (!enc.iconPath && player.destinyUserInfo.iconPath)
-      enc.iconPath = player.destinyUserInfo.iconPath;
-  } else {
-    state.encounters.push(
-      new Encounter(
-        player.destinyUserInfo.membershipId,
-        player.destinyUserInfo.membershipType,
-        player.destinyUserInfo.displayName,
-        player.destinyUserInfo.iconPath,
-        player.characterClass,
-        instanceId
-      )
-    );
-  }
+  if (encounter) await incrementEncounter(encounter, instanceId);
+  else await addNewEncounter(player, instanceId);
 };
 
-const clearEncounters = (): void => {
+const incrementEncounter = async (encounter: Encounter, instanceId: string) => {
+  encounter.count++;
+
+  encounter.instanceIds.push(instanceId);
+  // const ids = await instanceIds.getItem<string[]>(encounter.membershipId);
+
+  // await instanceIds.setItem(encounter.membershipId, ids ? [...ids, instanceId] : [instanceId]);
+};
+
+const addNewEncounter = async (player: DestinyPlayer, instanceId: string) => {
+  state.encounters.push({
+    membershipId: player.destinyUserInfo.membershipId,
+    membershipType: player.destinyUserInfo.membershipType,
+    displayName: player.destinyUserInfo.displayName,
+    iconPath: player.destinyUserInfo.iconPath,
+    characterClass: player.characterClass,
+
+    instanceIds: [instanceId],
+    count: 0
+  });
+
+  // await instanceIds.setItem(player.destinyUserInfo.membershipId, [instanceId]);
+};
+
+const clearEncounters = async (): Promise<void> => {
   state.encounters = [];
+  await instanceIds.clear();
 };
 
-const setCurrentUser = (membershipId: string): void => {
+const setCurrentUser = async (membershipId: string): Promise<void> => {
   state.membershipId = membershipId;
-  clearEncounters();
+  await clearEncounters();
 };
 
 export default readonly(state);
-export { addEncounter, clearEncounters, setCurrentUser };
+export { addEncounter, setCurrentUser, instanceIds as encounterInstanceIds };

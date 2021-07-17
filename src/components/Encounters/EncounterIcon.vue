@@ -11,7 +11,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue';
 
-import { Encounter } from '~/models';
+import { Encounter } from '~/interfaces/encounters';
 
 export default defineComponent({
   props: {

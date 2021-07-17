@@ -5,7 +5,7 @@
     }}</span>
 
     <div class="flex justify-between text-light-700">
-      <p>Found {{ encounterssCount }} players</p>
+      <p>Found {{ encounterCount }} players</p>
     </div>
 
     <router-view></router-view>
@@ -15,14 +15,16 @@
 <script lang="ts">
 import { ref, computed, defineComponent } from 'vue';
 import { useRoute } from 'vue-router';
-import { DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
+import {
+  DestinyCharacterComponent,
+  DestinyHistoricalStatsPeriodGroup
+} from 'bungie-api-ts/destiny2';
 
 import { getPGCR, getActivities } from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
 import useCancelToken from '~/composables/useCancelToken';
 import encounters, { addEncounter, setCurrentUser } from '~/stores/encounters';
-import { ProfileState } from '~/interfaces';
-import { CharacterLoading } from '~/models';
+import { ProfileState, CharacterLoading } from '~/interfaces';
 
 export default defineComponent({
   setup() {
@@ -45,18 +47,17 @@ export default defineComponent({
         return;
       }
 
-      acts.forEach(async act => {
-        const pgcr = await getPGCR(act.activityDetails.instanceId, cancelToken.token);
-        pgcr.entries.forEach(entry => {
-          const player = entry.player;
-
-          if (entry.player.destinyUserInfo.membershipId !== profile.membershipId) {
-            addEncounter(pgcr.activityDetails.instanceId, player);
-          }
-        });
-      });
-
+      acts.forEach(async a => await handleActivity(a));
       await fetchActivities(character, page + 1);
+    };
+
+    const handleActivity = async (activity: DestinyHistoricalStatsPeriodGroup) => {
+      const pgcr = await getPGCR(activity.activityDetails.instanceId, cancelToken.token);
+
+      // here promise.all should be ok
+      pgcr.entries
+        .filter(e => e.player.destinyUserInfo.membershipId !== profile.membershipId)
+        .forEach(async entry => await addEncounter(entry.player, pgcr.activityDetails.instanceId));
     };
 
     const profile = useProfile(useRoute());
@@ -64,20 +65,20 @@ export default defineComponent({
       if (!profile.membershipId || !profile.characters.length) return;
 
       if (encounters.membershipId === profile.membershipId) return;
-      setCurrentUser(profile.membershipId);
+      await setCurrentUser(profile.membershipId);
 
       await Promise.all(
         profile.characters.map(c => {
-          loadings.value.push(new CharacterLoading(c.characterId));
+          loadings.value.push({ characterId: c.characterId, loading: true });
           return fetchActivities(c, 0);
         })
       );
     });
 
-    const encounterssCount = computed(() => encounters.encounters.length);
+    const encounterCount = computed(() => encounters.encounters.length);
 
     return {
-      encounterssCount,
+      encounterCount,
 
       profile,
 

@@ -36,7 +36,7 @@ import { computed, defineComponent, ref } from 'vue';
 
 import EncounterRow from 'components/Encounters/EncounterRow.vue';
 import encounters from '~/stores/encounters';
-import { Encounter } from '~/models';
+import { Encounter } from '~/interfaces/encounters';
 
 export default defineComponent({
   components: { EncounterRow },

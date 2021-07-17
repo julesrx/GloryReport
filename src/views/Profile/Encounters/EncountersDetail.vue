@@ -14,11 +14,11 @@
       <p class="text-2xl">{{ encounter.displayName }}</p>
     </div>
 
-    <div v-if="encounter.instanceIds" class="mt-4 space-y-2">
-      <p class="text-center">{{ encounter.instanceIds.length }} activities found</p>
+    <div v-if="instanceIds" class="mt-4 space-y-2">
+      <p class="text-center">{{ instanceIds.length }} activities found</p>
       <div class="divide-y divide-dark-400">
         <ActivityItem
-          v-for="instanceId in encounter.instanceIds"
+          v-for="instanceId in instanceIds"
           :key="instanceId"
           :instanceId="instanceId"
           class="max-w-4xl mx-auto"
@@ -29,11 +29,12 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import { ref, computed, watch, defineComponent } from 'vue';
 import { useRoute } from 'vue-router';
+import { debounce } from 'lodash-es';
 
-import { Encounter } from '~/models';
-import encounters from '~/stores/encounters';
+import { Encounter } from '~/interfaces/encounters';
+import encounters, { encounterInstanceIds } from '~/stores/encounters';
 import EncounterIcon from 'components/Encounters/EncounterIcon.vue';
 import ActivityItem from 'components/ActivityItem.vue';
 
@@ -49,12 +50,37 @@ export default defineComponent({
       ) as Encounter;
     });
 
+    const instanceIds = computed(() => encounter.value?.instanceIds ?? []);
+    // const instanceIds = ref<string[]>([]);
+    // watch(
+    //   () => encounter.value?.count,
+    //   debounce(
+    //     // throttle instead ?
+    //     async () => {
+    //       if (!encounter.value) return;
+
+    //       const ids = await encounterInstanceIds.getItem<string[]>(encounter.value.membershipId);
+    //       if (!ids) return;
+
+    //       instanceIds.value = ids;
+    //     },
+    //     250,
+    //     { maxWait: 500 }
+    //   ),
+    //   { immediate: true }
+    // );
+
     const parentParams = computed(() => ({
       membershipType: route.params['membershipType'],
       membershipId: route.params['membershipId']
     }));
 
-    return { encounter, parentParams };
+    return {
+      encounter,
+      instanceIds,
+
+      parentParams
+    };
   }
 });
 </script>

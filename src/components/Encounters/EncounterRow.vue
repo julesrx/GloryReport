@@ -19,7 +19,7 @@
 import { defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { Encounter } from '~/models';
+import { Encounter } from '~/interfaces/encounters';
 import EncounterIcon from './EncounterIcon.vue';
 
 export default defineComponent({
