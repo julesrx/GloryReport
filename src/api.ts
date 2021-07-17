@@ -13,7 +13,8 @@ import { getStore } from '~/storage';
 
 const api = axios.create({
   baseURL: 'https://stats.bungie.net/Platform/',
-  headers: { 'X-Api-Key': import.meta.env.VITE_BUNGIE_API_KEY }
+  headers: { 'X-Api-Key': import.meta.env.VITE_BUNGIE_API_KEY },
+  maxRedirects: 0 // usefull ? https://github.com/axios/axios/issues/3217
 });
 
 const queue = new PQueue({ interval: 2500, intervalCap: 20 });
@@ -52,6 +53,8 @@ const getPGCR = (
       if (cache) resolve(cache);
       else {
         const callback = async () => {
+          // using a single cancel token causes memory leak
+          // https://github.com/axios/axios/pull/3305
           const res = await api.get<ServerResponse<DestinyPostGameCarnageReportData>>(uri, {
             cancelToken
           });
