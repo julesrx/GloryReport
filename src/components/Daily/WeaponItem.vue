@@ -9,14 +9,9 @@
         absolute
         bottom-0
         left-0
-        m-0
-        p-0
         bg-dark-800 bg-opacity-50
-        text-light-100
         w-full
-        h-4
         text-xs
-        leading-none
         flex
         items-center
         pr-0.5
