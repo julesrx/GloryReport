@@ -3,6 +3,5 @@ memory leak (maybe from pqueue ?)
 search
 encounter detail with indexeddb
 cancel button to stop search and encounters
-version 2.0.0
 style daily
 fix change player on encounters page

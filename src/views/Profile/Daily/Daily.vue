@@ -1,13 +1,32 @@
 <template>
-  <pre>found {{ activitiesLength }} activities</pre>
+  <div id="daily" class="mb-4">
+    <MutedText class="text-sm">
+      {{ true ? 'fetching activities...' : 'all activities found' }}
+    </MutedText>
 
-  <template v-for="day in daysarr" :key="day.toString()">
-    <DayReportItem :day="day" :report="getDayReport(day)" :profile="profile" />
-    <hr />
-  </template>
+    <div class="text-light-700">
+      <p>Found {{ activitiesLength }} activities</p>
+    </div>
+  </div>
+
+  <div class="divide-y divide-dark-400">
+    <DayReportItem
+      v-for="day in daysarr"
+      :key="day.toString()"
+      :day="day"
+      :report="getDayReport(day)"
+      :profile="profile"
+    />
+  </div>
 
   <div class="mt-3 text-center">
-    <button type="button" class="bg-dark-50" @click="() => (days += 3)">See more</button>
+    <button
+      type="button"
+      class="px-4 py-2 opacity-50 hover:opacity-75 focus:outline-none"
+      @click="() => (days += 7)"
+    >
+      See more
+    </button>
   </div>
 </template>
 
@@ -18,19 +37,20 @@ import { addDays, format } from 'date-fns';
 import { DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
 
 import DayReportItem from 'components/Daily/DayReportItem.vue';
+import MutedText from 'components/common/MutedText.vue';
 import { DayReport, DestinyHistoricalStatsPeriodGroupShort, ProfileState } from '~/interfaces';
 import { getActivities } from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
 import useCancelToken from '~/composables/useCancelToken';
 
 export default defineComponent({
-  components: { DayReportItem },
+  components: { DayReportItem, MutedText },
   setup() {
     const cancelToken = useCancelToken();
 
     const activities = ref<DestinyHistoricalStatsPeriodGroupShort[]>([]);
 
-    const days = ref(3);
+    const days = ref(7);
     const from = new Date();
     const to = computed<Date>(() => addDays(from, -days.value));
 

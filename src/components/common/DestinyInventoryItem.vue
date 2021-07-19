@@ -1,8 +1,10 @@
 <template>
-  <div>
-    <img :src="icon" class="h-20 w-20" />
+  <img :src="icon" :title="name" />
+
+  <!-- <div>
+    <img :src="icon" class="h-20 w-20" :title="name" />
     <p>{{ name }}</p>
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts">

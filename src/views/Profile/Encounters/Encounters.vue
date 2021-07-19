@@ -1,10 +1,10 @@
 <template>
   <div id="encounters">
-    <span class="text-sm opacity-50">{{
-      isLoading ? 'fetching activities...' : 'all activities found'
-    }}</span>
+    <MutedText class="text-sm">
+      {{ isLoading ? 'fetching activities...' : 'all activities found' }}
+    </MutedText>
 
-    <div class="flex justify-between text-light-700">
+    <div class="text-light-700">
       <p>Found {{ encounterCount }} players</p>
     </div>
 
@@ -20,6 +20,7 @@ import {
   DestinyHistoricalStatsPeriodGroup
 } from 'bungie-api-ts/destiny2';
 
+import MutedText from 'components/common/MutedText.vue';
 import { getPGCR, getActivities } from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
 import useCancelToken from '~/composables/useCancelToken';
@@ -27,6 +28,7 @@ import encounters, { addEncounter, setCurrentUser } from '~/stores/encounters';
 import { ProfileState, CharacterLoading } from '~/interfaces';
 
 export default defineComponent({
+  components: { MutedText },
   setup() {
     const cancelToken = useCancelToken();
 
