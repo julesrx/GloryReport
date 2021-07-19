@@ -3,44 +3,35 @@
     <p class="text-xl mb-2">{{ formattedDay }}</p>
 
     <MutedText v-if="loading">loading...</MutedText>
-    <template v-else>
+    <div v-else>
       <MutedText v-if="!result || !result.score">No activity this day</MutedText>
       <template v-else>
-        <p>Score : {{ result.score }}</p>
-
-        <div class="flex space-x-1 items-end" v-if="result.weapons.length">
-          <WeaponItem :weapon="result.weapons[0]" :img-class="['h-24', 'w-24']" />
-          <WeaponItem
-            v-if="result.weapons[1]"
-            :weapon="result.weapons[1]"
-            :img-class="['h-22', 'w-22']"
-          />
-          <WeaponItem
-            v-if="result.weapons[2]"
-            :weapon="result.weapons[2]"
-            :img-class="['h-20', 'w-20']"
-          />
-          <WeaponItem
-            v-for="weapon in result.weapons.slice(3)"
-            :key="weapon.referenceId"
-            :weapon="weapon"
-            :img-class="['h-18', 'w-18']"
-          />
+        <div class="flex flex-wrap justify-end space-x-2">
+          <ResultStatsItem name="Score" :value="result.score" />
+          <ResultStatsItem name="Kills" :value="result.kills" />
+          <ResultStatsItem name="Deaths" :value="result.deaths" />
+          <ResultStatsItem name="Assists" :value="result.assists" />
+          <ResultStatsItem name="K/D" :value="result.kd" />
+          <ResultStatsItem name="KDA" :value="result.kda" />
         </div>
+
+        <MutedText class="text-sm" v-if="!result.weapons.length">No weapons used</MutedText>
+        <template v-else>
+          <div class="flex space-x-1 items-end">
+            <WeaponItem :weapon="result.weapons[0]" class="h-24 w-24" />
+            <WeaponItem v-if="result.weapons[1]" :weapon="result.weapons[1]" class="h-22 w-22" />
+            <WeaponItem v-if="result.weapons[2]" :weapon="result.weapons[2]" class="h-20 w-20" />
+            <WeaponItem
+              v-for="weapon in result.weapons.slice(3)"
+              :key="weapon.referenceId"
+              :weapon="weapon"
+              class="h-18 w-18"
+            />
+          </div>
+        </template>
       </template>
-    </template>
+    </div>
   </div>
-
-  <!-- <p>{{ day }}</p>
-
-  <p v-if="loading">loading...</p>
-  <template v-else>
-    <p>Score : {{ result.score }}</p>
-    <template v-for="weapon in result.weapons" :key="weapon.referenceId">
-      <DestinyInventoryItem :reference-id="weapon.referenceId" />
-      <p>{{ weapon.uniqueWeaponKills }} kills ({{ getWeaponPrecision(weapon) }}%)</p>
-    </template>
-  </template> -->
 </template>
 
 <script lang="ts">
@@ -55,9 +46,11 @@ import enLocale from 'date-fns/locale/en-GB';
 
 import { getPGCR } from '~/api';
 import { DayReport, DayReportResult, DayReportResultWeapon, ProfileState } from '~/interfaces';
+import { average } from '~/helpers';
 import useCancelToken from '~/composables/useCancelToken';
 import WeaponItem from './WeaponItem.vue';
 import MutedText from 'components/common/MutedText.vue';
+import ResultStatsItem from './ResultStatsItem.vue';
 
 export default defineComponent({
   props: {
@@ -66,7 +59,7 @@ export default defineComponent({
     // TODO: use global service instead
     profile: { type: Object as PropType<ProfileState>, required: true }
   },
-  components: { WeaponItem, MutedText },
+  components: { WeaponItem, MutedText, ResultStatsItem },
   setup(props) {
     const cancelToken = useCancelToken();
     const loading = ref(true);
@@ -103,13 +96,32 @@ export default defineComponent({
 
       return {
         score: getResultScore(entries),
+        kills: getResultKills(entries),
+        deaths: getResultDeaths(entries),
+        assists: getResultAssists(entries),
+        kd: getResultKd(entries),
+        kda: getResultKda(entries),
         weapons: getResultWeapons(entries)
       };
     });
 
-    const getResultScore = (entries: DestinyPostGameCarnageReportEntry[]): number => {
-      return entries.map(e => e.score.basic.value).reduce((a, b) => a + b, 0);
-    };
+    const getResultScore = (entries: DestinyPostGameCarnageReportEntry[]): number =>
+      entries.map(e => e.score.basic.value).reduce((a, b) => a + b, 0);
+
+    const getResultKills = (entries: DestinyPostGameCarnageReportEntry[]): number =>
+      entries.map(e => e.values['kills'].basic.value).reduce((a, b) => a + b, 0);
+
+    const getResultDeaths = (entries: DestinyPostGameCarnageReportEntry[]): number =>
+      entries.map(e => e.values['deaths'].basic.value).reduce((a, b) => a + b, 0);
+
+    const getResultAssists = (entries: DestinyPostGameCarnageReportEntry[]): number =>
+      entries.map(e => e.values['assists'].basic.value).reduce((a, b) => a + b, 0);
+
+    const getResultKd = (entries: DestinyPostGameCarnageReportEntry[]): string =>
+      average(entries.map(e => e.values['killsDeathsRatio'].basic.value));
+
+    const getResultKda = (entries: DestinyPostGameCarnageReportEntry[]): string =>
+      average(entries.map(e => e.values['killsDeathsAssists'].basic.value));
 
     const getResultWeapons = (
       entries: DestinyPostGameCarnageReportEntry[]
@@ -150,16 +162,11 @@ export default defineComponent({
         .sort((a, b) => (a.uniqueWeaponKills > b.uniqueWeaponKills ? -1 : 1));
     };
 
-    const getWeaponPrecision = (weapon: DayReportResultWeapon): number => {
-      return Math.round((weapon.uniqueWeaponPrecisionKills / weapon.uniqueWeaponKills) * 100);
-    };
-
     return {
       formattedDay,
 
       loading,
-      result,
-      getWeaponPrecision
+      result
     };
   }
 });

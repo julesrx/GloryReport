@@ -20,6 +20,11 @@ export interface DayReport {
 
 export interface DayReportResult {
   readonly score: number;
+  readonly kills: number;
+  readonly deaths: number;
+  readonly assists: number;
+  readonly kd: string;
+  readonly kda: string;
   readonly weapons: DayReportResultWeapon[];
 }
 

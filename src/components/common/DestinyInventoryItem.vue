@@ -1,6 +1,30 @@
 <template>
-  <img :src="icon" :title="name" />
-
+  <!-- <img :src="icon" :title="name" /> -->
+  <div
+    :style="{ backgroundImage: `url(${icon})` }"
+    class="bg-contain bg-center bg-no-repeat relative"
+  >
+    <span
+      class="
+        absolute
+        bottom-0
+        left-0
+        m-0
+        p-0
+        bg-dark-800 bg-opacity-50
+        text-light-100
+        w-full
+        h-4
+        text-xs
+        leading-none
+        flex
+        items-center
+        pr-0.5
+        justify-end
+      "
+      >36 (85%)</span
+    >
+  </div>
   <!-- <div>
     <img :src="icon" class="h-20 w-20" :title="name" />
     <p>{{ name }}</p>
