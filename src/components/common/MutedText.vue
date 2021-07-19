@@ -1,5 +1,5 @@
 <template>
-  <span class="opacity-50">
+  <div class="opacity-50">
     <slot></slot>
-  </span>
+  </div>
 </template>

@@ -1,36 +1,60 @@
 <template>
-  <div class="day-report py-4 first:pt-0">
-    <p class="text-xl mb-2">{{ formattedDay }}</p>
+  <div class="py-4">
+    <p class="text-xl">{{ formattedDay }}</p>
+    <MutedText v-if="isLoading">loading...</MutedText>
+    <template v-else>
+      <MutedText v-if="!activityCount">Nothing happened this day</MutedText>
+      <div v-else-if="result && result.score">
+        <MutedText class="mb-2">{{ activityCountText }}</MutedText>
 
-    <MutedText v-if="loading">loading...</MutedText>
-    <div v-else>
-      <MutedText v-if="!result || !result.score">No activity this day</MutedText>
-      <template v-else>
-        <div class="flex flex-wrap justify-end space-x-2">
-          <ResultStatsItem name="Score" :value="result.score" />
-          <ResultStatsItem name="Kills" :value="result.kills" />
-          <ResultStatsItem name="Deaths" :value="result.deaths" />
-          <ResultStatsItem name="Assists" :value="result.assists" />
-          <ResultStatsItem name="K/D" :value="result.kd" />
-          <ResultStatsItem name="KDA" :value="result.kda" />
+        <div>
+          <MutedText>Global result:</MutedText>
+          <div class="flex justify-between">
+            <div>
+              <span class="text-xl">{{ result.wins }}</span
+              ><span class="text-green-500"> W </span> <MutedText class="inline"> - </MutedText
+              ><span class="text-xl">{{ result.losses }}</span> <span> L </span>
+              <MutedText class="inline">({{ getWinRatio(result) }}%)</MutedText>
+            </div>
+
+            <div class="flex flex-wrap justify-end space-x-2">
+              <ResultStatsItem name="Score" :value="result.score" />
+              <ResultStatsItem name="Kills" :value="result.kills" />
+              <ResultStatsItem name="Deaths" :value="result.deaths" />
+              <ResultStatsItem name="Assists" :value="result.assists" />
+              <ResultStatsItem name="K/D" :value="result.kd" />
+              <ResultStatsItem name="KDA" :value="result.kda" />
+            </div>
+          </div>
         </div>
 
         <MutedText class="text-sm" v-if="!result.weapons.length">No weapons used</MutedText>
-        <template v-else>
-          <div class="flex space-x-1 items-end">
-            <WeaponItem :weapon="result.weapons[0]" class="h-24 w-24" />
-            <WeaponItem v-if="result.weapons[1]" :weapon="result.weapons[1]" class="h-22 w-22" />
-            <WeaponItem v-if="result.weapons[2]" :weapon="result.weapons[2]" class="h-20 w-20" />
-            <WeaponItem
-              v-for="weapon in result.weapons.slice(3)"
-              :key="weapon.referenceId"
-              :weapon="weapon"
-              class="h-18 w-18"
-            />
+        <div v-else>
+          <MutedText>Weapons used:</MutedText>
+          <div class="flow-root">
+            <div class="flex flex-wrap -mr-1 space-y-1 items-end">
+              <WeaponItem :weapon="result.weapons[0]" class="h-24 w-24 mr-1" />
+              <WeaponItem
+                v-if="result.weapons[1]"
+                :weapon="result.weapons[1]"
+                class="h-22 w-22 mr-1"
+              />
+              <WeaponItem
+                v-if="result.weapons[2]"
+                :weapon="result.weapons[2]"
+                class="h-20 w-20 mr-1"
+              />
+              <WeaponItem
+                v-for="weapon in result.weapons.slice(3)"
+                :key="weapon.referenceId"
+                :weapon="weapon"
+                class="h-18 w-18 mr-1"
+              />
+            </div>
           </div>
-        </template>
-      </template>
-    </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -62,24 +86,29 @@ export default defineComponent({
   components: { WeaponItem, MutedText, ResultStatsItem },
   setup(props) {
     const cancelToken = useCancelToken();
-    const loading = ref(true);
+    const isLoading = ref(true);
 
     const formattedDay = computed(() =>
       format(props.day, `EEEE',' dd MMMM yyyy`, { locale: enLocale })
     );
 
+    const activityCount = computed(() => props.report.activities.length);
+    const activityCountText = computed(
+      () => `${activityCount.value} activit${activityCount.value > 1 ? 'ies' : 'y'}`
+    );
+
     const pgcrs = ref<DestinyPostGameCarnageReportData[]>([]);
     watch(
-      () => props.report.activities.length,
+      activityCount,
       debounce(async () => {
-        loading.value = true;
+        isLoading.value = true;
 
         const res = await Promise.all(
           props.report.activities.map(a => getPGCR(a.instanceId, cancelToken.token))
         );
 
-        loading.value = false;
         pgcrs.value = res;
+        isLoading.value = false;
       }, 250),
       { immediate: true }
     );
@@ -95,6 +124,8 @@ export default defineComponent({
         );
 
       return {
+        wins: 100,
+        losses: 100,
         score: getResultScore(entries),
         kills: getResultKills(entries),
         deaths: getResultDeaths(entries),
@@ -162,11 +193,19 @@ export default defineComponent({
         .sort((a, b) => (a.uniqueWeaponKills > b.uniqueWeaponKills ? -1 : 1));
     };
 
+    const getWinRatio = (result: DayReportResult) =>
+      Math.round((result.losses / result.wins) * 100);
+
     return {
       formattedDay,
 
-      loading,
-      result
+      isLoading,
+
+      activityCount,
+      activityCountText,
+
+      result,
+      getWinRatio
     };
   }
 });

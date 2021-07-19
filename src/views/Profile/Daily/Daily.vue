@@ -9,25 +9,28 @@
     </div>
   </div>
 
-  <div class="divide-y divide-dark-400">
-    <DayReportItem
-      v-for="day in daysarr"
-      :key="day.toString()"
-      :day="day"
-      :report="getDayReport(day)"
-      :profile="profile"
-    />
-  </div>
+  <template v-if="activitiesLength">
+    <div class="divide-y divide-dark-400">
+      <DayReportItem
+        v-for="day in daysarr"
+        :key="day.toString()"
+        :day="day"
+        :report="getDayReport(day)"
+        :profile="profile"
+        class="first:pt-0"
+      />
+    </div>
 
-  <div class="mt-3 text-center">
-    <button
-      type="button"
-      class="px-4 py-2 opacity-50 hover:opacity-75 focus:outline-none"
-      @click="() => (days += 7)"
-    >
-      See more
-    </button>
-  </div>
+    <div class="mt-3 text-center">
+      <button
+        type="button"
+        class="px-4 py-2 opacity-50 hover:opacity-75 focus:outline-none"
+        @click="() => (days += 7)"
+      >
+        See more
+      </button>
+    </div>
+  </template>
 </template>
 
 <script lang="ts">

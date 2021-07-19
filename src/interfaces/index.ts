@@ -19,6 +19,8 @@ export interface DayReport {
 }
 
 export interface DayReportResult {
+  readonly wins: number;
+  readonly losses: number;
   readonly score: number;
   readonly kills: number;
   readonly deaths: number;
