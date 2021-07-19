@@ -97,6 +97,7 @@ export default defineComponent({
       () => `${activityCount.value} activit${activityCount.value > 1 ? 'ies' : 'y'}`
     );
 
+    // instead of getting pgcr from cache, just get the data from the activity values ?
     const pgcrs = ref<DestinyPostGameCarnageReportData[]>([]);
     watch(
       activityCount,
@@ -124,8 +125,8 @@ export default defineComponent({
         );
 
       return {
-        wins: 100,
-        losses: 100,
+        wins: getResultWins(entries),
+        losses: getResultLosses(entries),
         score: getResultScore(entries),
         kills: getResultKills(entries),
         deaths: getResultDeaths(entries),
@@ -135,6 +136,12 @@ export default defineComponent({
         weapons: getResultWeapons(entries)
       };
     });
+
+    const getResultWins = (entries: DestinyPostGameCarnageReportEntry[]): number =>
+      entries.filter(e => e.standing === 1).length;
+
+    const getResultLosses = (entries: DestinyPostGameCarnageReportEntry[]): number =>
+      entries.filter(e => e.standing !== 1).length;
 
     const getResultScore = (entries: DestinyPostGameCarnageReportEntry[]): number =>
       entries.map(e => e.score.basic.value).reduce((a, b) => a + b, 0);
@@ -194,7 +201,7 @@ export default defineComponent({
     };
 
     const getWinRatio = (result: DayReportResult) =>
-      Math.round((result.losses / result.wins) * 100);
+      Math.round((result.wins / activityCount.value) * 100);
 
     return {
       formattedDay,
