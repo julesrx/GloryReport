@@ -1,7 +1,7 @@
 <template>
   <div id="daily" class="mb-4">
     <MutedText class="text-sm">
-      {{ true ? 'fetching activities...' : 'all activities found' }}
+      {{ isLoading ? 'fetching activities...' : 'all activities found' }}
     </MutedText>
 
     <div class="text-light-700">
@@ -41,7 +41,12 @@ import { DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
 
 import DayReportItem from 'components/Daily/DayReportItem.vue';
 import MutedText from 'components/common/MutedText.vue';
-import { DayReport, DestinyHistoricalStatsPeriodGroupShort, ProfileState } from '~/interfaces';
+import {
+  CharacterLoading,
+  DayReport,
+  DestinyHistoricalStatsPeriodGroupShort,
+  ProfileState
+} from '~/interfaces';
 import { getActivities } from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
 import useCancelToken from '~/composables/useCancelToken';
@@ -52,6 +57,13 @@ export default defineComponent({
     const cancelToken = useCancelToken();
 
     const activities = ref<DestinyHistoricalStatsPeriodGroupShort[]>([]);
+
+    // TODO, in common with encounters ?
+    const loadings = ref<CharacterLoading[]>([]);
+    const isLoading = computed(() => {
+      if (!profile.characters.length) return false;
+      return loadings.value.filter(l => l.loading).length > 0;
+    });
 
     const days = ref(7);
     const from = new Date();
@@ -71,7 +83,12 @@ export default defineComponent({
 
     const fetchActivities = async (character: DestinyCharacterComponent, page = 0) => {
       const acts = await getActivities(character, page, cancelToken.token);
-      if (!acts.length) return;
+      if (!acts.length) {
+        const loading = loadings.value.find(l => l.characterId === character.characterId);
+        if (loading) loading.loading = false;
+
+        return;
+      }
 
       activities.value = [
         ...activities.value,
@@ -86,7 +103,12 @@ export default defineComponent({
 
     const profile = useProfile(useRoute());
     useWatchProfile(profile, async (profile: ProfileState): Promise<void> => {
-      await Promise.all(profile.characters.map(c => fetchActivities(c)));
+      await Promise.all(
+        profile.characters.map(c => {
+          loadings.value.push({ characterId: c.characterId, loading: true });
+          return fetchActivities(c, 0);
+        })
+      );
     });
 
     const getDayReport = (day: Date): DayReport => {
@@ -107,6 +129,7 @@ export default defineComponent({
     return {
       days,
 
+      isLoading,
       activitiesLength: computed(() => activities.value.length),
 
       daysarr,
