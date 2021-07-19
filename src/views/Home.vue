@@ -1,3 +1,17 @@
 <template>
-  <h2 class="text-center text-xl mt-5">Welcome guardian...</h2>
+  <div class="mt-60 space-y-4">
+    <AppLogo />
+    <PlayerSearch />
+  </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import AppLogo from 'components/AppLogo.vue';
+import PlayerSearch from 'components/Nav/PlayerSearch.vue';
+
+export default defineComponent({
+  components: { AppLogo, PlayerSearch }
+});
+</script>

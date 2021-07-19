@@ -63,10 +63,7 @@ import api from '~/api';
 export default defineComponent({
   components: { XIcon },
   props: {
-    small: {
-      type: Boolean,
-      default: false
-    }
+    small: { type: Boolean, default: false }
   },
   setup(props) {
     const users = ref<UserInfoCard[]>([]);
