@@ -1,11 +1,15 @@
 <template>
-  <div id="daily" class="mb-4">
+  <div class="mb-4">
     <MutedText class="text-sm">
       {{ isLoading ? 'fetching activities...' : 'all activities found' }}
     </MutedText>
 
-    <div class="text-light-700">
+    <div class="flex justify-between">
       <p>Found {{ activitiesLength }} activities</p>
+      <div class="text-sm space-x-2">
+        <label for="specificDay">Find a specific day</label>
+        <DateInput id="specificDay" v-model="specificDay" />
+      </div>
     </div>
   </div>
 
@@ -21,7 +25,7 @@
       />
     </div>
 
-    <div class="mt-3 text-center">
+    <div class="mt-3 text-center" v-if="!specificDay">
       <button
         type="button"
         class="px-4 py-2 opacity-50 hover:opacity-75 focus:outline-none"
@@ -41,6 +45,7 @@ import { DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
 
 import DayReportItem from 'components/Daily/DayReportItem.vue';
 import MutedText from 'components/common/MutedText.vue';
+import DateInput from 'components/common/DateInput.vue';
 import {
   CharacterLoading,
   DayReport,
@@ -52,7 +57,7 @@ import useProfile, { useWatchProfile } from '~/composables/useProfile';
 import useCancelToken from '~/composables/useCancelToken';
 
 export default defineComponent({
-  components: { DayReportItem, MutedText },
+  components: { DayReportItem, MutedText, DateInput },
   setup() {
     const cancelToken = useCancelToken();
 
@@ -69,7 +74,11 @@ export default defineComponent({
     const from = new Date();
     const to = computed<Date>(() => addDays(from, -days.value));
 
+    const specificDay = ref<Date | undefined>(undefined);
+
     const daysarr = computed<Date[]>(() => {
+      if (specificDay.value) return [specificDay.value];
+
       const res = [];
 
       let date = from;
@@ -127,6 +136,7 @@ export default defineComponent({
     };
 
     return {
+      specificDay,
       days,
 
       isLoading,
