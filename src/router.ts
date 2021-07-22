@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import Home from '@/views/Home.vue';
+import Home from 'views/Home.vue';
 
-import Report from '@/views/Report/Report.vue';
-import ReportEncounters from '@/views/Report/ReportEncounters.vue';
-import ReportEncounter from '@/views/Report/ReportEncounter.vue';
+import Profile from 'views/Profile/Profile.vue';
+import ProfileHome from 'views/Profile/ProfileHome.vue';
 
 export default createRouter({
   history: createWebHistory(),
@@ -15,26 +14,40 @@ export default createRouter({
       component: Home
     },
     {
-      name: 'Report',
+      name: 'Profile',
       path: '/:membershipType/:membershipId',
-      component: Report,
+      component: Profile,
       children: [
         {
-          name: 'ReportEncounters',
+          name: 'ProfileHome',
           path: '',
-          component: ReportEncounters
+          component: ProfileHome,
+          redirect: { name: 'EncountersRecap' }
         },
         {
-          name: 'ReportEncounter',
-          path: ':selectedMembershipId',
-          component: ReportEncounter
+          name: 'Encounters',
+          path: 'encounters',
+          component: () => import('views/Profile/Encounters/Encounters.vue'),
+          redirect: { name: 'EncountersRecap' },
+          children: [
+            {
+              name: 'EncountersRecap',
+              path: '',
+              component: () => import('views/Profile/Encounters/EncountersRecap.vue')
+            },
+            {
+              name: 'EncountersDetail',
+              path: ':selectedMembershipId',
+              component: () => import('views/Profile/Encounters/EncountersDetail.vue')
+            }
+          ]
+        },
+        {
+          name: 'Daily',
+          path: 'daily',
+          component: () => import('views/Profile/Daily/Daily.vue')
         }
       ]
-    },
-    {
-      name: 'NotFound',
-      path: '/:pathMatch(.*)*',
-      component: () => import('@/views/NotFound.vue')
     }
   ]
 });

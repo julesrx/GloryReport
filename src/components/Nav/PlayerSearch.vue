@@ -1,27 +1,28 @@
 <template>
-  <div :id="elId" class="relative max-w-xs mx-auto mb-5">
-    <div class="relative text-dark-500">
+  <div :id="elId" class="relative max-w-xs mx-auto">
+    <div class="relative text-light-500">
       <input
         type="text"
         v-model="search"
         placeholder="Guardian..."
         @click="debouncedOnSearch"
         :class="[
-          'placeholder-dark-300 bg-light-100 py-1 pl-2 pr-8 rounded shadow block w-full focus:outline-none',
+          'placeholder-dark-50 bg-dark-500 py-1 pl-2 pr-8 rounded shadow block w-full focus:outline-none',
           sizeClasses
         ]"
       />
-      <X
-        v-if="search"
-        class="absolute inset-y-0 right-0 cursor-pointer h-full mr-1"
-        @click="search = ''"
-      />
+      <div v-if="search" class="absolute inset-y-0 right-0 flex items-center">
+        <XIcon class="cursor-pointer h-full mr-1 h-5 w-5" @click="search = ''" />
+      </div>
     </div>
 
-    <div :class="['bg-light-100 rounded shadow absolute w-full mt-1 text-dark-500', sizeClasses]">
+    <div
+      v-if="search"
+      :class="['bg-dark-500 rounded shadow absolute w-full mt-1 z-10', sizeClasses]"
+    >
       <ul class="max-h-56 overflow-auto">
-        <li v-if="loading" class="px-2 py-1 text-dark-300">Searching...</li>
-        <li v-else-if="!loading && noresult && !users.length" class="px-2 py-1 text-dark-300">
+        <li v-if="loading" class="px-2 py-1 text-dark-50">Searching...</li>
+        <li v-else-if="!loading && noresult && !users.length" class="px-2 py-1 text-dark-50">
           No player found...
         </li>
         <li
@@ -30,11 +31,8 @@
           :key="`${user.membershipType}-${user.membershipId}`"
         >
           <router-link
-            :to="{
-              name: 'ReportEncounters',
-              params: { membershipType: user.membershipType, membershipId: user.membershipId }
-            }"
-            class="flex items-center space-x-2 px-2 py-1 hover:bg-light-600 rounded"
+            :to="`/${user.membershipType}/${user.membershipId}`"
+            class="flex items-center space-x-2 px-2 py-1 hover:bg-dark-300 rounded"
             @click.passive="users = []"
           >
             <img
@@ -58,22 +56,17 @@ import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { UserInfoCard } from 'bungie-api-ts/user/interfaces';
 import { ServerResponse } from 'bungie-api-ts/app';
 import { debounce } from 'lodash-es';
+import { XIcon } from '@heroicons/vue/solid';
 
-import { bhttp } from '@/api';
-import X from '@/components/icons/X.vue';
+import api from '~/api';
 
 export default defineComponent({
-  components: {
-    X
-  },
+  components: { XIcon },
   props: {
-    small: {
-      type: Boolean,
-      default: false
-    }
+    small: { type: Boolean, default: false }
   },
   setup(props) {
-    const users = ref([] as UserInfoCard[]);
+    const users = ref<UserInfoCard[]>([]);
 
     const search = ref('');
     const noresult = ref(false);
@@ -85,7 +78,7 @@ export default defineComponent({
 
       try {
         loading.value = true;
-        const { data } = await bhttp.get(
+        const { data } = await api.get(
           `Destiny2/SearchDestinyPlayer/-1/${encodeURIComponent(search.value.trim())}/`
         );
 
@@ -95,7 +88,7 @@ export default defineComponent({
             (user, index, self) =>
               index ===
               self.findIndex(
-                (t) =>
+                t =>
                   t.membershipType === user.membershipType && t.membershipId === user.membershipId
               )
           );

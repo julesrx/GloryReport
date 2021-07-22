@@ -12,14 +12,17 @@
       "esnext",
       "dom"
     ],
-    "types": [
-      "vite/client"
-    ],
-    "baseUrl": "./src",
+    "baseUrl": "src",
     "paths": {
-      "@/*": [
+      "~/*": [
         "*"
       ],
+      "components/*": [
+        "components/*"
+      ],
+      "views/*": [
+        "views/*"
+      ]
     }
   },
   "include": [
@@ -27,5 +30,5 @@
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue"
-  ]
+  ],
 }

@@ -9,9 +9,6 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  props: {
-    title: String,
-    value: String
-  }
+  props: { title: String, value: String }
 });
 </script>

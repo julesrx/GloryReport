@@ -1,25 +1,27 @@
 import localforage from 'localforage';
 
-import { version } from '../package.json';
+import { APP_NAME } from '~/contants';
 
-const dbName = 'Glory.report';
-const appVersionKey = 'app-version';
-
-export const requestCacheKey = 'request-cache';
-
-export function getStorage(storeName: string) {
+const getStore = (storeName: string, version: string | null = null): LocalForage => {
   const store = localforage.createInstance({
-    name: dbName,
-    storeName
+    name: APP_NAME,
+    storeName,
+    driver: localforage.INDEXEDDB
   });
 
-  const localVersion = localStorage.getItem(appVersionKey);
-  if (localVersion !== version) {
-    store.clear();
-    localStorage.setItem(appVersionKey, version);
+  if (version) {
+    const currentVersion = getStoreVersion(storeName);
+    if (currentVersion && currentVersion !== version) store.clear(); // do not wait for this
+
+    setStoreVersion(storeName, version);
   }
 
   return store;
-}
+};
 
-export const requestCache = getStorage(requestCacheKey);
+const getStoreVersion = (storeName: string): string | null =>
+  localStorage.getItem(`${storeName}-version`);
+const setStoreVersion = (storeName: string, version: string): void =>
+  localStorage.setItem(`${storeName}-version`, version);
+
+export { getStore };
