@@ -1,7 +1,5 @@
 <template>
   <nav>
-    <BungieGlobalAlerts />
-
     <AppLogo :small="true" :use-link="true" class="mb-2" />
     <PlayerSearch :small="true" class="mb-3" />
 
@@ -13,14 +11,13 @@
 import { defineComponent, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
-import BungieGlobalAlerts from './BungieGlobalAlerts.vue';
-import PlayerSearch from './PlayerSearch.vue';
 import NavLinks from './NavLinks.vue';
+import PlayerSearch from 'components/Nav/PlayerSearch.vue';
 import AppLogo from 'components/AppLogo.vue';
 import useProfile from '~/composables/useProfile';
 
 export default defineComponent({
-  components: { BungieGlobalAlerts, PlayerSearch, NavLinks, AppLogo },
+  components: { PlayerSearch, NavLinks, AppLogo },
   setup() {
     const route = useRoute();
     const profile = useProfile(route);
