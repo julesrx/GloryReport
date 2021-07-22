@@ -6,9 +6,9 @@
   "homepage": "https://glory.report",
   "scripts": {
     "dev": "vite",
-    "build": "npm run lint && vue-tsc --noEmit && vite build",
+    "build": "npm run lint && vite build",
     "serve": "vite preview",
-    "lint": "eslint --ext .js,.vue,.ts ./ --fix"
+    "lint": "vue-tsc --noEmit && eslint --ext .js,.vue,.ts ./ --fix"
   },
   "dependencies": {
     "@heroicons/vue": "^1.0.2",
