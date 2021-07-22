@@ -4,6 +4,7 @@ import { BungieMembershipType } from 'bungie-api-ts/common';
 
 import profile, { refreshProfile } from '~/stores/profile';
 import { ProfileState } from '~/interfaces';
+import { useSetTitle } from './useSetTitle';
 
 const getMembershipFromRouteParams = (params: RouteParams): [BungieMembershipType, string] => {
   return [
@@ -23,6 +24,9 @@ const useProfile = (route: RouteLocationNormalizedLoaded): ProfileState => {
     },
     { immediate: true }
   );
+
+  const setTitle = useSetTitle();
+  watch(profile, profile => setTitle(profile.profile?.userInfo.displayName), { immediate: true });
 
   return profile as ProfileState;
 };

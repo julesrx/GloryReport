@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@heroicons/vue": "^1.0.2",
+    "@vueuse/core": "^5.1.4",
     "axios": "^0.21.1",
     "axios-lab": "^0.1.0",
     "bungie-api-ts": "^4.9.0",

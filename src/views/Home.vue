@@ -10,8 +10,13 @@ import { defineComponent } from 'vue';
 
 import AppLogo from 'components/AppLogo.vue';
 import PlayerSearch from 'components/Nav/PlayerSearch.vue';
+import { useSetTitle } from '~/composables/useSetTitle';
 
 export default defineComponent({
-  components: { AppLogo, PlayerSearch }
+  components: { AppLogo, PlayerSearch },
+  setup() {
+    const setTitle = useSetTitle();
+    setTitle();
+  }
 });
 </script>
