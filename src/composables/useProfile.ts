@@ -2,7 +2,7 @@ import { watch, WatchOptions } from 'vue';
 import { RouteParams, RouteLocationNormalizedLoaded } from 'vue-router';
 import { BungieMembershipType } from 'bungie-api-ts/common';
 
-import profile, { refreshProfile } from '~/profile';
+import profile, { refreshProfile } from '~/stores/profile';
 import { ProfileState } from '~/interfaces';
 
 const getMembershipFromRouteParams = (params: RouteParams): [BungieMembershipType, string] => {

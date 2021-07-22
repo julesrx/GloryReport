@@ -17,7 +17,7 @@
     <div v-if="instanceIds" class="mt-4 space-y-2">
       <p class="text-center">{{ instanceIds.length }} activities found</p>
       <div class="divide-y divide-dark-400">
-        <ActivityItem
+        <EncounterActivityItem
           v-for="instanceId in instanceIds"
           :key="instanceId"
           :instanceId="instanceId"
@@ -35,10 +35,10 @@ import { useRoute } from 'vue-router';
 import { Encounter } from '~/interfaces/encounters';
 import encounters from '~/stores/encounters';
 import EncounterIcon from 'components/Encounters/EncounterIcon.vue';
-import ActivityItem from 'components/ActivityItem.vue';
+import EncounterActivityItem from '~/components/Encounters/EncounterActivityItem.vue';
 
 export default defineComponent({
-  components: { EncounterIcon, ActivityItem },
+  components: { EncounterIcon, EncounterActivityItem },
   setup() {
     const route = useRoute();
     const encounter = computed(() => {

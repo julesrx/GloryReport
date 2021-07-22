@@ -27,7 +27,7 @@ import { ref, computed, defineComponent, onMounted, PropType } from 'vue';
 import { DestinyInventoryItemDefinition } from 'bungie-api-ts/destiny2';
 
 import { DayReportResultWeapon } from '~/interfaces';
-import { getDefinition } from '~/manifest';
+import { getDefinition } from '~/stores/manifest';
 
 export default defineComponent({
   props: {

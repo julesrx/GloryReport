@@ -14,7 +14,7 @@ import { getStore } from '~/storage';
 const api = axios.create({
   baseURL: 'https://stats.bungie.net/Platform/',
   headers: { 'X-Api-Key': import.meta.env.VITE_BUNGIE_API_KEY },
-  maxRedirects: 0 // usefull ? https://github.com/axios/axios/issues/3217
+  maxRedirects: 0
 });
 
 const queue = new PQueue({ interval: 2500, intervalCap: 20 });

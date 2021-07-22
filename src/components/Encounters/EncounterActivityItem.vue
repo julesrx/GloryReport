@@ -11,9 +11,9 @@
       <DateDistance :date="pgcr.period" />
 
       <div class="flex-1"></div>
-      <StatItem :title="'Score'" :value="score" />
-      <StatItem :title="'KD'" :value="kd" class="ml-2" />
-      <StatItem :title="'KDA'" :value="kda" class="ml-2" />
+      <EncounterStatItem :title="'Score'" :value="score" />
+      <EncounterStatItem :title="'KD'" :value="kd" class="ml-2" />
+      <EncounterStatItem :title="'KDA'" :value="kda" class="ml-2" />
 
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -41,12 +41,12 @@ import { useRoute } from 'vue-router';
 import { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2/interfaces';
 
 import { getPGCR } from '~/api';
-import DateDistance from 'components/DateDistance.vue';
-import StatItem from 'components/StatItem.vue';
+import DateDistance from 'components/common/DateDistance.vue';
+import EncounterStatItem from '~/components/Encounters/EncounterStatItem.vue';
 import useAbortSignal from '~/composables/useAbortSignal';
 
 export default defineComponent({
-  components: { DateDistance, StatItem },
+  components: { DateDistance, EncounterStatItem },
   props: {
     instanceId: { type: String, required: true }
   },

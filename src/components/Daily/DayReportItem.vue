@@ -18,12 +18,12 @@
             </div>
 
             <div class="flex flex-wrap justify-end space-x-2">
-              <ResultStatsItem name="Score" :value="result.score" />
-              <ResultStatsItem name="Kills" :value="result.kills" />
-              <ResultStatsItem name="Deaths" :value="result.deaths" />
-              <ResultStatsItem name="Assists" :value="result.assists" />
-              <ResultStatsItem name="K/D" :value="result.kd" />
-              <ResultStatsItem name="KDA" :value="result.kda" />
+              <DayResultStatsItem name="Score" :value="result.score" />
+              <DayResultStatsItem name="Kills" :value="result.kills" />
+              <DayResultStatsItem name="Deaths" :value="result.deaths" />
+              <DayResultStatsItem name="Assists" :value="result.assists" />
+              <DayResultStatsItem name="K/D" :value="result.kd" />
+              <DayResultStatsItem name="KDA" :value="result.kda" />
             </div>
           </div>
         </div>
@@ -33,18 +33,18 @@
           <MutedText>Weapons used:</MutedText>
           <div class="flow-root">
             <div class="flex flex-wrap -mr-1 space-y-1 items-end">
-              <WeaponItem :weapon="result.weapons[0]" class="h-24 w-24 mr-1" />
-              <WeaponItem
+              <DayWeaponItem :weapon="result.weapons[0]" class="h-24 w-24 mr-1" />
+              <DayWeaponItem
                 v-if="result.weapons[1]"
                 :weapon="result.weapons[1]"
                 class="h-22 w-22 mr-1"
               />
-              <WeaponItem
+              <DayWeaponItem
                 v-if="result.weapons[2]"
                 :weapon="result.weapons[2]"
                 class="h-20 w-20 mr-1"
               />
-              <WeaponItem
+              <DayWeaponItem
                 v-for="weapon in result.weapons.slice(3)"
                 :key="weapon.referenceId"
                 :weapon="weapon"
@@ -72,9 +72,9 @@ import { getPGCR } from '~/api';
 import { DayReport, DayReportResult, DayReportResultWeapon, ProfileState } from '~/interfaces';
 import { average } from '~/helpers';
 import useAbortSignal from '~/composables/useAbortSignal';
-import WeaponItem from './WeaponItem.vue';
+import DayWeaponItem from './DayWeaponItem.vue';
 import MutedText from 'components/common/MutedText.vue';
-import ResultStatsItem from './ResultStatsItem.vue';
+import DayResultStatsItem from './DayResultStatsItem.vue';
 
 export default defineComponent({
   props: {
@@ -83,7 +83,7 @@ export default defineComponent({
     // TODO: use global service instead
     profile: { type: Object as PropType<ProfileState>, required: true }
   },
-  components: { WeaponItem, MutedText, ResultStatsItem },
+  components: { DayWeaponItem, MutedText, DayResultStatsItem },
   setup(props) {
     const abortSignal = useAbortSignal();
     const isLoading = ref(true);
