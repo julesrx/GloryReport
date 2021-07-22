@@ -9,6 +9,7 @@ import {
 } from 'bungie-api-ts/destiny2';
 import PQueue from 'p-queue';
 
+import { version } from '../package.json';
 import { getStore } from '~/storage';
 
 const api = axios.create({
@@ -19,7 +20,7 @@ const api = axios.create({
 
 const queue = new PQueue({ interval: 2500, intervalCap: 20 });
 
-const pgcrs = getStore('d2-pgcr-datas');
+const pgcrs = getStore('d2-pgcr-datas', version);
 
 const getActivities = async (
   character: DestinyCharacterComponent,

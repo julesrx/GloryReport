@@ -37,7 +37,7 @@ const loadManifest = async (): Promise<void> => {
 
     status.message = 'new manifest version available! ';
 
-    store.clear();
+    await store.clear();
     localStorage.removeItem(versionKey);
   }
 
