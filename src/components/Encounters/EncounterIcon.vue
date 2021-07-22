@@ -1,21 +1,15 @@
 <template>
-  <img
-    :src="icon"
-    :data-class="encounter.characterClass"
-    :height="size"
-    :width="size"
-    loading="lazy"
-  />
+  <img :src="icon" :data-class="encounter.characterClass" :height="size" :width="size" />
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue';
 
-import { Encounter } from '~/interfaces/encounters';
+import { EncounterDisplay } from '~/interfaces/encounters';
 
 export default defineComponent({
   props: {
-    encounter: { type: Object as PropType<Encounter>, required: true },
+    encounter: { type: Object as PropType<EncounterDisplay>, required: true },
     size: { type: Number, default: 48 }
   },
   setup(props) {
