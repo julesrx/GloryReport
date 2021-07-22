@@ -11,6 +11,14 @@ export interface Encounter {
   count: number;
 }
 
+export interface EncounterDisplay {
+  readonly membershipId: string;
+  readonly displayName: string;
+  readonly iconPath: string;
+  readonly count: number;
+  readonly characterClass: string;
+}
+
 export interface EncountersState {
   membershipId: string | null;
   encounters: Encounter[];

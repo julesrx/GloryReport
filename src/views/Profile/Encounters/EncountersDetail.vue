@@ -29,12 +29,11 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, watch, defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { useRoute } from 'vue-router';
-import { debounce } from 'lodash-es';
 
 import { Encounter } from '~/interfaces/encounters';
-import encounters, { encounterInstanceIds } from '~/stores/encounters';
+import encounters from '~/stores/encounters';
 import EncounterIcon from 'components/Encounters/EncounterIcon.vue';
 import ActivityItem from 'components/ActivityItem.vue';
 
@@ -51,24 +50,6 @@ export default defineComponent({
     });
 
     const instanceIds = computed(() => encounter.value?.instanceIds ?? []);
-    // const instanceIds = ref<string[]>([]);
-    // watch(
-    //   () => encounter.value?.count,
-    //   debounce(
-    //     // throttle instead ?
-    //     async () => {
-    //       if (!encounter.value) return;
-
-    //       const ids = await encounterInstanceIds.getItem<string[]>(encounter.value.membershipId);
-    //       if (!ids) return;
-
-    //       instanceIds.value = ids;
-    //     },
-    //     250,
-    //     { maxWait: 500 }
-    //   ),
-    //   { immediate: true }
-    // );
 
     const parentParams = computed(() => ({
       membershipType: route.params['membershipType'],

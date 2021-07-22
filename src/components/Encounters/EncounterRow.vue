@@ -19,7 +19,7 @@
 import { defineComponent, PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { Encounter } from '~/interfaces/encounters';
+import { EncounterDisplay } from '~/interfaces/encounters';
 import EncounterIcon from './EncounterIcon.vue';
 
 export default defineComponent({
@@ -28,7 +28,7 @@ export default defineComponent({
   },
   emits: ['select'],
   props: {
-    encounter: { type: Object as PropType<Encounter>, required: true },
+    encounter: { type: Object as PropType<EncounterDisplay>, required: true },
     ranking: { type: Number, required: true },
     showBorders: Boolean,
     cellBorder: String,
@@ -36,7 +36,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    const navigateToEncounter = (encounter: Encounter) => {
+    const navigateToEncounter = (encounter: EncounterDisplay) => {
       router.push({
         name: 'EncountersDetail',
         params: { selectedMembershipId: encounter.membershipId }
