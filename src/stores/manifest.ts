@@ -21,41 +21,44 @@ const status = reactive<ManifestStatus>({
 const loadManifest = async (): Promise<void> => {
   status.isLoading = true;
 
-  status.message = 'fetching definitions...';
+  try {
+    status.message = 'fetching definitions...';
 
-  const res = await api.get('Destiny2/Manifest/');
-  const version = res.data.Response.version;
+    const res = await api.get('Destiny2/Manifest/');
+    const version = res.data.Response.version;
 
-  const savedVersion = localStorage.getItem(versionKey);
-  if (savedVersion) {
-    if (savedVersion === version) {
-      status.isLoading = false;
-      status.message = null;
+    const savedVersion = localStorage.getItem(versionKey);
+    if (savedVersion) {
+      if (savedVersion === version) {
+        status.isLoading = false;
+        status.message = null;
 
-      return;
+        return;
+      }
+
+      status.message = 'new manifest version available! ';
+
+      await store.clear();
+      localStorage.removeItem(versionKey);
     }
 
-    status.message = 'new manifest version available! ';
+    status.message = 'loading data...';
 
-    await store.clear();
-    localStorage.removeItem(versionKey);
+    const defs = await axios.get(
+      'https://www.bungie.net' +
+        res.data.Response.jsonWorldComponentContentPaths['en']['DestinyInventoryItemDefinition']
+    );
+
+    status.message = 'saving data...';
+
+    await Promise.all(Object.keys(defs.data).map(k => store.setItem(k, defs.data[k])));
+
+    status.message = null;
+
+    localStorage.setItem(versionKey, version);
+  } finally {
+    status.isLoading = false;
   }
-
-  status.message = 'loading data...';
-
-  const defs = await axios.get(
-    'https://www.bungie.net' +
-      res.data.Response.jsonWorldComponentContentPaths['en']['DestinyInventoryItemDefinition']
-  );
-
-  status.message = 'saving data...';
-
-  await Promise.all(Object.keys(defs.data).map(k => store.setItem(k, defs.data[k])));
-
-  status.isLoading = false;
-  status.message = null;
-
-  localStorage.setItem(versionKey, version);
 };
 
 const getDefinition = async (

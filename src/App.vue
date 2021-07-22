@@ -5,6 +5,8 @@
   <main class="px-4 max-w-screen-xl mx-auto">
     <router-view />
   </main>
+
+  <Manifest />
 </template>
 
 <script lang="ts">
@@ -13,9 +15,10 @@ import { useRoute } from 'vue-router';
 
 import Nav from 'components/Nav/Nav.vue';
 import BungieGlobalAlerts from 'components/BungieGlobalAlerts.vue';
+import Manifest from 'components/Manifest.vue';
 
 export default defineComponent({
-  components: { Nav, BungieGlobalAlerts },
+  components: { Nav, BungieGlobalAlerts, Manifest },
   setup() {
     const route = useRoute();
     const isHome = computed(() => route.matched.some(m => m.name === 'Home'));
