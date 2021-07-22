@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { addDays, format } from 'date-fns';
 import { DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
@@ -54,14 +54,15 @@ import {
 } from '~/interfaces';
 import { getActivities } from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
-import useCancelToken from '~/composables/useCancelToken';
+import useAbortSignal from '~/composables/useAbortSignal';
 
 export default defineComponent({
   components: { DayReportItem, MutedText, DateInput },
   setup() {
-    const cancelToken = useCancelToken();
+    const abortSignal = useAbortSignal();
 
     const activities = ref<DestinyHistoricalStatsPeriodGroupShort[]>([]);
+    onUnmounted(() => (activities.value = []));
 
     // TODO, in common with encounters ?
     const loadings = ref<CharacterLoading[]>([]);
@@ -91,7 +92,7 @@ export default defineComponent({
     });
 
     const fetchActivities = async (character: DestinyCharacterComponent, page = 0) => {
-      const acts = await getActivities(character, page, cancelToken.token);
+      const acts = await getActivities(character, page, abortSignal);
       if (!acts.length) {
         const loading = loadings.value.find(l => l.characterId === character.characterId);
         if (loading) loading.loading = false;

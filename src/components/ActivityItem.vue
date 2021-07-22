@@ -43,7 +43,7 @@ import { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2/interfa
 import { getPGCR } from '~/api';
 import DateDistance from 'components/DateDistance.vue';
 import StatItem from 'components/StatItem.vue';
-import useCancelToken from '~/composables/useCancelToken';
+import useAbortSignal from '~/composables/useAbortSignal';
 
 export default defineComponent({
   components: { DateDistance, StatItem },
@@ -52,7 +52,7 @@ export default defineComponent({
   },
   setup(props) {
     const route = useRoute();
-    const cancelToken = useCancelToken();
+    const abortSignal = useAbortSignal();
 
     const loading = ref(true);
     const pgcr = ref<DestinyPostGameCarnageReportData | null>(null);
@@ -63,7 +63,7 @@ export default defineComponent({
     const kda = ref('');
 
     onMounted(async () => {
-      pgcr.value = await getPGCR(props.instanceId, cancelToken.token);
+      pgcr.value = await getPGCR(props.instanceId, abortSignal);
       loading.value = false;
 
       if (!pgcr.value) return;

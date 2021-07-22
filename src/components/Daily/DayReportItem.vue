@@ -71,7 +71,7 @@ import enLocale from 'date-fns/locale/en-GB';
 import { getPGCR } from '~/api';
 import { DayReport, DayReportResult, DayReportResultWeapon, ProfileState } from '~/interfaces';
 import { average } from '~/helpers';
-import useCancelToken from '~/composables/useCancelToken';
+import useAbortSignal from '~/composables/useAbortSignal';
 import WeaponItem from './WeaponItem.vue';
 import MutedText from 'components/common/MutedText.vue';
 import ResultStatsItem from './ResultStatsItem.vue';
@@ -85,7 +85,7 @@ export default defineComponent({
   },
   components: { WeaponItem, MutedText, ResultStatsItem },
   setup(props) {
-    const cancelToken = useCancelToken();
+    const abortSignal = useAbortSignal();
     const isLoading = ref(true);
 
     const formattedDay = computed(() =>
@@ -105,7 +105,7 @@ export default defineComponent({
         isLoading.value = true;
 
         const res = await Promise.all(
-          props.report.activities.map(a => getPGCR(a.instanceId, cancelToken.token))
+          props.report.activities.map(a => getPGCR(a.instanceId, abortSignal))
         );
 
         pgcrs.value = res;

@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, defineComponent } from 'vue';
+import { ref, computed, defineComponent, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import {
   DestinyCharacterComponent,
@@ -23,14 +23,14 @@ import {
 import MutedText from 'components/common/MutedText.vue';
 import { getPGCR, getActivities } from '~/api';
 import useProfile, { useWatchProfile } from '~/composables/useProfile';
-import useCancelToken from '~/composables/useCancelToken';
+import useAbortSignal from '~/composables/useAbortSignal';
 import encounters, { addEncounter, setCurrentUser } from '~/stores/encounters';
 import { ProfileState, CharacterLoading } from '~/interfaces';
 
 export default defineComponent({
   components: { MutedText },
   setup() {
-    const cancelToken = useCancelToken();
+    const abortSignal = useAbortSignal();
 
     const loadings = ref<CharacterLoading[]>([]);
     const isLoading = computed(() => {
@@ -40,7 +40,7 @@ export default defineComponent({
     });
 
     const fetchActivities = async (character: DestinyCharacterComponent, page = 0) => {
-      const acts = await getActivities(character, page, cancelToken.token);
+      const acts = await getActivities(character, page, abortSignal);
 
       if (!acts.length) {
         const loading = loadings.value.find(l => l.characterId === character.characterId);
@@ -54,7 +54,7 @@ export default defineComponent({
     };
 
     const handleActivity = async (activity: DestinyHistoricalStatsPeriodGroup) => {
-      const pgcr = await getPGCR(activity.activityDetails.instanceId, cancelToken.token);
+      const pgcr = await getPGCR(activity.activityDetails.instanceId, abortSignal);
 
       // here promise.all should be ok
       pgcr.entries
@@ -78,6 +78,8 @@ export default defineComponent({
     });
 
     const encounterCount = computed(() => encounters.encounters.length);
+
+    onUnmounted(async () => await setCurrentUser(''));
 
     return {
       encounterCount,

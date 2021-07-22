@@ -1,7 +1,7 @@
 fix :
-memory leak (maybe from pqueue ?)
+memory leak from axios cancel token
 search
-encounter detail with indexeddb
+encounter detail with indexeddb + instanceIds ?
 cancel button to stop search and encounters
 style daily
 fix change player on encounters page

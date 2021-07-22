@@ -1,4 +1,4 @@
-import axios, { CancelToken } from 'axios';
+import axios from 'axios-lab';
 import { ServerResponse } from 'bungie-api-ts/common';
 import {
   DestinyActivityHistoryResults,
@@ -24,7 +24,7 @@ const pgcrs = getStore('d2-pgcr-datas');
 const getActivities = async (
   character: DestinyCharacterComponent,
   page = 0,
-  cancelToken: CancelToken
+  abortSignal: AbortSignal
 ): Promise<DestinyHistoricalStatsPeriodGroup[]> => {
   const mode = DestinyActivityModeType.AllPvP;
   const count = 250;
@@ -33,7 +33,7 @@ const getActivities = async (
     `Destiny2/${character.membershipType}/Account/${character.membershipId}/Character/${character.characterId}/Stats/Activities/`,
     {
       params: { count: count, mode: mode, page: page },
-      cancelToken
+      signal: abortSignal
     }
   );
 
@@ -44,7 +44,7 @@ const getActivities = async (
 
 const getPGCR = (
   instanceId: string,
-  cancelToken: CancelToken
+  abortSignal: AbortSignal
 ): Promise<DestinyPostGameCarnageReportData> => {
   const uri = `Destiny2/Stats/PostGameCarnageReport/${instanceId}/`;
 
@@ -56,7 +56,7 @@ const getPGCR = (
           // using a single cancel token causes memory leak
           // https://github.com/axios/axios/pull/3305
           const res = await api.get<ServerResponse<DestinyPostGameCarnageReportData>>(uri, {
-            cancelToken
+            signal: abortSignal
           });
 
           const pgcr = await pgcrs.setItem(uri, res.data.Response);

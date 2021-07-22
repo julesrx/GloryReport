@@ -1,5 +1,5 @@
 import { reactive } from 'vue';
-import axios from 'axios';
+import axios from 'axios-lab';
 
 import api from '~/api';
 import { getStore } from '~/storage';
