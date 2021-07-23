@@ -22,11 +22,7 @@ const addEncounter = async (player: DestinyPlayer, instanceId: string): Promise<
 
 const incrementEncounter = async (encounter: Encounter, instanceId: string) => {
   encounter.count++;
-
   encounter.instanceIds.push(instanceId);
-  // const ids = await instanceIds.getItem<string[]>(encounter.membershipId);
-
-  // await instanceIds.setItem(encounter.membershipId, ids ? [...ids, instanceId] : [instanceId]);
 };
 
 const addNewEncounter = async (player: DestinyPlayer, instanceId: string) => {
@@ -40,8 +36,6 @@ const addNewEncounter = async (player: DestinyPlayer, instanceId: string) => {
     instanceIds: [instanceId],
     count: 0
   });
-
-  // await instanceIds.setItem(player.destinyUserInfo.membershipId, [instanceId]);
 };
 
 const clearEncounters = async (): Promise<void> => {
