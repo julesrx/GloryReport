@@ -138,10 +138,10 @@ export default defineComponent({
     });
 
     const getResultWins = (entries: DestinyPostGameCarnageReportEntry[]): number =>
-      entries.filter(e => e.standing === 1).length;
+      entries.filter(e => e.standing === 0).length;
 
     const getResultLosses = (entries: DestinyPostGameCarnageReportEntry[]): number =>
-      entries.filter(e => e.standing !== 1).length;
+      entries.filter(e => e.standing === 1).length;
 
     const getResultScore = (entries: DestinyPostGameCarnageReportEntry[]): number =>
       entries.map(e => e.score.basic.value).reduce((a, b) => a + b, 0);
