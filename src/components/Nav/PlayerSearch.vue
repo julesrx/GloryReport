@@ -4,7 +4,7 @@
       <input
         type="text"
         v-model="search"
-        placeholder="Guardian..."
+        placeholder="BungieName#1234..."
         @click="debouncedOnSearch"
         :class="[
           'placeholder-dark-50 bg-dark-500 py-1 pl-2 pr-8 rounded shadow block w-full focus:outline-none',
