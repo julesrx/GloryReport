@@ -1,6 +1,6 @@
 {
   "name": "glory.report",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "author": "julesrx (https://julesrx.fr)",
   "homepage": "https://glory.report",
@@ -15,7 +15,7 @@
     "@vueuse/core": "^5.1.4",
     "axios": "^0.21.1",
     "axios-lab": "^0.1.0",
-    "bungie-api-ts": "^4.9.0",
+    "bungie-api-ts": "^4.10.1",
     "date-fns": "^2.22.1",
     "inter-ui": "^3.19.2",
     "localforage": "^1.9.0",
