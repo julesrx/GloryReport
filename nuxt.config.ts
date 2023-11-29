@@ -1,5 +1,13 @@
 export default defineNuxtConfig({
-    devtools: { enabled: true }
+    devtools: { enabled: true },
+    ssr: false,
+    css: ['~/assets/main.css'],
+    postcss: {
+        plugins: {
+            tailwindcss: {},
+            autoprefixer: {}
+        }
+    }
     // resolve: {
     //   alias: [
     //     { find: '~', replacement: '/src' },
