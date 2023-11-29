@@ -1,11 +1,12 @@
 const title = 'Glory.report';
-const description = '';
+const description = 'Destiny 2 PvP tools, including player encounters, daily reports, and more';
 const url = 'https://glory.report/';
 
 export default defineNuxtConfig({
     devtools: { enabled: true },
     ssr: false,
     css: ['~/assets/main.css'],
+    modules: ['@vueuse/nuxt'],
     postcss: {
         plugins: {
             tailwindcss: {},
@@ -44,11 +45,4 @@ export default defineNuxtConfig({
             ]
         }
     }
-    // resolve: {
-    //   alias: [
-    //     { find: '~', replacement: '/src' },
-    //     { find: 'components', replacement: '/src/components' },
-    //     { find: 'views', replacement: '/src/views' }
-    //   ]
-    // },
 });
