@@ -1,10 +1,11 @@
-import type { ServerResponse } from 'bungie-api-ts/common';
+import type { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 import type { GlobalAlert } from 'bungie-api-ts/core';
+import type { DestinyProfileResponse } from 'bungie-api-ts/destiny2';
 import type { UserSearchResponse, UserSearchPrefixRequest } from 'bungie-api-ts/user';
 
 const fetchApi = $fetch.create({
     baseURL: 'https://stats.bungie.net/Platform/',
-    headers: { 'X-Api-Key': import.meta.env.BUNGIE_API_KEY }
+    headers: { 'X-Api-Key': import.meta.env.VITE_BUNGIE_API_KEY }
 });
 
 export const getGlobalAlerts = async () => {
@@ -17,4 +18,14 @@ export const searchByGlobalNamePost = async (displayNamePrefix: string) => {
         method: 'POST',
         body
     });
+};
+
+export const getProfile = async (
+    destinyMembershipId: string,
+    membershipType: BungieMembershipType
+) => {
+    return await fetchApi<ServerResponse<DestinyProfileResponse>>(
+        `Destiny2/${membershipType}/Profile/${destinyMembershipId}/`,
+        { params: { components: '100,200' } }
+    );
 };
