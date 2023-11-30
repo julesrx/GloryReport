@@ -28,12 +28,17 @@ export const useActivitiesStore = defineStore('activities', () => {
         Object.keys(loadings.value).every(k => loadings.value[k] === false)
     );
 
+    let abortcontroller: AbortController;
+
     const load = (characters: DestinyCharacterComponent[]) => {
+        abortcontroller = new AbortController();
         activities.value.length = 0;
         for (const character of characters) {
             loadings.value[character.characterId] = true;
             loadCharacter(character, 0);
         }
+
+        return abortcontroller;
     };
 
     const loadCharacter = async (character: DestinyCharacterComponent, page: number) => {
@@ -41,6 +46,7 @@ export const useActivitiesStore = defineStore('activities', () => {
             character.membershipId,
             character.membershipType,
             character.characterId,
+            abortcontroller.signal,
             page
         );
 

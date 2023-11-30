@@ -38,6 +38,7 @@ export const getActivityHistory = async (
     destinyMembershipId: string,
     membershipType: BungieMembershipType,
     characterId: string,
+    abortSignal: AbortSignal,
     page = 0
 ) => {
     return await fetchApi<ServerResponse<DestinyActivityHistoryResults>>(
@@ -46,8 +47,9 @@ export const getActivityHistory = async (
             params: {
                 mode: 5, // AllPvP
                 count: 250,
-                page,
-            }
+                page
+            },
+            signal: abortSignal
         }
     );
 };

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { BungieMembershipType } from 'bungie-api-ts/common';
 
+let abortcontroller: AbortController;
+
 const route = useRoute();
 const profile = useProfileStore();
 const activities = useActivitiesStore();
@@ -15,9 +17,11 @@ watchOnce(
         profile.init(data.value!.Response);
 
         const characters = profile.characters;
-        activities.load(characters);
+        abortcontroller = activities.load(characters);
     }
 );
+
+onUnmounted(() => abortcontroller.abort());
 
 const acts = activities.activities;
 const loadingDone = activities.loadingDone;
