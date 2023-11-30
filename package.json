@@ -13,6 +13,7 @@
     "dependencies": {
         "@julesrx/utils": "^0.0.8",
         "@pinia/nuxt": "^0.5.1",
+        "p-queue": "^7.4.1",
         "pinia": "^2.1.7"
     },
     "devDependencies": {

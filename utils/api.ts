@@ -57,9 +57,8 @@ export const getActivityHistory = async (
     );
 };
 
-export const getPostGameCarnageReport = async (activityId: string, abortSignal: AbortSignal) => {
+export const getPostGameCarnageReport = async (activityId: string) => {
     return await fetchApi<ServerResponse<DestinyPostGameCarnageReportData>>(
-        `Destiny2/Stats/PostGameCarnageReport/${activityId}/`,
-        { signal: abortSignal }
+        `Destiny2/Stats/PostGameCarnageReport/${activityId}/`
     );
 };

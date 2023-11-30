@@ -6,8 +6,9 @@ import type {
     DestinyProfileComponent,
     DestinyProfileResponse
 } from 'bungie-api-ts/destiny2';
+import Queue from 'p-queue';
 
-let abortcontroller: AbortController;
+let abortcontroller: AbortController; // TODO: use signal from queue
 
 export const useProfileStore = defineStore('profile', () => {
     const profile = ref<DestinyProfileComponent>();
@@ -25,6 +26,7 @@ export const useProfileStore = defineStore('profile', () => {
 });
 
 export const useActivitiesStore = defineStore('activities', () => {
+    const reports = usePgcrStore();
     const activities = ref<DestinyHistoricalStatsPeriodGroup[]>([]);
 
     const loadings = ref<{ [characterId: string]: boolean }>({});
@@ -58,6 +60,10 @@ export const useActivitiesStore = defineStore('activities', () => {
             return;
         }
 
+        for (const act of acts) {
+            reports.fetchReport(act.activityDetails.instanceId);
+        }
+
         activities.value.push(...acts);
         loadCharacter(character, page + 1);
     };
@@ -67,25 +73,27 @@ export const useActivitiesStore = defineStore('activities', () => {
 
 const cache = createCacheStorage();
 export const usePgcrStore = defineStore('pgcr', () => {
+    const queue = new Queue({ concurrency: 3 });
     const reports = shallowRef<DestinyPostGameCarnageReportData[]>();
 
     const init = () => {
+        queue.clear();
         reports.value = [];
     };
 
     const expiration = 60 * 60 * 24 * 14; // 14 days
-    const fetchReport = async (activityId: string) => {
-        const cached = await cache.gset(
-            `pgcr:${activityId}`,
-            async () =>
-                await getPostGameCarnageReport(activityId, abortcontroller.signal).then(
-                    r => r.Response
-                ),
-            expiration
-        );
+    const fetchReport = (activityId: string) => {
+        const t = async () => {
+            const cached = await cache.gset(
+                `pgcr:${activityId}`,
+                async () => await getPostGameCarnageReport(activityId).then(r => r.Response),
+                expiration
+            );
 
-        reports.value!.push(cached);
-        return cached;
+            reports.value!.push(cached);
+        };
+
+        queue.add(() => t(), { signal: abortcontroller.signal });
     };
 
     return { reports, init, fetchReport };

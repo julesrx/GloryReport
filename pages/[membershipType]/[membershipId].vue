@@ -18,9 +18,9 @@ watchOnce(
         profile.init(data.value!.Response);
 
         const characters = profile.characters;
-        abortcontroller = activities.load(characters);
 
         reports.init();
+        abortcontroller = activities.load(characters);
     }
 );
 
