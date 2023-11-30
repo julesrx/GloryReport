@@ -2,7 +2,6 @@ import { createCacheStorage } from '@julesrx/utils';
 import type {
     DestinyCharacterComponent,
     DestinyHistoricalStatsPeriodGroup,
-    DestinyPostGameCarnageReportData,
     DestinyProfileComponent,
     DestinyProfileResponse
 } from 'bungie-api-ts/destiny2';
@@ -66,11 +65,13 @@ export const useActivitiesStore = defineStore('activities', () => {
 const cache = createCacheStorage();
 export const usePgcrStore = defineStore('pgcr', () => {
     const queue = new Queue({ concurrency: 5 });
-    const reports = shallowRef<DestinyPostGameCarnageReportData[]>();
+    const encounters = new Map<string, { instanceId: string; period: string }[]>();
+    const players = new Map<string, string>();
 
     const init = () => {
         queue.clear();
-        reports.value = [];
+        players.clear();
+        encounters.clear();
     };
 
     const expiration = 60 * 60 * 24 * 14; // 14 days
@@ -82,7 +83,23 @@ export const usePgcrStore = defineStore('pgcr', () => {
                 expiration
             );
 
-            reports.value!.push(cached);
+            for (const entry of cached.entries) {
+                const membershipId = entry.player.destinyUserInfo.membershipId;
+                const infos = entry.player.destinyUserInfo;
+
+                if (infos.bungieGlobalDisplayName && infos.bungieGlobalDisplayNameCode) {
+                    const name = `${infos.bungieGlobalDisplayName}#${infos.bungieGlobalDisplayNameCode}`;
+                    if (!players.has(membershipId)) players.set(membershipId, name);
+                }
+
+                if (!encounters.has(membershipId)) encounters.set(membershipId, []);
+
+                // TODO: read array length and add to a separate array for top 100
+                encounters.get(membershipId)!.push({
+                    instanceId: cached.activityDetails.instanceId,
+                    period: cached.period
+                });
+            }
         };
 
         queue.add(() => t(), { signal: abortcontroller.signal });
@@ -90,5 +107,5 @@ export const usePgcrStore = defineStore('pgcr', () => {
 
     const done = () => queue.size === 0;
 
-    return { reports, init, fetchReport, done };
+    return { encounters, players, init, fetchReport, done };
 });

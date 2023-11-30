@@ -28,11 +28,6 @@ const abort = () => abortcontroller.abort();
 onUnmounted(() => abort());
 
 const acts = activities.activities;
-
-const pgcrCount = ref(0);
-useIntervalFn(() => {
-    pgcrCount.value = reports.reports?.length ?? 0;
-}, 1000);
 </script>
 
 <template>
@@ -40,6 +35,5 @@ useIntervalFn(() => {
     <div v-else>
         <button type="button" @click="abort">Abort</button>
         <div>Found {{ acts.length }} activities</div>
-        <div>Analysed {{ pgcrCount }} activities</div>
     </div>
 </template>
