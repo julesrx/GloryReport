@@ -5,6 +5,8 @@ await db.init();
 
 <template>
     <main>
+        <ProgressBar />
+
         <Body class="bg-stone-900 text-stone-100" />
         <GlobalAlerts />
 

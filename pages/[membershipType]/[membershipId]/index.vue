@@ -8,6 +8,7 @@ const profile = useProfileStore();
 const activities = useActivitiesStore();
 const reports = usePgcrStore();
 const db = useDatabase();
+const progress = useProgress();
 
 const membershipId = route.params.membershipId as string;
 const membershipType = +route.params.membershipType as BungieMembershipType;
@@ -36,6 +37,14 @@ useIntervalFn(() => {
     encounters.value = db.getTopEncounters(search.value);
 }, 2000);
 
+watchThrottled(
+    () => reports.totalFetched,
+    totalFetched => {
+        console.log((totalFetched / acts.length) * 100);
+        progress.setProgress((totalFetched / acts.length) * 100);
+    },
+    { throttle: 250 }
+);
 // TODO: progress bar for PGCR fetched
 </script>
 

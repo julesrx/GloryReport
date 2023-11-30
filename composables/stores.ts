@@ -73,6 +73,8 @@ export const usePgcrStore = defineStore('pgcr', () => {
         db.clear();
     };
 
+    const totalFetched = ref(0);
+
     const expiration = 60 * 60 * 24 * 14; // 14 days
     const fetchReport = (activityId: string) => {
         const t = async () => {
@@ -83,12 +85,18 @@ export const usePgcrStore = defineStore('pgcr', () => {
             );
 
             db.insertEncounters(cached);
+            totalFetched.value++;
         };
 
         queue.add(() => t(), { signal: abortcontroller.signal });
     };
 
-    const done = () => queue.size === 0;
+    return { init, fetchReport, totalFetched };
+});
 
-    return { init, fetchReport, done };
+export const useProgress = defineStore('progress', () => {
+    const progress = ref(0);
+    const setProgress = (number: number) => (progress.value = number);
+
+    return { progress, setProgress };
 });

@@ -56,12 +56,15 @@ export const useDatabase = defineStore('db', () => {
                 db.run('INSERT OR IGNORE INTO Players values (?, ?)', [membershipId, displayName]);
             }
 
+            // FIXME: handle: UNIQUE constraint failed: Encounters.membershipId, Encounters.instanceId
             // TODO: insert all in the same query
-            db.run('INSERT INTO Encounters values (?, ?, ?)', [
-                membershipId,
-                activity.activityDetails.instanceId,
-                activity.period
-            ]);
+            try {
+                db.run('INSERT INTO Encounters values (?, ?, ?)', [
+                    membershipId,
+                    activity.activityDetails.instanceId,
+                    activity.period
+                ]);
+            } catch {}
         }
     };
 
