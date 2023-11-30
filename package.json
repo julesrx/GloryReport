@@ -14,12 +14,14 @@
         "@julesrx/utils": "^0.0.8",
         "@pinia/nuxt": "^0.5.1",
         "p-queue": "^7.4.1",
-        "pinia": "^2.1.7"
+        "pinia": "^2.1.7",
+        "sql.js": "^1.9.0"
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",
         "@nuxtjs/eslint-config-typescript": "^12.1.0",
         "@nuxtjs/eslint-module": "^4.1.0",
+        "@types/sql.js": "^1.4.9",
         "@vueuse/core": "^10.6.1",
         "@vueuse/nuxt": "^10.6.1",
         "autoprefixer": "^10.4.16",
