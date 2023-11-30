@@ -44,7 +44,7 @@ useIntervalFn(() => {
 
         <ul>
             <li v-for="encounter in encounters" :key="encounter.membershipId">
-                {{ encounter.membershipId }}: {{ encounter.count }} times
+                {{ encounter.displayName }}: {{ encounter.count }} times
             </li>
         </ul>
     </div>

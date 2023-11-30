@@ -70,7 +70,7 @@ export const usePgcrStore = defineStore('pgcr', () => {
 
     const init = () => {
         queue.clear();
-        db.clearEncounters();
+        db.clear();
     };
 
     const expiration = 60 * 60 * 24 * 14; // 14 days
