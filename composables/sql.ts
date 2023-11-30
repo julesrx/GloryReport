@@ -45,22 +45,23 @@ export const useDatabase = defineStore('db', () => {
             const membershipId = userInfo.membershipId;
             if (membershipId === profile.profile!.userInfo.membershipId) return;
 
+            let displayName: string;
             if (userInfo.bungieGlobalDisplayName && userInfo.bungieGlobalDisplayNameCode) {
-                db.run('INSERT OR IGNORE INTO Players values (?, ?)', [
-                    membershipId,
-                    `${userInfo.bungieGlobalDisplayName}#${userInfo.bungieGlobalDisplayNameCode}`
-                ]);
+                displayName = `${userInfo.bungieGlobalDisplayName}#${userInfo.bungieGlobalDisplayNameCode}`;
+            } else {
+                displayName = userInfo.displayName;
             }
 
-            // FIXME: handle: UNIQUE constraint failed: Encounters.membershipId, Encounters.instanceId
+            if (displayName) {
+                db.run('INSERT OR IGNORE INTO Players values (?, ?)', [membershipId, displayName]);
+            }
+
             // TODO: insert all in the same query
-            try {
-                db.run('INSERT INTO Encounters values (?, ?, ?)', [
-                    membershipId,
-                    activity.activityDetails.instanceId,
-                    activity.period
-                ]);
-            } catch {}
+            db.run('INSERT INTO Encounters values (?, ?, ?)', [
+                membershipId,
+                activity.activityDetails.instanceId,
+                activity.period
+            ]);
         }
     };
 
@@ -69,7 +70,7 @@ export const useDatabase = defineStore('db', () => {
         const query = `
             SELECT e.membershipId, p.displayName, COUNT(e.instanceId) AS count
             FROM Encounters as e
-            JOIN Players as p on p.membershipId = e.membershipId
+            LEFT JOIN Players as p on p.membershipId = e.membershipId
             ${hasFilter ? 'WHERE LOWER(p.displayName) LIKE ?' : ''}
             GROUP BY e.membershipId, p.displayName
             ORDER BY COUNT(e.instanceId) DESC

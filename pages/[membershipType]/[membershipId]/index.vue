@@ -36,7 +36,7 @@ useIntervalFn(() => {
     encounters.value = db.getTopEncounters(search.value);
 }, 2000);
 
-// TODO:progress bar for PGCR fetched
+// TODO: progress bar for PGCR fetched
 </script>
 
 <template>
@@ -47,9 +47,13 @@ useIntervalFn(() => {
 
         <input id="search" v-model="search" type="search" />
         <ul>
-            <li v-for="encounter in encounters" :key="encounter.membershipId">
-                {{ encounter.displayName }}: {{ encounter.count }} times
-            </li>
+            <EncounterListItem
+                v-for="encounter in encounters"
+                :key="encounter.membershipId"
+                :encounter="encounter"
+            />
         </ul>
+
+        <NuxtPage />
     </div>
 </template>
