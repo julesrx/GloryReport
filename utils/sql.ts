@@ -36,11 +36,23 @@ export const insertEncounters = (activity: DestinyPostGameCarnageReportData) => 
     }
 };
 
-export const getTopEncounters = () => {
-    return db.exec(`
-        SELECT membershipId, count(instanceId) as Count FROM Encounters
-        GROUP BY instanceId
+export interface EncounterAggregateResult {
+    membershipId: string;
+    count: number;
+}
+
+export const getTopEncounters = (): EncounterAggregateResult[] => {
+    const res = db.exec(`
+        SELECT membershipId, count(instanceId) AS count FROM Encounters
+        GROUP BY membershipId
         ORDER BY count(instanceId) DESC
         LIMIT 100
     `);
+
+    return res[0].values.map(v => {
+        const membershipId = v[0]!.toString();
+        const count = v[1]!.toString();
+
+        return { membershipId, count: +count };
+    });
 };

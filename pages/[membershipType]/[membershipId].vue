@@ -28,9 +28,10 @@ const abort = () => abortcontroller.abort();
 onUnmounted(() => abort());
 
 const acts = activities.activities;
+const encounters = shallowRef<EncounterAggregateResult[]>([]);
 
 useIntervalFn(() => {
-    console.log(getTopEncounters());
+    encounters.value = getTopEncounters();
 }, 2000);
 </script>
 
@@ -39,5 +40,11 @@ useIntervalFn(() => {
     <div v-else>
         <button type="button" @click="abort">Abort</button>
         <div>Found {{ acts.length }} activities</div>
+
+        <ul>
+            <li v-for="encounter in encounters" :key="encounter.membershipId">
+                {{ encounter.membershipId }}: {{ encounter.count }} times
+            </li>
+        </ul>
     </div>
 </template>
