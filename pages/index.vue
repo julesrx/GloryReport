@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { UserInfoCard, UserSearchResponseDetail } from 'bungie-api-ts/user';
+import type { UserInfoCard } from 'bungie-api-ts/user';
 
 const gamertag = ref('');
 const results = ref<UserInfoCard[]>([]);
@@ -23,9 +23,9 @@ watchDebounced(
 
         <div>
             <input
-                type="search"
                 id="gamertag"
                 v-model="gamertag"
+                type="search"
                 autofocus
                 class="bg-stone-900 border border-stone-800"
             />

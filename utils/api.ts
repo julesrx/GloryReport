@@ -7,7 +7,7 @@ const fetchApi = $fetch.create({
     baseURL: 'https://stats.bungie.net/Platform/',
     headers: { 'X-Api-Key': import.meta.env.VITE_BUNGIE_API_KEY },
     onRequest: ({ request }) => {
-        if (!request.toString().endsWith('/')) throw new Error();
+        if (!request.toString().endsWith('/')) throw new Error('Aborted');
     }
 });
 

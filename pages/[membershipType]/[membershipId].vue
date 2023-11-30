@@ -7,8 +7,8 @@ const route = useRoute();
 const profile = useProfileStore();
 const activities = useActivitiesStore();
 
-const membershipId = route.params['membershipId'] as string;
-const membershipType = +route.params['membershipType'] as BungieMembershipType;
+const membershipId = route.params.membershipId as string;
+const membershipType = +route.params.membershipType as BungieMembershipType;
 
 const { data, pending } = useAsyncData('profile', () => getProfile(membershipId, membershipType));
 watchOnce(
@@ -29,7 +29,7 @@ const loadingDone = activities.loadingDone;
 
 <template>
     <div v-if="pending">Loading profile...</div>
-    <template v-else>
+    <div v-else>
         <div>{{ loadingDone ? 'Found' : 'Loading' }} {{ acts.length }} activities</div>
-    </template>
+    </div>
 </template>

@@ -6,13 +6,14 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     ssr: false,
     css: ['~/assets/main.css'],
-    modules: ['@vueuse/nuxt', '@pinia/nuxt'],
+    modules: ['@vueuse/nuxt', '@pinia/nuxt', '@nuxtjs/eslint-module'],
     postcss: {
         plugins: {
             tailwindcss: {},
             autoprefixer: {}
         }
     },
+    eslint: { fix: true },
     typescript: { typeCheck: true, strict: true },
     appConfig: { title },
     app: {
