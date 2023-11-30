@@ -1,5 +1,5 @@
 <script setup lang="ts">
-console.log(select());
+await initSqlDriver();
 </script>
 
 <template>

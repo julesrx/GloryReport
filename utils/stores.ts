@@ -72,6 +72,8 @@ export const usePgcrStore = defineStore('pgcr', () => {
         queue.clear();
         players.clear();
         encounters.clear();
+
+        clearEncounters();
     };
 
     const expiration = 60 * 60 * 24 * 14; // 14 days
@@ -83,23 +85,25 @@ export const usePgcrStore = defineStore('pgcr', () => {
                 expiration
             );
 
-            for (const entry of cached.entries) {
-                const membershipId = entry.player.destinyUserInfo.membershipId;
-                const infos = entry.player.destinyUserInfo;
+            insertEncounters(cached);
 
-                if (infos.bungieGlobalDisplayName && infos.bungieGlobalDisplayNameCode) {
-                    const name = `${infos.bungieGlobalDisplayName}#${infos.bungieGlobalDisplayNameCode}`;
-                    if (!players.has(membershipId)) players.set(membershipId, name);
-                }
+            // for (const entry of cached.entries) {
+            //     const membershipId = entry.player.destinyUserInfo.membershipId;
+            //     const infos = entry.player.destinyUserInfo;
 
-                if (!encounters.has(membershipId)) encounters.set(membershipId, []);
+            //     if (infos.bungieGlobalDisplayName && infos.bungieGlobalDisplayNameCode) {
+            //         const name = `${infos.bungieGlobalDisplayName}#${infos.bungieGlobalDisplayNameCode}`;
+            //         if (!players.has(membershipId)) players.set(membershipId, name);
+            //     }
 
-                // TODO: read array length and add to a separate array for top 100
-                encounters.get(membershipId)!.push({
-                    instanceId: cached.activityDetails.instanceId,
-                    period: cached.period
-                });
-            }
+            //     if (!encounters.has(membershipId)) encounters.set(membershipId, []);
+
+            //     // TODO: read array length and add to a separate array for top 100
+            //     encounters.get(membershipId)!.push({
+            //         instanceId: cached.activityDetails.instanceId,
+            //         period: cached.period
+            //     });
+            // }
         };
 
         queue.add(() => t(), { signal: abortcontroller.signal });

@@ -28,6 +28,10 @@ const abort = () => abortcontroller.abort();
 onUnmounted(() => abort());
 
 const acts = activities.activities;
+
+useIntervalFn(() => {
+    console.log(getTopEncounters());
+}, 2000);
 </script>
 
 <template>
