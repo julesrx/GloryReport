@@ -29,15 +29,9 @@ export const useActivitiesStore = defineStore('activities', () => {
     const reports = usePgcrStore();
     const activities = ref<DestinyHistoricalStatsPeriodGroup[]>([]);
 
-    // const loadings = ref<{ [characterId: string]: boolean }>({});
-    // const loadingDone = computed(() =>
-    //     Object.keys(loadings.value).every(k => loadings.value[k] === false)
-    // );
-
     const load = (characters: DestinyCharacterComponent[]) => {
         activities.value.length = 0;
         for (const character of characters) {
-            // loadings.value[character.characterId] = true;
             loadCharacter(character, 0);
         }
 
@@ -55,7 +49,6 @@ export const useActivitiesStore = defineStore('activities', () => {
 
         const acts = res.Response.activities;
         if (!acts?.length) {
-            // loadings.value[character.characterId] = false;
             return;
         }
 
