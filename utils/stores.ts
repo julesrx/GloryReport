@@ -8,7 +8,7 @@ import type {
 } from 'bungie-api-ts/destiny2';
 import Queue from 'p-queue';
 
-let abortcontroller: AbortController; // TODO: use signal from queue
+const abortcontroller = new AbortController();
 
 export const useProfileStore = defineStore('profile', () => {
     const profile = ref<DestinyProfileComponent>();
@@ -29,16 +29,15 @@ export const useActivitiesStore = defineStore('activities', () => {
     const reports = usePgcrStore();
     const activities = ref<DestinyHistoricalStatsPeriodGroup[]>([]);
 
-    const loadings = ref<{ [characterId: string]: boolean }>({});
-    const loadingDone = computed(() =>
-        Object.keys(loadings.value).every(k => loadings.value[k] === false)
-    );
+    // const loadings = ref<{ [characterId: string]: boolean }>({});
+    // const loadingDone = computed(() =>
+    //     Object.keys(loadings.value).every(k => loadings.value[k] === false)
+    // );
 
     const load = (characters: DestinyCharacterComponent[]) => {
-        abortcontroller = new AbortController();
         activities.value.length = 0;
         for (const character of characters) {
-            loadings.value[character.characterId] = true;
+            // loadings.value[character.characterId] = true;
             loadCharacter(character, 0);
         }
 
@@ -56,7 +55,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
         const acts = res.Response.activities;
         if (!acts?.length) {
-            loadings.value[character.characterId] = false;
+            // loadings.value[character.characterId] = false;
             return;
         }
 
@@ -68,12 +67,12 @@ export const useActivitiesStore = defineStore('activities', () => {
         loadCharacter(character, page + 1);
     };
 
-    return { load, activities, loadings, loadingDone };
+    return { load, activities };
 });
 
 const cache = createCacheStorage();
 export const usePgcrStore = defineStore('pgcr', () => {
-    const queue = new Queue({ concurrency: 3 });
+    const queue = new Queue({ concurrency: 5 });
     const reports = shallowRef<DestinyPostGameCarnageReportData[]>();
 
     const init = () => {
@@ -96,5 +95,7 @@ export const usePgcrStore = defineStore('pgcr', () => {
         queue.add(() => t(), { signal: abortcontroller.signal });
     };
 
-    return { reports, init, fetchReport };
+    const done = () => queue.size === 0;
+
+    return { reports, init, fetchReport, done };
 });

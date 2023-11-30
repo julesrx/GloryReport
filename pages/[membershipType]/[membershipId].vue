@@ -24,15 +24,22 @@ watchOnce(
     }
 );
 
-onUnmounted(() => abortcontroller.abort());
+const abort = () => abortcontroller.abort();
+onUnmounted(() => abort());
 
 const acts = activities.activities;
-const loadingDone = activities.loadingDone;
+
+const pgcrCount = ref(0);
+useIntervalFn(() => {
+    pgcrCount.value = reports.reports?.length ?? 0;
+}, 1000);
 </script>
 
 <template>
     <div v-if="pending">Loading profile...</div>
     <div v-else>
-        <div>{{ loadingDone ? 'Found' : 'Loading' }} {{ acts.length }} activities</div>
+        <button type="button" @click="abort">Abort</button>
+        <div>Found {{ acts.length }} activities</div>
+        <div>Analysed {{ pgcrCount }} activities</div>
     </div>
 </template>
