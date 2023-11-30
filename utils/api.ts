@@ -1,15 +1,14 @@
 import type { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 import type { GlobalAlert } from 'bungie-api-ts/core';
-import {
-    DestinyActivityModeType,
-    type DestinyActivityHistoryResults,
-    type DestinyProfileResponse
-} from 'bungie-api-ts/destiny2';
+import type { DestinyActivityHistoryResults, DestinyProfileResponse } from 'bungie-api-ts/destiny2';
 import type { UserSearchResponse, UserSearchPrefixRequest } from 'bungie-api-ts/user';
 
 const fetchApi = $fetch.create({
     baseURL: 'https://stats.bungie.net/Platform/',
-    headers: { 'X-Api-Key': import.meta.env.VITE_BUNGIE_API_KEY }
+    headers: { 'X-Api-Key': import.meta.env.VITE_BUNGIE_API_KEY },
+    onRequest: ({ request }) => {
+        if (!request.toString().endsWith('/')) throw new Error();
+    }
 });
 
 export const getGlobalAlerts = async () => {
