@@ -31,9 +31,12 @@ onUnmounted(() => abort());
 const acts = activities.activities;
 const encounters = shallowRef<EncounterAggregateResult[]>([]);
 
+const search = ref('');
 useIntervalFn(() => {
-    encounters.value = db.getTopEncounters();
+    encounters.value = db.getTopEncounters(search.value);
 }, 2000);
+
+// TODO:progress bar for PGCR fetched
 </script>
 
 <template>
@@ -42,6 +45,7 @@ useIntervalFn(() => {
         <button type="button" @click="abort">Abort</button>
         <div>Found {{ acts.length }} activities</div>
 
+        <input id="search" v-model="search" type="search" />
         <ul>
             <li v-for="encounter in encounters" :key="encounter.membershipId">
                 {{ encounter.displayName }}: {{ encounter.count }} times

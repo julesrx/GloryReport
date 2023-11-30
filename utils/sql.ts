@@ -65,18 +65,22 @@ export const useDatabase = defineStore('db', () => {
     };
 
     const getTopEncounters = (displayName?: string): EncounterAggregateResult[] => {
+        const hasFilter = !!displayName;
         const query = `
             SELECT e.membershipId, p.displayName, COUNT(e.instanceId) AS count
             FROM Encounters as e
             JOIN Players as p on p.membershipId = e.membershipId
-            ${displayName ? 'WHERE LOWER(p.displayName) LIKE ?' : ''}
+            ${hasFilter ? 'WHERE LOWER(p.displayName) LIKE ?' : ''}
             GROUP BY e.membershipId, p.displayName
             ORDER BY COUNT(e.instanceId) DESC
             LIMIT 100
         `;
 
-        const res = db.exec(query, displayName ? [`%${displayName?.toLowerCase}%`] : undefined);
+        const res = hasFilter
+            ? db.exec(query, [`%${displayName?.toLowerCase()}%`])
+            : db.exec(query);
 
+        if (!res?.length) return [];
         return res[0].values.map(v => {
             const membershipId = v[0] as string;
             const displayName = v[1] as string;
