@@ -7,7 +7,6 @@ const route = useRoute();
 const profile = useProfileStore();
 const activities = useActivitiesStore();
 const reports = usePgcrStore();
-const db = useDatabase();
 const progress = useProgress();
 
 const membershipId = route.params.membershipId as string;
@@ -30,14 +29,6 @@ const abort = () => abortcontroller.abort();
 onUnmounted(() => abort());
 
 const acts = activities.activities;
-
-const encounters = shallowRef<EncounterAggregateResult[]>([]);
-provide(encountersKey, encounters);
-
-const search = ref('');
-useIntervalFn(() => {
-    encounters.value = db.getTopEncounters(search.value);
-}, 2000);
 
 watchThrottled(
     () => reports.totalFetched,

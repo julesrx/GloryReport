@@ -14,7 +14,7 @@ const navigate = () => {
 <template>
     <tr class="cursor-pointer hover:bg-stone-800" @click="() => navigate()">
         <td class="text-right">{{ index + 1 }}</td>
-        <td class="px-6">{{ encounter.displayName ?? 'Unknown' }}</td>
+        <td class="px-6 py-1">{{ encounter.displayName ?? 'Unknown' }}</td>
         <td>{{ encounter.count }}</td>
     </tr>
 </template>
