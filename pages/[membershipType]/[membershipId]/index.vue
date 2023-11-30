@@ -40,12 +40,12 @@ useIntervalFn(() => {
 watchThrottled(
     () => reports.totalFetched,
     totalFetched => {
-        console.log((totalFetched / acts.length) * 100);
-        progress.setProgress((totalFetched / acts.length) * 100);
+        const prog = Math.trunc((totalFetched / acts.length) * 100);
+        progress.set(prog === 100 && activities.loadings.length > 0 ? 90 : prog);
     },
-    { throttle: 250 }
+    { throttle: 300 }
 );
-// TODO: progress bar for PGCR fetched
+onUnmounted(() => progress.set(0));
 </script>
 
 <template>
@@ -59,6 +59,7 @@ watchThrottled(
             <EncounterListItem
                 v-for="encounter in encounters"
                 :key="encounter.membershipId"
+                v-memo="[encounter.membershipId]"
                 :encounter="encounter"
             />
         </ul>

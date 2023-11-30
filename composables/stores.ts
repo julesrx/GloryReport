@@ -29,8 +29,15 @@ export const useActivitiesStore = defineStore('activities', () => {
     const reports = usePgcrStore();
     const activities = ref<DestinyHistoricalStatsPeriodGroup[]>([]);
 
+    const loadings = ref<string[]>([]);
+    const removeLoading = (characterId: string) => {
+        loadings.value = loadings.value.filter(i => i !== characterId);
+    };
+
     const load = (characters: DestinyCharacterComponent[]) => {
         activities.value.length = 0;
+
+        loadings.value.push(...characters.map(c => c.characterId));
         for (const character of characters) {
             loadCharacter(character, 0);
         }
@@ -49,6 +56,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
         const acts = res.Response.activities;
         if (!acts?.length) {
+            removeLoading(character.characterId);
             return;
         }
 
@@ -60,7 +68,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         loadCharacter(character, page + 1);
     };
 
-    return { load, activities };
+    return { load, activities, loadings };
 });
 
 const cache = createCacheStorage();
@@ -94,9 +102,11 @@ export const usePgcrStore = defineStore('pgcr', () => {
     return { init, fetchReport, totalFetched };
 });
 
-export const useProgress = defineStore('progress', () => {
-    const progress = ref(0);
-    const setProgress = (number: number) => (progress.value = number);
-
-    return { progress, setProgress };
+export const useProgress = defineStore('progress', {
+    state: () => ({ progress: 0 }),
+    actions: {
+        set(number: number) {
+            this.progress = number;
+        }
+    }
 });
