@@ -6,6 +6,7 @@ let abortcontroller: AbortController;
 const route = useRoute();
 const profile = useProfileStore();
 const activities = useActivitiesStore();
+const reports = usePgcrStore();
 
 const membershipId = route.params.membershipId as string;
 const membershipType = +route.params.membershipType as BungieMembershipType;
@@ -18,6 +19,8 @@ watchOnce(
 
         const characters = profile.characters;
         abortcontroller = activities.load(characters);
+
+        reports.init();
     }
 );
 

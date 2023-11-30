@@ -1,9 +1,13 @@
+import { createCacheStorage } from '@julesrx/utils';
 import type {
     DestinyCharacterComponent,
     DestinyHistoricalStatsPeriodGroup,
+    DestinyPostGameCarnageReportData,
     DestinyProfileComponent,
     DestinyProfileResponse
 } from 'bungie-api-ts/destiny2';
+
+let abortcontroller: AbortController;
 
 export const useProfileStore = defineStore('profile', () => {
     const profile = ref<DestinyProfileComponent>();
@@ -27,8 +31,6 @@ export const useActivitiesStore = defineStore('activities', () => {
     const loadingDone = computed(() =>
         Object.keys(loadings.value).every(k => loadings.value[k] === false)
     );
-
-    let abortcontroller: AbortController;
 
     const load = (characters: DestinyCharacterComponent[]) => {
         abortcontroller = new AbortController();
@@ -61,4 +63,30 @@ export const useActivitiesStore = defineStore('activities', () => {
     };
 
     return { load, activities, loadings, loadingDone };
+});
+
+const cache = createCacheStorage();
+export const usePgcrStore = defineStore('pgcr', () => {
+    const reports = shallowRef<DestinyPostGameCarnageReportData[]>();
+
+    const init = () => {
+        reports.value = [];
+    };
+
+    const expiration = 60 * 60 * 24 * 14; // 14 days
+    const fetchReport = async (activityId: string) => {
+        const cached = await cache.gset(
+            `pgcr:${activityId}`,
+            async () =>
+                await getPostGameCarnageReport(activityId, abortcontroller.signal).then(
+                    r => r.Response
+                ),
+            expiration
+        );
+
+        reports.value!.push(cached);
+        return cached;
+    };
+
+    return { reports, init, fetchReport };
 });

@@ -1,6 +1,10 @@
 import type { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 import type { GlobalAlert } from 'bungie-api-ts/core';
-import type { DestinyActivityHistoryResults, DestinyProfileResponse } from 'bungie-api-ts/destiny2';
+import type {
+    DestinyActivityHistoryResults,
+    DestinyPostGameCarnageReportData,
+    DestinyProfileResponse
+} from 'bungie-api-ts/destiny2';
 import type { UserSearchResponse, UserSearchPrefixRequest } from 'bungie-api-ts/user';
 
 const fetchApi = $fetch.create({
@@ -50,5 +54,12 @@ export const getActivityHistory = async (
             },
             signal: abortSignal
         }
+    );
+};
+
+export const getPostGameCarnageReport = async (activityId: string, abortSignal: AbortSignal) => {
+    return await fetchApi<ServerResponse<DestinyPostGameCarnageReportData>>(
+        `Destiny2/Stats/PostGameCarnageReport/${activityId}/`,
+        { signal: abortSignal }
     );
 };
