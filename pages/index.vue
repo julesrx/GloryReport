@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { UserSearchResponseDetail } from 'bungie-api-ts/user';
+import type { UserInfoCard, UserSearchResponseDetail } from 'bungie-api-ts/user';
 
 const gamertag = ref('');
-const results = ref<UserSearchResponseDetail[]>([]);
+const results = ref<UserInfoCard[]>([]);
 
 watchDebounced(
     gamertag,
     async gamertag => {
         const res = await searchByGlobalNamePost(gamertag);
-        results.value = res.Response.searchResults;
+        results.value = res.Response.searchResults.map(l => l.destinyMemberships[0]);
     },
     { debounce: 500 }
 );
@@ -31,8 +31,8 @@ watchDebounced(
             />
 
             <ul v-if="results.length">
-                <li v-for="r in results" :key="r.bungieNetMembershipId">
-                    <NuxtLink :to="`/${r.bungieNetMembershipId}/${r.bungieNetMembershipId}`">
+                <li v-for="r in results" :key="r.membershipId">
+                    <NuxtLink :to="`/${r.membershipType}/${r.membershipId}`">
                         {{ r.bungieGlobalDisplayName }}
                     </NuxtLink>
                 </li>

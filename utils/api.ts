@@ -1,6 +1,10 @@
 import type { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
 import type { GlobalAlert } from 'bungie-api-ts/core';
-import type { DestinyProfileResponse } from 'bungie-api-ts/destiny2';
+import {
+    DestinyActivityModeType,
+    type DestinyActivityHistoryResults,
+    type DestinyProfileResponse
+} from 'bungie-api-ts/destiny2';
 import type { UserSearchResponse, UserSearchPrefixRequest } from 'bungie-api-ts/user';
 
 const fetchApi = $fetch.create({
@@ -27,5 +31,23 @@ export const getProfile = async (
     return await fetchApi<ServerResponse<DestinyProfileResponse>>(
         `Destiny2/${membershipType}/Profile/${destinyMembershipId}/`,
         { params: { components: '100,200' } }
+    );
+};
+
+export const getActivityHistory = async (
+    destinyMembershipId: string,
+    membershipType: BungieMembershipType,
+    characterId: string,
+    page = 0
+) => {
+    return await fetchApi<ServerResponse<DestinyActivityHistoryResults>>(
+        `Destiny2/${membershipType}/Account/${destinyMembershipId}/Character/${characterId}/Stats/Activities/`,
+        {
+            params: {
+                mode: 5, // AllPvP
+                count: 250,
+                page,
+            }
+        }
     );
 };
