@@ -1,4 +1,4 @@
-import type { BungieMembershipType, ServerResponse } from 'bungie-api-ts/common';
+import { BungieMembershipType, type ServerResponse } from 'bungie-api-ts/common';
 import type { GlobalAlert } from 'bungie-api-ts/core';
 import type {
     DestinyActivityHistoryResults,

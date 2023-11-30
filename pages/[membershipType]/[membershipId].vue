@@ -30,7 +30,9 @@ const abort = () => abortcontroller.abort();
 onUnmounted(() => abort());
 
 const acts = activities.activities;
+
 const encounters = shallowRef<EncounterAggregateResult[]>([]);
+provide(encountersKey, encounters);
 
 const search = ref('');
 useIntervalFn(() => {
@@ -53,16 +55,6 @@ onUnmounted(() => progress.set(0));
     <div v-else>
         <button type="button" @click="abort">Abort</button>
         <div>Found {{ acts.length }} activities</div>
-
-        <input id="search" v-model="search" type="search" />
-        <ul>
-            <EncounterListItem
-                v-for="encounter in encounters"
-                :key="encounter.membershipId"
-                v-memo="[encounter.membershipId]"
-                :encounter="encounter"
-            />
-        </ul>
 
         <NuxtPage />
     </div>
