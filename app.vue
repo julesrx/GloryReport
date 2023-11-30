@@ -1,5 +1,6 @@
 <script setup lang="ts">
-await initSqlDriver();
+const db = useDatabase();
+await db.init();
 </script>
 
 <template>

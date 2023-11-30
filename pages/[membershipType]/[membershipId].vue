@@ -7,6 +7,7 @@ const route = useRoute();
 const profile = useProfileStore();
 const activities = useActivitiesStore();
 const reports = usePgcrStore();
+const db = useDatabase();
 
 const membershipId = route.params.membershipId as string;
 const membershipType = +route.params.membershipType as BungieMembershipType;
@@ -31,7 +32,7 @@ const acts = activities.activities;
 const encounters = shallowRef<EncounterAggregateResult[]>([]);
 
 useIntervalFn(() => {
-    encounters.value = getTopEncounters();
+    encounters.value = db.getTopEncounters();
 }, 2000);
 </script>
 
