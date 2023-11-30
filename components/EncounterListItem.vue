@@ -6,7 +6,7 @@ const router = useRouter();
 
 const navigate = () => {
     router.push(
-        `/${route.params.membershipType}/${route.params.membershipId}/${props.encounter.membershipId}`
+        `/${route.params.membershipType}/${route.params.membershipId}/${props.encounter.membershipTypeId}`
     );
 };
 </script>

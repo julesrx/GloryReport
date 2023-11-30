@@ -33,8 +33,8 @@ watchDebounced(search, fetchEncounters, { debounce: 250 });
             <tbody>
                 <EncounterListItem
                     v-for="(encounter, i) in encounters"
-                    :key="encounter.membershipId"
-                    v-memo="[encounter.membershipId, i]"
+                    :key="encounter.membershipTypeId"
+                    v-memo="[encounter.membershipTypeId, i]"
                     :encounter="encounter"
                     :index="i"
                 />
