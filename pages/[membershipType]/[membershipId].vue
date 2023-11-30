@@ -20,11 +20,12 @@ watchOnce(
 );
 
 const acts = activities.activities;
+const loadingDone = activities.loadingDone;
 </script>
 
 <template>
     <div v-if="pending">Loading profile...</div>
     <template v-else>
-        <pre>{{ acts.length }}</pre>
+        <div>{{ loadingDone ? 'Found' : 'Loading' }} {{ acts.length }} activities</div>
     </template>
 </template>

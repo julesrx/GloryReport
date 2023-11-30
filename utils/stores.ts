@@ -24,12 +24,12 @@ export const useActivitiesStore = defineStore('activities', () => {
     const activities = ref<DestinyHistoricalStatsPeriodGroup[]>([]);
 
     const loadings = ref<{ [characterId: string]: boolean }>({});
-    const isDone = computed(() => {
-        const keys = Object.keys(loadings.value);
-        return keys.every(k => loadings.value[k] === false);
-    });
+    const loadingDone = computed(() =>
+        Object.keys(loadings.value).every(k => loadings.value[k] === false)
+    );
 
     const load = (characters: DestinyCharacterComponent[]) => {
+        activities.value.length = 0;
         for (const character of characters) {
             loadings.value[character.characterId] = true;
             loadCharacter(character, 0);
@@ -54,5 +54,5 @@ export const useActivitiesStore = defineStore('activities', () => {
         loadCharacter(character, page + 1);
     };
 
-    return { load, activities, loadings, isDone };
+    return { load, activities, loadings, loadingDone };
 });
