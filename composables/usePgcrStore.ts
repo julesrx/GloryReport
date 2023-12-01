@@ -6,7 +6,7 @@ export default defineStore('pgcr', () => {
     const cache = useCache();
     const abortcontroller = useAbortController();
 
-    const init = () => {
+    const clear = () => {
         queue.clear();
         db.clear();
     };
@@ -29,5 +29,5 @@ export default defineStore('pgcr', () => {
         queue.add(() => t(), { signal: abortcontroller.signal });
     };
 
-    return { init, fetchReport, totalFetched };
+    return { clear, fetchReport, totalFetched };
 });

@@ -13,7 +13,7 @@ export default defineNuxtConfig({
             autoprefixer: {}
         }
     },
-    eslint: { fix: true },
+    eslint: { fix: true, failOnError: true },
     typescript: { typeCheck: true, strict: true },
     appConfig: { title },
     app: {

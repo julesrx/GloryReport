@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import type { BungieMembershipType } from 'bungie-api-ts/common';
 
-let abortcontroller: AbortController;
-
 const route = useRoute();
 const profile = useProfileStore();
 const activities = useActivitiesStore();
 const reports = usePgcrStore();
 const progress = useProgressStore();
+const abortcontroller = useAbortController();
 
 const membershipId = route.params.membershipId as string;
 const membershipType = +route.params.membershipType as BungieMembershipType;
@@ -16,9 +15,9 @@ const { data, pending } = useAsyncData('profile', () => getProfile(membershipId,
 watchOnce(
     () => !pending.value,
     () => {
-        profile.init(data.value!.Response);
-        reports.init();
-        abortcontroller = activities.load(profile.characters!);
+        profile.load(data.value!.Response);
+        reports.clear();
+        activities.load(profile.characters!);
     }
 );
 

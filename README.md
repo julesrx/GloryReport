@@ -20,6 +20,6 @@ pnpm dev
 # fork it
 # clone it
 # dev it
-pnpm lint
+pnpm build
 # make a pull request
 ```

@@ -8,7 +8,7 @@ export default defineStore('profile', () => {
     const profile = shallowRef<DestinyProfileComponent>();
     const characters = shallowRef<DestinyCharacterComponent[]>();
 
-    const init = (response: DestinyProfileResponse) => {
+    const load = (response: DestinyProfileResponse) => {
         profile.value = response.profile.data;
         characters.value = (() => {
             const chars = response.characters.data;
@@ -16,5 +16,5 @@ export default defineStore('profile', () => {
         })();
     };
 
-    return { profile, characters, init };
+    return { profile, characters, load };
 });

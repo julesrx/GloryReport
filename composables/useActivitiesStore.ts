@@ -21,8 +21,6 @@ export default defineStore('activities', () => {
         for (const character of characters) {
             loadCharacter(character, 0);
         }
-
-        return abortcontroller;
     };
 
     const loadCharacter = async (character: DestinyCharacterComponent, page: number) => {
