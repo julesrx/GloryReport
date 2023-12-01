@@ -15,6 +15,14 @@ export const getUserDisplayName = (userInfo: UserInfoCard): string | null => {
     return displayName ?? null;
 };
 
+export const splitDisplayName = (displayName: string | null): [string, string] => {
+    if (!displayName) return ['Anonymous', ''];
+    if (!displayName.includes('#')) return [displayName, ''];
+
+    const split = displayName.split('#');
+    return [split[0], split[1]];
+};
+
 export const splitMembershipTypeId = (membershipTypeId: string): [number, string] => {
     const split = membershipTypeId.split('-');
     const membershipType = +split[0];

@@ -7,7 +7,7 @@ const route = useRoute();
 const profile = useProfileStore();
 const activities = useActivitiesStore();
 const reports = usePgcrStore();
-const progress = useProgress();
+const progress = useProgressStore();
 
 const membershipId = route.params.membershipId as string;
 const membershipType = +route.params.membershipType as BungieMembershipType;
@@ -18,7 +18,7 @@ watchOnce(
     () => {
         profile.init(data.value!.Response);
         reports.init();
-        abortcontroller = activities.load(profile.characters);
+        abortcontroller = activities.load(profile.characters!);
     }
 );
 

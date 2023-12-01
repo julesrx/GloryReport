@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { useProgress } from '~/composables/stores';
-
-const progress = useProgress();
+const progress = useProgressStore();
 
 const width = computed(() => progress.progress);
 const show = computed(() => width.value > 0 && width.value < 100);

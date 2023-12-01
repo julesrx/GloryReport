@@ -4,8 +4,7 @@ const props = defineProps<{ encounter: EncounterAggregateResult; index: number }
 const route = useRoute();
 const router = useRouter();
 
-// TODO: try fetch from api and cache
-const displayName = computed(() => props.encounter.displayName ?? 'Anonymous');
+const displayName = computed(() => splitDisplayName(props.encounter.displayName)[0]);
 
 const navigate = () => {
     router.push(

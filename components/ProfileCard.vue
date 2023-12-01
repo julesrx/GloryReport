@@ -1,13 +1,10 @@
 <script setup lang="ts">
 const profile = useProfileStore();
 
-const emblem = computed(() => `https://bungie.net${profile.characters[0].emblemPath}`);
+const emblem = computed(() => `https://bungie.net${profile.characters![0].emblemPath}`);
 const displayName = computed<[string, string]>(() => {
     const displayName = getUserDisplayName(profile.profile!.userInfo);
-    if (!displayName || !displayName.includes('#')) return [displayName, ''];
-
-    const split = displayName.split('#');
-    return [split[0], split[1]];
+    return splitDisplayName(displayName);
 });
 </script>
 

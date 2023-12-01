@@ -2,20 +2,7 @@ import type { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2';
 import initSqlJs, { type Database } from 'sql.js';
 import wasm from 'sql.js/dist/sql-wasm.wasm?url';
 
-export interface EncounterAggregateResult {
-    membershipTypeId: string;
-    membershipType: number;
-    membershipId: string;
-    displayName: string | null;
-    count: number;
-}
-
-export interface EncounterDetailResult {
-    instanceId: string;
-    period: string;
-}
-
-export const useDatabase = defineStore('db', () => {
+export default defineStore('db', () => {
     const profile = useProfileStore();
 
     let db: Database;
@@ -92,8 +79,6 @@ export const useDatabase = defineStore('db', () => {
 
             const displayName = v[1] as string | null;
             const count = v[2] as number;
-
-            if (displayName === null) console.warn('Found null', membershipTypeId);
 
             return { membershipTypeId, membershipType, membershipId, displayName, count };
         });

@@ -1,15 +1,12 @@
-import { createCacheStorage } from '@julesrx/utils';
 import type {
     DestinyCharacterComponent,
     DestinyHistoricalStatsPeriodGroup
 } from 'bungie-api-ts/destiny2';
-import Queue from 'p-queue';
-import { useDatabase } from './sql';
 
-const abortcontroller = new AbortController();
-
-export const useActivitiesStore = defineStore('activities', () => {
+export default defineStore('activities', () => {
     const reports = usePgcrStore();
+    const abortcontroller = useAbortController();
+
     const activities = ref<DestinyHistoricalStatsPeriodGroup[]>([]);
 
     const loadings = ref<string[]>([]);
@@ -52,44 +49,4 @@ export const useActivitiesStore = defineStore('activities', () => {
     };
 
     return { load, activities, loadings };
-});
-
-const cache = createCacheStorage();
-export const usePgcrStore = defineStore('pgcr', () => {
-    const queue = new Queue({ concurrency: 8 });
-    const db = useDatabase();
-
-    const init = () => {
-        queue.clear();
-        db.clear();
-    };
-
-    const totalFetched = ref(0);
-
-    const expiration = 60 * 60 * 24 * 14; // 14 days
-    const fetchReport = (activityId: string) => {
-        const t = async () => {
-            const cached = await cache.gset(
-                `pgcr:${activityId}`,
-                async () => await getPostGameCarnageReport(activityId).then(r => r.Response),
-                expiration
-            );
-
-            db.insertEncounters(cached);
-            totalFetched.value++;
-        };
-
-        queue.add(() => t(), { signal: abortcontroller.signal });
-    };
-
-    return { init, fetchReport, totalFetched };
-});
-
-export const useProgress = defineStore('progress', {
-    state: () => ({ progress: 0 }),
-    actions: {
-        set(number: number) {
-            this.progress = number;
-        }
-    }
 });
