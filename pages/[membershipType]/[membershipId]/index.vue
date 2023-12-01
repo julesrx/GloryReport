@@ -7,7 +7,7 @@ const fetchEncounters = () => {
     encounters.value = db.getTopEncounters(search.value);
 };
 
-useDatabaseInterval(useIntervalFn(fetchEncounters, 2000, { immediate: true }));
+useDatabaseInterval(fetchEncounters, 2000);
 
 const search = ref('');
 watchDebounced(search, fetchEncounters, { debounce: 250 });
@@ -32,7 +32,6 @@ watchDebounced(search, fetchEncounters, { debounce: 250 });
             </thead>
 
             <tbody>
-                <!-- TODO: v-memo="[encounter.membershipTypeId, i, encounter.count]" -->
                 <EncounterListItem
                     v-for="(encounter, i) in encounters"
                     :key="encounter.membershipTypeId"

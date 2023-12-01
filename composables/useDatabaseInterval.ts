@@ -1,11 +1,11 @@
-import type { Pausable } from '@vueuse/core';
-
-export default (pausable: Pausable) => {
+export default (fn: () => void, interval = 1000) => {
     const reports = useReportStore();
     const activities = useActivitiesStore();
 
+    const { pause } = useIntervalFn(fn, interval, { immediate: true });
+
     whenever(
         () => reports.totalFetched === activities.activities?.length,
-        () => pausable.pause()
+        () => pause()
     );
 };
