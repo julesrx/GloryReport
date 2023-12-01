@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const db = useDatabase();
 const route = useRoute();
+const db = useDatabase();
 
 const encounterMembershipTypeId = route.params.encounterMembershipTypeId as string;
 
@@ -27,6 +27,10 @@ const link = (instanceId: string) => `https://destinytracker.com/destiny-2/pgcr/
 
 <template>
     <div>
+        <NuxtLink :to="`/${route.params.membershipType}/${route.params.membershipId}`">
+            Back
+        </NuxtLink>
+
         <pre v-if="!profilePending">{{ profile?.userInfo.displayName }}</pre>
 
         <ul>
