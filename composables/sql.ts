@@ -6,8 +6,13 @@ export interface EncounterAggregateResult {
     membershipTypeId: string;
     membershipType: number;
     membershipId: string;
-    displayName: string;
+    displayName: string | null;
     count: number;
+}
+
+export interface EncounterDetailResult {
+    instanceId: string;
+    period: string;
 }
 
 export const useDatabase = defineStore('db', () => {
@@ -45,6 +50,7 @@ export const useDatabase = defineStore('db', () => {
         for (const entry of activity.entries) {
             const userInfo = entry.player.destinyUserInfo;
             const membershipId = userInfo.membershipId;
+            const membershipTypeId = `${userInfo.membershipType}-${membershipId}`;
 
             if (membershipId === profile.profile!.userInfo.membershipId) return;
 
@@ -53,14 +59,17 @@ export const useDatabase = defineStore('db', () => {
                 displayName = `${userInfo.bungieGlobalDisplayName}#${userInfo.bungieGlobalDisplayNameCode}`;
             }
 
-            const membershipTypeId = userInfo.membershipType + '-' + membershipId;
-            db.run('INSERT OR IGNORE INTO Players values (?, ?)', [membershipTypeId, displayName]);
+            if (displayName) {
+                db.run(
+                    'INSERT OR IGNORE INTO Players (membershipTypeId, displayName) values (?, ?)',
+                    [membershipTypeId, displayName]
+                );
+            }
 
-            db.run('INSERT INTO Encounters values (?, ?, ?)', [
-                membershipTypeId,
-                activity.activityDetails.instanceId,
-                activity.period
-            ]);
+            db.run(
+                'INSERT INTO Encounters (membershipTypeId, instanceId, period) values (?, ?, ?)',
+                [membershipTypeId, activity.activityDetails.instanceId, activity.period]
+            );
         }
     };
 
@@ -85,20 +94,28 @@ export const useDatabase = defineStore('db', () => {
             const membershipTypeId = v[0] as string;
             const [membershipType, membershipId] = splitMembershipTypeId(membershipTypeId);
 
-            const displayName = v[1] as string;
+            const displayName = v[1] as string | null;
             const count = v[2] as number;
+
+            if (displayName === null) console.warn('Found null', membershipTypeId);
 
             return { membershipTypeId, membershipType, membershipId, displayName, count };
         });
     };
 
-    const getEncounterInstanceIds = (membershipTypeId: string): string[] => {
-        const res = db.exec('SELECT instanceId FROM Encounters where membershipTypeId = ?', [
-            membershipTypeId
-        ]);
+    const getEncounterInstanceIds = (membershipTypeId: string): EncounterDetailResult[] => {
+        const res = db.exec(
+            'SELECT instanceId, period FROM Encounters WHERE membershipTypeId = ? ORDER BY period DESC',
+            [membershipTypeId]
+        );
 
         if (!res?.length) return [];
-        return res[0].values.map(v => v[0] as string);
+        return res[0].values.map(v => {
+            const instanceId = v[0] as string;
+            const period = v[1] as string;
+
+            return { instanceId, period };
+        });
     };
 
     return { init, clear, insertEncounters, getTopEncounters, getEncounterInstanceIds };

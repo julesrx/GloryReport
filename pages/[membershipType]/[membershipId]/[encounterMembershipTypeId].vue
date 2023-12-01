@@ -12,19 +12,29 @@ const { data: profile, pending: profilePending } = useAsyncData(
     }
 );
 
-const instanceIds = ref<string[]>([]);
-useIntervalFn(() => db.getEncounterInstanceIds(encounterMembershipTypeId), 1000, {
+const details = ref<EncounterDetailResult[]>([]);
+useIntervalFn(() => (details.value = db.getEncounterInstanceIds(encounterMembershipTypeId)), 1000, {
     immediate: true
 });
+
+const formatPeriod = (period: string) => {
+    const date = new Date(period);
+    return dateTimeShortFormatter.format(date);
+};
+
+const link = (instanceId: string) => `https://destinytracker.com/destiny-2/pgcr/${instanceId}`;
 </script>
 
 <template>
     <div>
-        <pre>{{ encounterMembershipTypeId }}</pre>
         <pre v-if="!profilePending">{{ profile?.userInfo.displayName }}</pre>
 
         <ul>
-            <li v-for="instanceId in instanceIds" :key="instanceId">{{ instanceId }}</li>
+            <li v-for="d in details" :key="d.instanceId">
+                <NuxtLink :to="link(d.instanceId)" target="_blank">
+                    {{ d.instanceId }}: {{ formatPeriod(d.period) }}
+                </NuxtLink>
+            </li>
         </ul>
     </div>
 </template>

@@ -73,7 +73,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
 const cache = createCacheStorage();
 export const usePgcrStore = defineStore('pgcr', () => {
-    const queue = new Queue({ concurrency: 5 });
+    const queue = new Queue({ concurrency: 8 });
     const db = useDatabase();
 
     const init = () => {
