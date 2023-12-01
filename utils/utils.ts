@@ -1,8 +1,19 @@
+import type { UserInfoCard } from 'bungie-api-ts/user';
+
 const locale = 'en-US';
 export const dateTimeShortFormatter = new Intl.DateTimeFormat(locale, {
     dateStyle: 'short',
     timeStyle: 'short'
 });
+
+export const getUserDisplayName = (userInfo: UserInfoCard): string | null => {
+    let displayName = userInfo.displayName;
+    if (userInfo.bungieGlobalDisplayName && userInfo.bungieGlobalDisplayNameCode) {
+        displayName = `${userInfo.bungieGlobalDisplayName}#${userInfo.bungieGlobalDisplayNameCode}`;
+    }
+
+    return displayName ?? null;
+};
 
 export const splitMembershipTypeId = (membershipTypeId: string): [number, string] => {
     const split = membershipTypeId.split('-');

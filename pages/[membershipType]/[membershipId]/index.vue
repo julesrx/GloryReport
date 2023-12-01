@@ -6,6 +6,7 @@ const fetchEncounters = () => {
     encounters.value = db.getTopEncounters(search.value);
 };
 
+// TODO: pause when loading is done
 useIntervalFn(fetchEncounters, 2000, { immediate: true });
 
 const search = ref('');

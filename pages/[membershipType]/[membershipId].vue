@@ -17,11 +17,8 @@ watchOnce(
     () => !pending.value,
     () => {
         profile.init(data.value!.Response);
-
-        const characters = profile.characters;
-
         reports.init();
-        abortcontroller = activities.load(characters);
+        abortcontroller = activities.load(profile.characters);
     }
 );
 
@@ -44,6 +41,8 @@ onUnmounted(() => progress.set(0));
 <template>
     <div v-if="pending">Loading profile...</div>
     <div v-else>
+        <ProfileCard />
+
         <button type="button" @click="abort">Abort</button>
         <div>Found {{ acts.length }} activities</div>
 

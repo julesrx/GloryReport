@@ -1,29 +1,12 @@
 import { createCacheStorage } from '@julesrx/utils';
 import type {
     DestinyCharacterComponent,
-    DestinyHistoricalStatsPeriodGroup,
-    DestinyProfileComponent,
-    DestinyProfileResponse
+    DestinyHistoricalStatsPeriodGroup
 } from 'bungie-api-ts/destiny2';
 import Queue from 'p-queue';
 import { useDatabase } from './sql';
 
 const abortcontroller = new AbortController();
-
-export const useProfileStore = defineStore('profile', () => {
-    const profile = ref<DestinyProfileComponent>();
-    const characters = ref<DestinyCharacterComponent[]>([]);
-
-    const init = (response: DestinyProfileResponse) => {
-        profile.value = response.profile.data;
-        characters.value = (() => {
-            const chars = response.characters.data;
-            return !chars ? [] : Object.keys(chars).map(k => chars[k]);
-        })();
-    };
-
-    return { profile, characters, init };
-});
 
 export const useActivitiesStore = defineStore('activities', () => {
     const reports = usePgcrStore();

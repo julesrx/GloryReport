@@ -54,11 +54,7 @@ export const useDatabase = defineStore('db', () => {
 
             if (membershipId === profile.profile!.userInfo.membershipId) return;
 
-            let displayName = userInfo.displayName;
-            if (userInfo.bungieGlobalDisplayName && userInfo.bungieGlobalDisplayNameCode) {
-                displayName = `${userInfo.bungieGlobalDisplayName}#${userInfo.bungieGlobalDisplayNameCode}`;
-            }
-
+            const displayName = getUserDisplayName(userInfo);
             if (displayName) {
                 db.run(
                     'INSERT OR IGNORE INTO Players (membershipTypeId, displayName) values (?, ?)',
