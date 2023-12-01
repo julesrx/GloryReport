@@ -19,6 +19,7 @@ export default defineNuxtConfig({
     app: {
         head: {
             htmlAttrs: { lang: 'en' },
+            bodyAttrs: { class: 'bg-stone-900 text-stone-100' },
             title,
             meta: [
                 { name: 'title', content: title },
