@@ -12,11 +12,14 @@ const { data: profile, pending: profilePending } = useAsyncData(
     }
 );
 
-// TODO: pause when loading is done
 const details = ref<EncounterDetailResult[]>([]);
-useIntervalFn(() => (details.value = db.getEncounterInstanceIds(encounterMembershipTypeId)), 1000, {
-    immediate: true
-});
+useDatabaseInterval(
+    useIntervalFn(
+        () => (details.value = db.getEncounterInstanceIds(encounterMembershipTypeId)),
+        1000,
+        { immediate: true }
+    )
+);
 
 const formatPeriod = (period: string) => {
     const date = new Date(period);

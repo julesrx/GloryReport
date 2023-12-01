@@ -1,13 +1,13 @@
 <script setup lang="ts">
 const db = useDatabase();
+
 const encounters = shallowRef<EncounterAggregateResult[]>([]);
 
 const fetchEncounters = () => {
     encounters.value = db.getTopEncounters(search.value);
 };
 
-// TODO: pause when loading is done
-useIntervalFn(fetchEncounters, 2000, { immediate: true });
+useDatabaseInterval(useIntervalFn(fetchEncounters, 2000, { immediate: true }));
 
 const search = ref('');
 watchDebounced(search, fetchEncounters, { debounce: 250 });

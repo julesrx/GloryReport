@@ -4,7 +4,7 @@ import type {
 } from 'bungie-api-ts/destiny2';
 
 export default defineStore('activities', () => {
-    const reports = usePgcrStore();
+    const reports = useReportStore();
     const abortcontroller = useAbortController();
 
     const activities = ref<DestinyHistoricalStatsPeriodGroup[]>([]);

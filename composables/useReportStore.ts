@@ -1,10 +1,11 @@
 import Queue from 'p-queue';
 
 export default defineStore('pgcr', () => {
-    const queue = new Queue({ concurrency: 8 });
     const db = useDatabase();
     const cache = useCache();
     const abortcontroller = useAbortController();
+
+    const queue = new Queue({ concurrency: 8 });
 
     const clear = () => {
         queue.clear();

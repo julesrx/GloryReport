@@ -4,7 +4,7 @@ import type { BungieMembershipType } from 'bungie-api-ts/common';
 const route = useRoute();
 const profile = useProfileStore();
 const activities = useActivitiesStore();
-const reports = usePgcrStore();
+const reports = useReportStore();
 const progress = useProgressStore();
 const abortcontroller = useAbortController();
 
