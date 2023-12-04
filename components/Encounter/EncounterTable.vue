@@ -22,7 +22,7 @@ const onInput = (e: Event) => {
                         @input="onInput"
                     />
                 </th>
-                <th class="table-cell table-right">Matches</th>
+                <th class="table-cell table-right">Hits</th>
             </tr>
         </thead>
 

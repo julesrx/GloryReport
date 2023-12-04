@@ -1,5 +1,5 @@
 <template>
-    <div class="py-0 lg:py-2 px-2 lg:px-0">
+    <div class="py-2 lg:pb-2 lg:pt-4 px-2 lg:px-0">
         <ProgressBar />
         <GlobalAlerts />
 
@@ -7,7 +7,7 @@
             <slot />
         </main>
 
-        <footer>
+        <footer class="lg:fixed lg:bottom-0 lg:right-0">
             <SocialIcons />
         </footer>
     </div>

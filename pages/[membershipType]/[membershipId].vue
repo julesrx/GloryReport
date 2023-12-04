@@ -23,6 +23,9 @@ watchOnce(
     }
 );
 
+const showAbort = computed(
+    () => !activities.done || activities.activityCount !== reports.fetchedCount
+);
 const abort = () => abortcontroller.abort();
 onUnmounted(() => abort());
 
@@ -33,9 +36,12 @@ progress.watch();
     <div v-if="pending">Loading profile...</div>
     <div v-else>
         <ProfileCard />
+        <hr class="my-4 border-stone-800" />
 
-        <button type="button" @click="abort">Abort</button>
-        <div>Found {{ activities.activityCount }} activities</div>
+        <div class="flex justify-between opacity-50 text-sm mb-4">
+            <div>Found {{ activities.activityCount }} activities</div>
+            <button v-if="showAbort" type="button" @click="abort">Abort</button>
+        </div>
 
         <NuxtPage />
     </div>

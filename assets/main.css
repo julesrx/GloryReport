@@ -12,6 +12,6 @@
     }
 
     .table-right {
-        @apply w-32 text-left;
+        @apply w-20 text-left;
     }
 }

@@ -11,8 +11,12 @@ export default defineStore('progress', () => {
         watchThrottled(
             () => reports.fetchedCount,
             fetchedCount => {
+                if (acts.done && fetchedCount === acts.activityCount) return set(100);
+
                 const prog = Math.trunc((fetchedCount / acts.activityCount) * 100);
-                set(prog === 100 && acts.loadings.length > 0 ? 90 : prog);
+                if (prog === 100 && !acts.done) return set(99);
+
+                set(prog);
             },
             { throttle: 500, immediate: true }
         );

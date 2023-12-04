@@ -10,6 +10,7 @@ export default defineStore('activities', () => {
     const removeLoading = (characterId: string) => {
         loadings.value = loadings.value.filter(i => i !== characterId);
     };
+    const done = computed(() => !loadings.value.length);
 
     const load = (characters: DestinyCharacterComponent[]) => {
         activityCount.value = 0;
@@ -43,5 +44,5 @@ export default defineStore('activities', () => {
         loadCharacter(character, page + 1);
     };
 
-    return { load, activityCount, loadings };
+    return { load, activityCount, done };
 });
