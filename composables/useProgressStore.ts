@@ -1,5 +1,5 @@
 export default defineStore('progress', () => {
-    const db = useDatabase();
+    const reports = useReportStore();
     const acts = useActivitiesStore();
 
     const progress = ref(0);
@@ -8,14 +8,14 @@ export default defineStore('progress', () => {
     };
 
     const watch = () => {
-        useIntervalFn(() => {
-            const count = db.getEncounterCount();
-            const prog = Math.trunc((count / acts.activityCount) * 100);
-
-            console.log(count, acts.activityCount, prog);
-
-            set(prog === 100 && acts.loadings.length > 0 ? 90 : prog);
-        }, 1000);
+        watchThrottled(
+            () => reports.fetchedCount,
+            fetchedCount => {
+                const prog = Math.trunc((fetchedCount / acts.activityCount) * 100);
+                set(prog === 100 && acts.loadings.length > 0 ? 90 : prog);
+            },
+            { throttle: 500, immediate: true }
+        );
 
         onUnmounted(() => set(0));
     };

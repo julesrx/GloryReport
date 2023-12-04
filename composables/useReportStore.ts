@@ -8,9 +8,12 @@ export default defineStore('pgcr', () => {
     const queue = new Queue({ concurrency: 8 });
 
     const clear = () => {
+        fetchedCount.value = 0;
         queue.clear();
         db.clear();
     };
+
+    const fetchedCount = ref(0);
 
     const expiration = 60 * 60 * 24 * 14; // 14 days
     const fetchReport = (activityId: string) => {
@@ -22,10 +25,11 @@ export default defineStore('pgcr', () => {
             );
 
             db.insertEncounters(cached);
+            fetchedCount.value++;
         };
 
         queue.add(() => t(), { signal: abortcontroller.signal });
     };
 
-    return { clear, fetchReport };
+    return { clear, fetchReport, fetchedCount: readonly(fetchedCount) };
 });

@@ -34,10 +34,13 @@ export default defineStore('db', () => {
     };
 
     const insertEncounters = (activity: DestinyPostGameCarnageReportData) => {
+        const instanceId = activity.activityDetails.instanceId;
+        const period = activity.period;
+
         for (const entry of activity.entries) {
             const userInfo = entry.player.destinyUserInfo;
             const membershipId = userInfo.membershipId;
-            const membershipTypeId = `${userInfo.membershipType}-${membershipId}`;
+            const membershipTypeId = getMembershipTypeId(userInfo);
 
             if (membershipId === profile.profile!.userInfo.membershipId) return;
 
@@ -51,7 +54,7 @@ export default defineStore('db', () => {
 
             db.run(
                 'INSERT INTO Encounters (membershipTypeId, instanceId, period) values (?, ?, ?)',
-                [membershipTypeId, activity.activityDetails.instanceId, activity.period]
+                [membershipTypeId, instanceId, period]
             );
         }
     };
@@ -99,18 +102,11 @@ export default defineStore('db', () => {
         });
     };
 
-    const getEncounterCount = (): number => {
-        const res = db.exec('SELECT COUNT(DISTINCT instanceId) FROM Encounters');
-        if (!res?.length) return 0;
-        return res[0].values[0][0] as number;
-    };
-
     return {
         init,
         clear,
         insertEncounters,
         getTopEncounters,
-        getEncounterInstanceIds,
-        getEncounterCount
+        getEncounterInstanceIds
     };
 });

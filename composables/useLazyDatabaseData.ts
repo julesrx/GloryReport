@@ -1,22 +1,21 @@
-export default <T>(id: string, fn: () => T | Promise<T>, interval = 1000) => {
-    const activities = useActivitiesStore();
-    const db = useDatabase();
+export default <T>(id: string, handler: () => T | Promise<T>, throttle = 1000) => {
+    const reports = useReportStore();
     const controller = useAbortController();
 
-    const { data, pending, refresh } = useLazyAsyncData(id, async () => await fn(), {
+    const { data, pending, refresh } = useLazyAsyncData(id, async () => await handler(), {
         deep: false
     });
 
-    const { pause, resume } = useIntervalFn(() => {
-        if (db.getEncounterCount() === activities.activityCount) {
-            pause();
-            return;
+    const unwatch = watchThrottled(
+        () => reports.fetchedCount,
+        () => refresh(),
+        {
+            throttle,
+            immediate: true
         }
+    );
 
-        refresh();
-    }, interval);
+    useEventListener(controller.signal, 'abort', unwatch);
 
-    useEventListener(controller.signal, 'abort', pause);
-
-    return { data, pending, refresh, pause, resume };
+    return { data, pending, refresh };
 };

@@ -23,6 +23,10 @@ export const splitDisplayName = (displayName: string | null): [string, string] =
     return [split[0], split[1]];
 };
 
+export const getMembershipTypeId = (userInfo: UserInfoCard) => {
+    return `${userInfo.membershipType}-${userInfo.membershipId}`;
+};
+
 export const splitMembershipTypeId = (membershipTypeId: string): [number, string] => {
     const split = membershipTypeId.split('-');
     const membershipType = +split[0];
