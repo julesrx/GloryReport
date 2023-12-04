@@ -5,7 +5,7 @@ const url = 'https://glory.report/';
 export default defineNuxtConfig({
     devtools: { enabled: true },
     ssr: false,
-    css: ['~/assets/main.css'],
+    css: ['@fontsource-variable/inter/index.css', '~/assets/main.css'],
     modules: ['@vueuse/nuxt', '@pinia/nuxt', '@nuxtjs/eslint-module'],
     postcss: {
         plugins: {
