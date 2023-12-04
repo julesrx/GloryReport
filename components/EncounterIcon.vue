@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import fallbackIcon from '~/assets/bungie-icon.png';
+import fallbackIcon from '~/assets/bungie-icon.png?url';
 
 const cache = useCache();
 const db = useDatabase();
