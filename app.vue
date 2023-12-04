@@ -9,5 +9,7 @@ await db.init();
         <ProgressBar />
         <GlobalAlerts />
         <NuxtPage />
+
+        <FooterIcons />
     </main>
 </template>

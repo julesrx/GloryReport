@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     ssr: false,
     css: ['@fontsource-variable/inter/index.css', '~/assets/main.css'],
-    modules: ['@vueuse/nuxt', '@pinia/nuxt', '@nuxtjs/eslint-module'],
+    modules: ['@vueuse/nuxt', '@pinia/nuxt', '@nuxtjs/eslint-module', 'nuxt-icon'],
     postcss: {
         plugins: {
             tailwindcss: {},
