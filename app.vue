@@ -5,11 +5,7 @@ await db.init();
 </script>
 
 <template>
-    <main class="mx-auto py-0 lg:py-4 max-w-screen-lg px-2 lg:px-0">
-        <ProgressBar />
-        <GlobalAlerts />
+    <NuxtLayout>
         <NuxtPage />
-
-        <FooterIcons />
-    </main>
+    </NuxtLayout>
 </template>

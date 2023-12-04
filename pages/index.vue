@@ -1,3 +1,7 @@
+<script setup lang="ts">
+definePageMeta({ layout: 'home' });
+</script>
+
 <template>
     <div class="h-screen flex flex-col justify-center items-center space-y-4">
         <NuxtLink to="/" class="flex flex-col items-center justify-center">
