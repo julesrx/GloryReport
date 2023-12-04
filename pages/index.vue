@@ -1,42 +1,13 @@
-<script setup lang="ts">
-import type { UserInfoCard } from 'bungie-api-ts/user';
-
-const gamertag = ref('');
-const results = ref<UserInfoCard[]>([]);
-
-watchDebounced(
-    gamertag,
-    async gamertag => {
-        const res = await searchByGlobalNamePost(gamertag);
-        results.value = res.Response.searchResults.map(l => l.destinyMemberships[0]);
-    },
-    { debounce: 500 }
-);
-</script>
-
 <template>
     <div class="h-screen flex flex-col justify-center items-center space-y-4">
-        <NuxtLink to="/" class="flex items-end">
-            <img src="~/assets/logo.png" class="h-36" />
-            <h1 class="text-4xl font-bold">Glory.report</h1>
+        <NuxtLink to="/" class="flex flex-col items-center justify-center">
+            <img src="~/assets/logo.png" class="h-52" />
+            <h1 class="flex justify-center items-end">
+                <div class="text-4xl font-bold">Glory</div>
+                <div class="text-3xl">.report</div>
+            </h1>
         </NuxtLink>
 
-        <div>
-            <input
-                id="gamertag"
-                v-model="gamertag"
-                type="search"
-                autofocus
-                class="bg-stone-900 border border-stone-800"
-            />
-
-            <ul v-if="results.length">
-                <li v-for="r in results" :key="r.membershipId">
-                    <NuxtLink :to="`/${r.membershipType}/${r.membershipId}`">
-                        {{ r.bungieGlobalDisplayName }}
-                    </NuxtLink>
-                </li>
-            </ul>
-        </div>
+        <PlayerSearch />
     </div>
 </template>
