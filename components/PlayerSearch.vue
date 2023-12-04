@@ -10,7 +10,10 @@ watchDebounced(
         searching.value = true;
 
         try {
-            if (!search) return [];
+            if (!search) {
+                results.value = [];
+                return;
+            }
 
             const res = await searchByGlobalNamePost(search);
             results.value = res.Response.searchResults.map(l => l.destinyMemberships[0]);
@@ -22,7 +25,6 @@ watchDebounced(
 );
 
 const resultClass = 'bg-stone-800 py-1 px-2 shadow block w-full rounded';
-const userIsSteam = (user: UserInfoCard) => user.iconPath.toLowerCase().includes('steam');
 </script>
 
 <template>
@@ -36,7 +38,7 @@ const userIsSteam = (user: UserInfoCard) => user.iconPath.toLowerCase().includes
             autofocus
         />
 
-        <ul v-if="search" class="absolute w-full mt-1">
+        <ul v-if="search" class="absolute w-full mt-1 max-h-52 overflow-y-auto">
             <li v-if="searching" :class="resultClass">Searching...</li>
             <template v-else>
                 <li v-if="results && !results.length" :class="resultClass">No results...</li>
@@ -48,10 +50,7 @@ const userIsSteam = (user: UserInfoCard) => user.iconPath.toLowerCase().includes
                         <img
                             :src="`https://bungie.net${r.iconPath}`"
                             :alt="getUserDisplayName(r)!"
-                            :class="[
-                                'flex-shrink-0 h-5 w-5 pointer-events-none',
-                                userIsSteam(r) ? 'invert-1' : null
-                            ]"
+                            class="flex-shrink-0 h-5 w-5 pointer-events-none"
                         />
                         <span class="whitespace-no-wrap">{{ getUserDisplayName(r) }}</span>
                     </NuxtLink>
