@@ -15,9 +15,9 @@ const navigate = () => {
 
 <template>
     <tr class="cursor-pointer hover:bg-stone-800" @click="() => navigate()">
-        <td class="text-right">{{ index + 1 }}</td>
-        <td class="px-6 py-1">
-            <div>
+        <td class="table-cell table-left">{{ index + 1 }}</td>
+        <td class="table-cell">
+            <div class="flex items-center space-x-2">
                 <Suspense>
                     <template #fallback>
                         <div class="h-8 w-8 bg-stone-500" />
@@ -33,6 +33,6 @@ const navigate = () => {
                 <div>{{ displayName }}</div>
             </div>
         </td>
-        <td>{{ encounter.count }}</td>
+        <td class="table-cell table-right">{{ encounter.count }}</td>
     </tr>
 </template>

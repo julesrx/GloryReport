@@ -11,19 +11,20 @@ watchDebounced(search, () => refresh(), { debounce: 250 });
 
 <template>
     <div>
-        <table class="w-full">
+        <table class="w-full table-fixed">
             <thead>
                 <tr>
-                    <th class="w-16 text-right">#</th>
-                    <th class="px-6 py-1">
+                    <th class="table-cell table-left">#</th>
+                    <th class="table-cell py-0 font-normal">
                         <input
                             id="search"
                             v-model="search"
-                            class="w-full pl-6 bg-stone-900 border border-stone-800"
+                            class="block bg-transparent h-full w-full focus:outline-none placeholder-stone-600"
                             type="search"
+                            placeholder="Search..."
                         />
                     </th>
-                    <th class="w-32 text-left">Matches</th>
+                    <th class="table-cell table-right">Matches</th>
                 </tr>
             </thead>
 
