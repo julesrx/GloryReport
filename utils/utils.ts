@@ -9,7 +9,8 @@ export const dateTimeShortFormatter = new Intl.DateTimeFormat(locale, {
 export const getUserDisplayName = (userInfo: UserInfoCard): string | null => {
     let displayName = userInfo.displayName;
     if (userInfo.bungieGlobalDisplayName && userInfo.bungieGlobalDisplayNameCode) {
-        displayName = `${userInfo.bungieGlobalDisplayName}#${userInfo.bungieGlobalDisplayNameCode}`;
+        const code = (userInfo.bungieGlobalDisplayNameCode ?? '').toString().padStart(4, '0');
+        displayName = `${userInfo.bungieGlobalDisplayName}#${code}`;
     }
 
     return displayName ?? null;

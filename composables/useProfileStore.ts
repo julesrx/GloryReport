@@ -7,6 +7,7 @@ import type {
 export default defineStore('profile', () => {
     const profile = shallowRef<DestinyProfileComponent>();
     const characters = shallowRef<DestinyCharacterComponent[]>();
+    const membershipTypeId = ref<[number, string]>();
 
     const load = (response: DestinyProfileResponse) => {
         profile.value = response.profile.data;
@@ -14,7 +15,11 @@ export default defineStore('profile', () => {
             const chars = response.characters.data;
             return !chars ? [] : Object.keys(chars).map(k => chars[k]);
         })();
+
+        membershipTypeId.value = splitMembershipTypeId(
+            getMembershipTypeId(profile.value!.userInfo)
+        );
     };
 
-    return { profile, characters, load };
+    return { profile, characters, membershipTypeId, load };
 });

@@ -19,7 +19,7 @@ jobs:
                   run_install: true
                   version: 8
 
-            - name: 'Create env file'
+            - name: Create env file
               run: echo "VITE_BUNGIE_API_KEY=${{ secrets.API_KEY }}" > .env
 
             - name: Build
