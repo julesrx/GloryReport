@@ -11,7 +11,9 @@ const abortcontroller = useAbortController();
 const membershipId = route.params.membershipId as string;
 const membershipType = +route.params.membershipType as BungieMembershipType;
 
-const { data, pending } = useAsyncData('profile', () => getProfile(membershipId, membershipType));
+const { data, pending } = useLazyAsyncData('profile', () =>
+    getProfile(membershipId, membershipType)
+);
 watchOnce(
     () => !pending.value,
     () => {

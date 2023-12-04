@@ -99,5 +99,18 @@ export default defineStore('db', () => {
         });
     };
 
-    return { init, clear, insertEncounters, getTopEncounters, getEncounterInstanceIds };
+    const getEncounterCount = (): number => {
+        const res = db.exec('SELECT COUNT(DISTINCT instanceId) FROM Encounters');
+        if (!res?.length) return 0;
+        return res[0].values[0][0] as number;
+    };
+
+    return {
+        init,
+        clear,
+        insertEncounters,
+        getTopEncounters,
+        getEncounterInstanceIds,
+        getEncounterCount
+    };
 });

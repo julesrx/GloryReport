@@ -4,7 +4,7 @@ const db = useDatabase();
 
 const encounterMembershipTypeId = route.params.encounterMembershipTypeId as string;
 
-const { data: profile, pending: profilePending } = useAsyncData(
+const { data: profile, pending: profilePending } = useLazyAsyncData(
     encounterMembershipTypeId,
     async () => {
         const [membershipType, membershipId] = splitMembershipTypeId(encounterMembershipTypeId);
@@ -12,8 +12,9 @@ const { data: profile, pending: profilePending } = useAsyncData(
     }
 );
 
-const details = ref<EncounterDetailResult[]>([]);
-useDatabaseInterval(() => (details.value = db.getEncounterInstanceIds(encounterMembershipTypeId)));
+const { data } = useLazyDatabaseData('details', () =>
+    db.getEncounterInstanceIds(encounterMembershipTypeId)
+);
 
 const formatPeriod = (period: string) => {
     const date = new Date(period);
@@ -32,7 +33,7 @@ const link = (instanceId: string) => `https://destinytracker.com/destiny-2/pgcr/
         <pre v-if="!profilePending">{{ profile?.userInfo.displayName }}</pre>
 
         <ul>
-            <li v-for="d in details" :key="d.instanceId">
+            <li v-for="d in data" :key="d.instanceId">
                 <NuxtLink :to="link(d.instanceId)" target="_blank">
                     {{ d.instanceId }}: {{ formatPeriod(d.period) }}
                 </NuxtLink>

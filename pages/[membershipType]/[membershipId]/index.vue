@@ -1,16 +1,12 @@
 <script setup lang="ts">
 const db = useDatabase();
 
-const encounters = shallowRef<EncounterAggregateResult[]>([]);
-
-const fetchEncounters = () => {
-    encounters.value = db.getTopEncounters(search.value);
-};
-
-useDatabaseInterval(fetchEncounters, 2000);
+const { data, refresh } = useLazyDatabaseData('encounters', () =>
+    db.getTopEncounters(search.value)
+);
 
 const search = ref('');
-watchDebounced(search, fetchEncounters, { debounce: 250 });
+watchDebounced(search, () => refresh(), { debounce: 250 });
 </script>
 
 <template>
@@ -33,7 +29,7 @@ watchDebounced(search, fetchEncounters, { debounce: 250 });
 
             <tbody>
                 <EncounterListItem
-                    v-for="(encounter, i) in encounters"
+                    v-for="(encounter, i) in data"
                     :key="encounter.membershipTypeId"
                     :encounter="encounter"
                     :index="i"
