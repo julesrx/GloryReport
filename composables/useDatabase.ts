@@ -23,7 +23,8 @@ export default defineStore('db', () => {
         db.run(`
             CREATE TABLE Players (
                 membershipTypeId string primary key,
-                displayName string
+                displayName string,
+                iconPath string
             )
         `);
     };
@@ -41,14 +42,15 @@ export default defineStore('db', () => {
             const userInfo = entry.player.destinyUserInfo;
             const membershipId = userInfo.membershipId;
             const membershipTypeId = getMembershipTypeId(userInfo);
+            const iconPath = entry.player.destinyUserInfo.iconPath;
 
             if (membershipId === profile.profile!.userInfo.membershipId) return;
 
             const displayName = getUserDisplayName(userInfo);
             if (displayName) {
                 db.run(
-                    'INSERT OR IGNORE INTO Players (membershipTypeId, displayName) values (?, ?)',
-                    [membershipTypeId, displayName]
+                    'INSERT OR IGNORE INTO Players (membershipTypeId, displayName, iconPath) values (?, ?, ?)',
+                    [membershipTypeId, displayName, iconPath]
                 );
             }
 
@@ -102,11 +104,21 @@ export default defineStore('db', () => {
         });
     };
 
+    const getEncounterIcon = (membershipTypeId: string): string | null => {
+        const res = db.exec('SELECT iconPath FROM Players WHERE membershipTypeId = ? LIMIT 1', [
+            membershipTypeId
+        ]);
+
+        if (!res?.length) return null;
+        return res[0].values[0][0] as string;
+    };
+
     return {
         init,
         clear,
         insertEncounters,
         getTopEncounters,
-        getEncounterInstanceIds
+        getEncounterInstanceIds,
+        getEncounterIcon
     };
 });
