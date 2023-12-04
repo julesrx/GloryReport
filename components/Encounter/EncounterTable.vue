@@ -27,7 +27,7 @@ const onInput = (e: Event) => {
         </thead>
 
         <tbody v-if="encounters">
-            <EncounterListItem
+            <EncounterItem
                 v-for="(encounter, i) in encounters"
                 :key="encounter.membershipTypeId"
                 :encounter="encounter"

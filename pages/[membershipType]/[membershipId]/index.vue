@@ -11,6 +11,6 @@ watchDebounced(search, () => refresh(), { debounce: 250 });
 
 <template>
     <div>
-        <EncountersTable v-model:search="search" :encounters="data" />
+        <EncounterTable v-model:search="search" :encounters="data" />
     </div>
 </template>
