@@ -1,4 +1,5 @@
 import type { DestinyPostGameCarnageReportData } from 'bungie-api-ts/destiny2';
+
 import initSqlJs, { type Database } from 'sql.js';
 import wasm from 'sql.js/dist/sql-wasm.wasm?url';
 
@@ -15,6 +16,7 @@ export default defineStore('db', () => {
                 membershipTypeId string,
                 instanceId string,
                 period string,
+                standing number,
 
                 primary key (membershipTypeId, instanceId)
             )
@@ -38,6 +40,10 @@ export default defineStore('db', () => {
         const instanceId = activity.activityDetails.instanceId;
         const period = activity.period;
 
+        const userEntry = activity.entries.find(
+            e => e.player.destinyUserInfo.membershipId === profile.profile!.userInfo.membershipId
+        );
+
         for (const entry of activity.entries) {
             const userInfo = entry.player.destinyUserInfo;
             const membershipId = userInfo.membershipId;
@@ -54,9 +60,18 @@ export default defineStore('db', () => {
                 );
             }
 
+            // TODO: needs work
+            const sameTeam = entry.values.team?.basic === userEntry?.values.team?.basic;
+            const isVictory = entry.standing === 0;
+            const standing = getEncounterStanding(sameTeam, isVictory);
+
+            if (standing > 1) {
+                console.log(instanceId);
+            }
+
             db.run(
-                'INSERT INTO Encounters (membershipTypeId, instanceId, period) values (?, ?, ?)',
-                [membershipTypeId, instanceId, period]
+                'INSERT INTO Encounters (membershipTypeId, instanceId, period, standing) values (?, ?, ?, ?)',
+                [membershipTypeId, instanceId, period, standing]
             );
         }
     };
@@ -91,7 +106,7 @@ export default defineStore('db', () => {
 
     const getEncounterInstanceIds = (membershipTypeId: string): EncounterDetailResult[] => {
         const res = db.exec(
-            'SELECT instanceId, period FROM Encounters WHERE membershipTypeId = ? ORDER BY period DESC',
+            'SELECT instanceId, period, standing FROM Encounters WHERE membershipTypeId = ? ORDER BY period DESC',
             [membershipTypeId]
         );
 
@@ -99,8 +114,9 @@ export default defineStore('db', () => {
         return res[0].values.map(v => {
             const instanceId = v[0] as string;
             const period = v[1] as string;
+            const standing = v[2] as number;
 
-            return { instanceId, period };
+            return { instanceId, period, standing };
         });
     };
 

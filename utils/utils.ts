@@ -1,4 +1,5 @@
 import type { UserInfoCard } from 'bungie-api-ts/user';
+import { EncounterStanding } from '~/utils/types';
 
 const locale = 'en-US';
 export const dateTimeShortFormatter = new Intl.DateTimeFormat(locale, {
@@ -34,4 +35,12 @@ export const splitMembershipTypeId = (membershipTypeId: string): [number, string
     const membershipId = split[1];
 
     return [membershipType, membershipId];
+};
+
+export const getEncounterStanding = (sameTeam: boolean, isVictory: boolean) => {
+    if (sameTeam) {
+        return isVictory ? EncounterStanding.VictorySameTeam : EncounterStanding.DefeatSameTeam;
+    } else {
+        return isVictory ? EncounterStanding.Victory : EncounterStanding.Defeat;
+    }
 };

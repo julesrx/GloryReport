@@ -26,18 +26,25 @@ const link = (instanceId: string) => `https://destinytracker.com/destiny-2/pgcr/
 
 <template>
     <div>
-        <NuxtLink :to="`/${route.params.membershipType}/${route.params.membershipId}`">
-            Back
+        <NuxtLink
+            class="opacity-50 text-sm mb-4"
+            :to="`/${route.params.membershipType}/${route.params.membershipId}`"
+        >
+            &lt;- back
         </NuxtLink>
 
         <pre v-if="!profilePending">{{ profile?.userInfo.displayName }}</pre>
 
-        <ul>
-            <li v-for="d in data" :key="d.instanceId">
-                <NuxtLink :to="link(d.instanceId)" target="_blank">
-                    {{ d.instanceId }}: {{ formatPeriod(d.period) }}
-                </NuxtLink>
-            </li>
-        </ul>
+        <table class="table-fixed">
+            <tbody>
+                <tr v-for="d in data" :key="d.instanceId">
+                    <td class="w-24">{{ d.instanceId }}</td>
+                    <td>{{ formatPeriod(d.period) }}</td>
+                    <td class="w-12">
+                        <NuxtLink :to="link(d.instanceId)" target="_blank"> </NuxtLink>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </template>

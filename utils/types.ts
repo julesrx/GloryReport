@@ -6,7 +6,15 @@ export interface EncounterAggregateResult {
     count: number;
 }
 
+export const enum EncounterStanding {
+    Victory,
+    Defeat,
+    VictorySameTeam,
+    DefeatSameTeam
+}
+
 export interface EncounterDetailResult {
     instanceId: string;
     period: string;
+    standing: EncounterStanding;
 }

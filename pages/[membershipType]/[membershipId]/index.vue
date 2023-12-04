@@ -10,7 +10,7 @@ watchDebounced(search, () => refresh(), { debounce: 250 });
 </script>
 
 <template>
-    <div>
+    <div class="mt-4">
         <EncounterTable v-model:search="search" :encounters="data" />
     </div>
 </template>

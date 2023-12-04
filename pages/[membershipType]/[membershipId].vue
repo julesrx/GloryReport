@@ -38,7 +38,7 @@ progress.watch();
         <ProfileCard />
         <hr class="my-4 border-stone-800" />
 
-        <div class="flex justify-between opacity-50 text-sm mb-4">
+        <div class="flex justify-between opacity-50 text-sm">
             <div>Found {{ activities.activityCount }} activities</div>
             <button v-if="showAbort" type="button" @click="abort">Abort</button>
         </div>
