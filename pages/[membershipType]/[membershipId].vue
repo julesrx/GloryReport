@@ -26,17 +26,7 @@ watchOnce(
 const abort = () => abortcontroller.abort();
 onUnmounted(() => abort());
 
-const acts = activities.activities;
-
-watchThrottled(
-    () => reports.totalFetched,
-    totalFetched => {
-        const prog = Math.trunc((totalFetched / acts.length) * 100);
-        progress.set(prog === 100 && activities.loadings.length > 0 ? 90 : prog);
-    },
-    { throttle: 300 }
-);
-onUnmounted(() => progress.set(0));
+progress.watch();
 </script>
 
 <template>
@@ -45,7 +35,7 @@ onUnmounted(() => progress.set(0));
         <ProfileCard />
 
         <button type="button" @click="abort">Abort</button>
-        <div>Found {{ acts.length }} activities</div>
+        <div>Found {{ activities.activityCount }} activities</div>
 
         <NuxtPage />
     </div>

@@ -8,7 +8,7 @@ export default <T>(id: string, fn: () => T | Promise<T>, interval = 1000) => {
     });
 
     const { pause, resume } = useIntervalFn(() => {
-        if (db.getEncounterCount() === activities.activities.length) {
+        if (db.getEncounterCount() === activities.activityCount) {
             pause();
             return;
         }

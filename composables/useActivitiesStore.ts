@@ -1,13 +1,10 @@
-import type {
-    DestinyCharacterComponent,
-    DestinyHistoricalStatsPeriodGroup
-} from 'bungie-api-ts/destiny2';
+import type { DestinyCharacterComponent } from 'bungie-api-ts/destiny2';
 
 export default defineStore('activities', () => {
     const reports = useReportStore();
     const abortcontroller = useAbortController();
 
-    const activities = ref<DestinyHistoricalStatsPeriodGroup[]>([]);
+    const activityCount = ref(0);
 
     const loadings = ref<string[]>([]);
     const removeLoading = (characterId: string) => {
@@ -15,7 +12,7 @@ export default defineStore('activities', () => {
     };
 
     const load = (characters: DestinyCharacterComponent[]) => {
-        activities.value.length = 0;
+        activityCount.value = 0;
 
         loadings.value.push(...characters.map(c => c.characterId));
         for (const character of characters) {
@@ -42,9 +39,9 @@ export default defineStore('activities', () => {
             reports.fetchReport(act.activityDetails.instanceId);
         }
 
-        activities.value.push(...acts);
+        activityCount.value += acts.length;
         loadCharacter(character, page + 1);
     };
 
-    return { load, activities, loadings };
+    return { load, activityCount, loadings };
 });

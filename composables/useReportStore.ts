@@ -12,8 +12,6 @@ export default defineStore('pgcr', () => {
         db.clear();
     };
 
-    const totalFetched = ref(0);
-
     const expiration = 60 * 60 * 24 * 14; // 14 days
     const fetchReport = (activityId: string) => {
         const t = async () => {
@@ -24,11 +22,10 @@ export default defineStore('pgcr', () => {
             );
 
             db.insertEncounters(cached);
-            totalFetched.value++;
         };
 
         queue.add(() => t(), { signal: abortcontroller.signal });
     };
 
-    return { clear, fetchReport, totalFetched };
+    return { clear, fetchReport };
 });
