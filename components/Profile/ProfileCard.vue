@@ -1,39 +1,43 @@
 <script setup lang="ts">
 import { createDurationFormatter } from '@julesrx/utils';
+import type { DestinyCharacterComponent, DestinyProfileComponent } from 'bungie-api-ts/destiny2';
+
+const props = withDefaults(
+    defineProps<{
+        profile: DestinyProfileComponent;
+        characters: DestinyCharacterComponent[];
+        rtl?: boolean;
+    }>(),
+    { rtl: false }
+);
 
 const durationFormatter = createDurationFormatter();
-const profile = useProfileStore();
 
-const emblem = computed(() => `https://bungie.net${profile.characters![0].emblemPath}`);
+const emblem = computed(() => `https://bungie.net${props.characters[0].emblemPath}`);
 
-const displayName = computed(() => getUserDisplayName(profile.profile!.userInfo));
+const displayName = computed(() => getUserDisplayName(props.profile.userInfo));
 const split = computed<[string, string]>(() => splitDisplayName(displayName.value));
 
 const durationPlayed = computed(() => {
-    let duration = 0;
-    if (profile.characters) {
-        duration =
-            profile.characters.map(c => +c.minutesPlayedTotal).reduce((a, b) => a + b, 0) *
-            60 *
-            1000;
-    }
+    const duration =
+        props.characters.map(c => +c.minutesPlayedTotal).reduce((a, b) => a + b, 0) * 60 * 1000;
 
     return durationFormatter.format(duration);
 });
 
 const link = computed(() => {
-    const membershipTypeId = profile.membershipTypeId!;
+    const membershipTypeId = splitMembershipTypeId(getMembershipTypeId(props.profile.userInfo));
     return `https://www.bungie.net/7/en/User/Profile/${membershipTypeId[0]}/${membershipTypeId[1]}`;
 });
 </script>
 
 <template>
-    <div class="flex items-center space-x-2">
+    <div :class="{ 'flex items-center space-x-2': true, 'flex-row-reverse space-x-reverse': rtl }">
         <NuxtLink :to="link" target="_blank" class="space-x-1">
             <img :src="emblem" :alt="displayName ?? 'Anonymous'" class="h-24 w-24" />
         </NuxtLink>
 
-        <div class="flex flex-col justify-center">
+        <div :class="{ 'flex flex-col justify-center': true, 'items-end': rtl }">
             <h2>
                 <NuxtLink :to="link" target="_blank" class="space-x-1">
                     <span class="text-2xl font-bold">{{ split[0] }}</span>

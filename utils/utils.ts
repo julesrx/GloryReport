@@ -1,3 +1,8 @@
+import type {
+    DestinyCharacterComponent,
+    DestinyProfileComponent,
+    DestinyProfileResponse
+} from 'bungie-api-ts/destiny2';
 import type { UserInfoCard } from 'bungie-api-ts/user';
 import { EncounterStanding } from '~/utils/types';
 
@@ -43,4 +48,16 @@ export const getEncounterStanding = (sameTeam: boolean, isVictory: boolean) => {
     } else {
         return isVictory ? EncounterStanding.Victory : EncounterStanding.Defeat;
     }
+};
+
+export const extractProfileResponseData = (
+    response: DestinyProfileResponse
+): [DestinyProfileComponent, DestinyCharacterComponent[]] => {
+    const profile = response.profile.data!;
+    const characters = (() => {
+        const chars = response.characters.data;
+        return !chars ? [] : Object.keys(chars).map(k => chars[k]);
+    })();
+
+    return [profile, characters];
 };

@@ -10,11 +10,10 @@ export default defineStore('profile', () => {
     const membershipTypeId = ref<[number, string]>();
 
     const load = (response: DestinyProfileResponse) => {
-        profile.value = response.profile.data;
-        characters.value = (() => {
-            const chars = response.characters.data;
-            return !chars ? [] : Object.keys(chars).map(k => chars[k]);
-        })();
+        const extracted = extractProfileResponseData(response);
+
+        profile.value = extracted[0];
+        characters.value = extracted[1];
 
         membershipTypeId.value = splitMembershipTypeId(
             getMembershipTypeId(profile.value!.userInfo)

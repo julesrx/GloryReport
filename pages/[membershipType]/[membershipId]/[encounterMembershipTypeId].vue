@@ -4,16 +4,18 @@ const db = useDatabase();
 
 const encounterMembershipTypeId = route.params.encounterMembershipTypeId as string;
 
-const { data: profile, pending } = useLazyAsyncData(
+const { data: profile } = useLazyAsyncData(
     encounterMembershipTypeId,
     async () => {
         const [membershipType, membershipId] = splitMembershipTypeId(encounterMembershipTypeId);
-        return await getProfile(membershipId, membershipType).then(r => r.Response.profile.data!);
+        const profile = await getProfile(membershipId, membershipType);
+
+        return extractProfileResponseData(profile.Response);
     },
     { deep: false }
 );
 
-const { data } = useLazyDatabaseData('details', () =>
+const { data: activities } = useLazyDatabaseData('details', () =>
     db.getEncounterInstanceIds(encounterMembershipTypeId)
 );
 </script>
@@ -28,12 +30,15 @@ const { data } = useLazyDatabaseData('details', () =>
             back
         </NuxtLink>
 
-        <div v-if="pending">Loading profile...</div>
-        <div v-else>{{ getUserDisplayName(profile!.userInfo) }}</div>
+        <div v-if="profile">
+            <Teleport to="#encounter">
+                <ProfileCard :profile="profile![0]" :characters="profile![1]" rtl />
+            </Teleport>
+        </div>
 
-        <div>
+        <div v-if="activities">
             <EncounterActivityItem
-                v-for="d in data"
+                v-for="d in activities"
                 :key="d.instanceId"
                 v-memo="[d.instanceId]"
                 :instance-id="d.instanceId"

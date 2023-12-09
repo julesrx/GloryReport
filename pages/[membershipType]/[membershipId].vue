@@ -35,7 +35,11 @@ progress.watch();
 <template>
     <div v-if="pending">Loading profile...</div>
     <div v-else>
-        <ProfileCard />
+        <div class="flex justify-between">
+            <ProfileCard :profile="profile.profile!" :characters="profile.characters!" />
+            <div id="encounter"></div>
+        </div>
+
         <hr class="my-4 border-stone-800" />
 
         <div class="flex justify-between opacity-50 text-sm">
