@@ -15,14 +15,9 @@ export default defineStore('pgcr', () => {
 
     const fetchedCount = ref(0);
 
-    const expiration = 60 * 60 * 24 * 14; // 14 days
     const fetchReport = (activityId: string) => {
         const t = async () => {
-            const cached = await cache.gset(
-                `pgcr:${activityId}`,
-                async () => await getPostGameCarnageReport(activityId).then(r => r.Response),
-                expiration
-            );
+            const cached = await getCachedPostGameCarnageReport(activityId, cache);
 
             db.insertEncounters(cached);
             fetchedCount.value++;

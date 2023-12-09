@@ -65,10 +65,6 @@ export default defineStore('db', () => {
             const isVictory = entry.standing === 0;
             const standing = getEncounterStanding(sameTeam, isVictory);
 
-            if (standing > 1) {
-                console.log(instanceId);
-            }
-
             db.run(
                 'INSERT INTO Encounters (membershipTypeId, instanceId, period, standing) values (?, ?, ?, ?)',
                 [membershipTypeId, instanceId, period, standing]

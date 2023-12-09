@@ -1,3 +1,4 @@
+import type { CacheStorage } from '@julesrx/utils';
 import { BungieMembershipType, type ServerResponse } from 'bungie-api-ts/common';
 import type { GlobalAlert } from 'bungie-api-ts/core';
 import type {
@@ -57,8 +58,20 @@ export const getActivityHistory = async (
     );
 };
 
-export const getPostGameCarnageReport = async (activityId: string) => {
+export const getPostGameCarnageReport = async (activityId: string | number) => {
     return await fetchApi<ServerResponse<DestinyPostGameCarnageReportData>>(
         `Destiny2/Stats/PostGameCarnageReport/${activityId}/`
+    );
+};
+
+const cacheExpiration = 60 * 60 * 24 * 14; // 14 days
+export const getCachedPostGameCarnageReport = async (
+    activityId: string | number,
+    cache: CacheStorage
+) => {
+    return await cache.gset(
+        `pgcr:${activityId}`,
+        async () => await getPostGameCarnageReport(activityId).then(r => r.Response),
+        cacheExpiration
     );
 };
