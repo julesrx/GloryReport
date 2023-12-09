@@ -31,7 +31,8 @@ const { data: activities } = useLazyDatabaseData('details', () =>
         </NuxtLink>
 
         <div v-if="profile">
-            <Teleport to="#encounter">
+            <Teleport to="#profiles">
+                <div class="opacity-50">vs</div>
                 <ProfileCard :profile="profile![0]" :characters="profile![1]" rtl />
             </Teleport>
         </div>
