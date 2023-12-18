@@ -11,7 +11,6 @@ const onInput = (e: Event) => {
     <table class="w-full table-fixed">
         <thead>
             <tr>
-                <th class="table-cell table-left">#</th>
                 <th class="table-cell py-0 font-normal">
                     <input
                         id="search"

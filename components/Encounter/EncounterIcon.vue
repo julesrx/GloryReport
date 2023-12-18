@@ -14,5 +14,5 @@ const src = iconPath ? `https://bungie.net${iconPath}` : fallbackIcon;
 </script>
 
 <template>
-    <img class="block h-8 w-8" :src="src" loading="lazy" />
+    <img class="block h-10 w-10" :src="src" loading="lazy" />
 </template>
