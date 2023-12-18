@@ -1,15 +1,17 @@
 <script setup lang="ts">
+const player = useProfileStore();
 const route = useRoute();
 const db = useDatabase();
 
+provide(membershipIdInjectionKey, player.membershipTypeId![1]);
+
 const encounterMembershipTypeId = route.params.encounterMembershipTypeId as string;
+const [membershipType, membershipId] = splitMembershipTypeId(encounterMembershipTypeId);
 
 const { data: profile } = useLazyAsyncData(
     encounterMembershipTypeId,
     async () => {
-        const [membershipType, membershipId] = splitMembershipTypeId(encounterMembershipTypeId);
         const profile = await getProfile(membershipId, membershipType);
-
         return extractProfileResponseData(profile.Response);
     },
     { deep: false }
@@ -52,12 +54,9 @@ const {
         </div>
 
         <div v-if="activities">
-            <EncounterActivityItem
-                v-for="d in activities"
-                :key="d.instanceId"
-                v-memo="[d.instanceId]"
-                :instance-id="d.instanceId"
-            />
+            <Suspense v-for="d in activities" :key="d.instanceId">
+                <EncounterActivityItem :instance-id="d.instanceId" />
+            </Suspense>
 
             <button v-if="showLoadMore" type="button" :disabled="pending" @click="onLoadMore">
                 Load more

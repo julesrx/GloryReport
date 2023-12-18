@@ -1,3 +1,4 @@
+import { createDurationFormatter, createTimeAgoFormatter } from '@julesrx/utils';
 import type {
     DestinyCharacterComponent,
     DestinyProfileComponent,
@@ -7,10 +8,14 @@ import type { UserInfoCard } from 'bungie-api-ts/user';
 import { EncounterStanding } from '~/utils/types';
 
 const locale = 'en-US';
+
 export const dateTimeShortFormatter = new Intl.DateTimeFormat(locale, {
     dateStyle: 'short',
     timeStyle: 'short'
 });
+
+export const timeAgoFormatter = createTimeAgoFormatter();
+export const durationFormatter = createDurationFormatter();
 
 export const getUserDisplayName = (userInfo: UserInfoCard): string | null => {
     let displayName = userInfo.displayName;

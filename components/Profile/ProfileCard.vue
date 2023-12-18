@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { createDurationFormatter } from '@julesrx/utils';
 import type { DestinyCharacterComponent, DestinyProfileComponent } from 'bungie-api-ts/destiny2';
 
 const props = withDefaults(
@@ -10,8 +9,6 @@ const props = withDefaults(
     }>(),
     { rtl: false }
 );
-
-const durationFormatter = createDurationFormatter();
 
 const emblem = computed(() => `https://bungie.net${props.characters[0].emblemPath}`);
 
