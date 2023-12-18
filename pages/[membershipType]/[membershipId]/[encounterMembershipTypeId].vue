@@ -15,9 +15,23 @@ const { data: profile } = useLazyAsyncData(
     { deep: false }
 );
 
-const { data: activities } = useLazyDatabaseData('details', () =>
-    db.getEncounterInstanceIds(encounterMembershipTypeId)
-);
+const limit = ref(25);
+const showLoadMore = ref(true);
+const onLoadMore = () => {
+    limit.value += 25;
+    refresh();
+};
+
+const {
+    data: activities,
+    refresh,
+    pending
+} = useLazyDatabaseData('details', () => {
+    const acts = db.getEncounterInstanceIds(encounterMembershipTypeId, limit.value);
+    if (acts.length < limit.value) showLoadMore.value = false;
+
+    return acts;
+});
 </script>
 
 <template>
@@ -44,6 +58,10 @@ const { data: activities } = useLazyDatabaseData('details', () =>
                 v-memo="[d.instanceId]"
                 :instance-id="d.instanceId"
             />
+
+            <button v-if="showLoadMore" type="button" :disabled="pending" @click="onLoadMore">
+                Load more
+            </button>
         </div>
     </div>
 </template>

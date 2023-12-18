@@ -100,10 +100,13 @@ export default defineStore('db', () => {
         });
     };
 
-    const getEncounterInstanceIds = (membershipTypeId: string): EncounterDetailResult[] => {
+    const getEncounterInstanceIds = (
+        membershipTypeId: string,
+        limit = 25
+    ): EncounterDetailResult[] => {
         const res = db.exec(
-            'SELECT instanceId, period, standing FROM Encounters WHERE membershipTypeId = ? ORDER BY period DESC',
-            [membershipTypeId]
+            'SELECT instanceId, period, standing FROM Encounters WHERE membershipTypeId = ? ORDER BY period DESC LIMIT ?',
+            [membershipTypeId, limit]
         );
 
         if (!res?.length) return [];
