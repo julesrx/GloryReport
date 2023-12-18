@@ -8,30 +8,25 @@ const onInput = (e: Event) => {
 </script>
 
 <template>
-    <table class="w-full table-fixed">
-        <thead>
-            <tr>
-                <th class="table-cell py-0 font-normal">
-                    <input
-                        id="search"
-                        :value="search"
-                        class="block bg-transparent h-full w-full focus:outline-none placeholder-stone-600"
-                        type="search"
-                        placeholder="Search..."
-                        @input="onInput"
-                    />
-                </th>
-                <th class="table-cell table-right">Hits</th>
-            </tr>
-        </thead>
+    <div class="flex justify-between w-full items-center">
+        <input
+            id="search"
+            :value="search"
+            class="bg-transparent h-8 flex-grow focus:outline-none placeholder-stone-600"
+            type="search"
+            placeholder="Search..."
+            @input="onInput"
+        />
 
-        <tbody v-if="encounters">
-            <EncounterItem
-                v-for="(encounter, i) in encounters"
-                :key="encounter.membershipTypeId"
-                :encounter="encounter"
-                :index="i"
-            />
-        </tbody>
-    </table>
+        <div class="w-20 text-center">Hits</div>
+    </div>
+
+    <div v-if="encounters" class="divide-y divide-stone-800">
+        <EncounterItem
+            v-for="(encounter, i) in encounters"
+            :key="encounter.membershipTypeId"
+            :encounter="encounter"
+            :index="i"
+        />
+    </div>
 </template>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 const db = useDatabase();
 
+const search = ref('');
+
 const { data, refresh } = useLazyDatabaseData('encounters', () =>
     db.getTopEncounters(search.value)
 );
 
-const search = ref('');
 watchDebounced(search, () => refresh(), { debounce: 250 });
 </script>
 
