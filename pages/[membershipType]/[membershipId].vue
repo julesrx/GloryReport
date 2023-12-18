@@ -5,8 +5,8 @@ const route = useRoute();
 const profile = useProfileStore();
 const activities = useActivitiesStore();
 const reports = useReportStore();
-const progress = useProgressStore();
 const abortcontroller = useAbortController();
+const loading = useLoadingStore();
 
 const membershipId = route.params.membershipId as string;
 const membershipType = +route.params.membershipType as BungieMembershipType;
@@ -23,13 +23,9 @@ watchOnce(
     }
 );
 
-const showAbort = computed(
-    () => !activities.done || activities.activityCount !== reports.fetchedCount
-);
+const showAbort = computed(() => loading.loading);
 const abort = () => abortcontroller.abort();
 onUnmounted(() => abort());
-
-progress.watch();
 </script>
 
 <template>

@@ -1,6 +1,10 @@
+<script setup lang="ts">
+const loading = useLoadingStore();
+</script>
+
 <template>
     <div class="py-2 lg:pb-2 lg:pt-4 px-2 lg:px-0">
-        <ProgressBar />
+        <LoadingIcon v-if="loading.loading" />
         <GlobalAlerts />
 
         <main class="mx-auto max-w-screen-lg">
