@@ -34,6 +34,6 @@ const imageSize = 'h-12 w-12';
             <div class="font-semibold">{{ displayName }}</div>
         </div>
 
-        <div class="w-20 items-center flex justify-center">{{ encounter.count }}</div>
+        <div class="w-20 items-center flex justify-end">{{ encounter.count }}</div>
     </NuxtLink>
 </template>
