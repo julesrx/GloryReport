@@ -45,13 +45,13 @@ const definition = computedAsync<DestinyActivityModeDefinition | null>(async () 
 
         <div>
             <div>{{ definition?.displayProperties.name }}</div>
-            <div class="opacity-70 text-sm">{{ details?.displayProperties.name }}</div>
+            <div class="text-white-muted text-sm">{{ details?.displayProperties.name }}</div>
         </div>
 
         <div class="flex-1"></div>
         <div class="text-end">
             <div>{{ win ? 'Victory' : 'Defeat' }}</div>
-            <div class="opacity-70 text-sm">{{ date }}</div>
+            <div class="text-white-muted text-sm">{{ date }}</div>
         </div>
     </NuxtLink>
 </template>

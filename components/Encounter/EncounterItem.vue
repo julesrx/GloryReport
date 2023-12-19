@@ -13,13 +13,13 @@ const imageSize = 'h-12 w-12';
 
 <template>
     <NuxtLink
-        class="flex justify-between py-2 hover:bg-stone-800"
+        class="flex justify-between py-2 hover:bg-black-muted"
         :to="`/${membershipType}/${membershipId}/${encounter.membershipTypeId}`"
     >
         <div class="flex-grow flex items-center space-x-2">
             <Suspense>
                 <template #fallback>
-                    <div :class="[imageSize, 'bg-stone-500']" />
+                    <div :class="[imageSize, 'bg-black-muted']" />
                 </template>
 
                 <EncounterIcon
@@ -30,7 +30,7 @@ const imageSize = 'h-12 w-12';
                 />
             </Suspense>
 
-            <div class="opacity-70 text-center w-6">{{ index + 1 }}</div>
+            <div class="text-white-muted text-center w-6">{{ index + 1 }}</div>
             <div class="font-semibold">{{ displayName }}</div>
         </div>
 

@@ -29,15 +29,15 @@ onUnmounted(() => abort());
 </script>
 
 <template>
-    <div v-if="pending">Loading profile...</div>
+    <div v-if="pending" class="text-white-muted">Loading profile...</div>
     <div v-else>
         <div id="profiles" class="flex justify-between items-center">
             <ProfileCard :profile="profile.profile!" :characters="profile.characters!" />
         </div>
 
-        <hr class="my-4 border-stone-800" />
+        <hr class="my-4 border-black-muted" />
 
-        <div class="flex justify-between opacity-50 text-sm">
+        <div class="flex justify-between text-white-muted text-sm">
             <div>Found {{ activities.activityCount }} activities</div>
             <button v-if="showAbort" type="button" @click="abort">Abort</button>
         </div>

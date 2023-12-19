@@ -39,7 +39,7 @@ const {
 <template>
     <div class="space-y-2">
         <NuxtLink
-            class="opacity-50 text-sm mb-4"
+            class="text-white-muted text-sm mb-4"
             :to="`/${route.params.membershipType}/${route.params.membershipId}`"
         >
             <Icon name="material-symbols-light:keyboard-backspace" />
@@ -48,7 +48,7 @@ const {
 
         <div v-if="profile">
             <Teleport to="#profiles">
-                <div class="opacity-50">vs</div>
+                <div class="text-white-muted">vs</div>
                 <ProfileCard :profile="profile![0]" :characters="profile![1]" rtl />
             </Teleport>
         </div>
@@ -62,7 +62,7 @@ const {
                 v-if="showLoadMore"
                 type="button"
                 :disabled="pending"
-                class="w-full py-4 opacity-70"
+                class="w-full py-4 text-white-muted"
                 @click="onLoadMore"
             >
                 Load more

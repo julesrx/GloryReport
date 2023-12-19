@@ -8,12 +8,12 @@ const onInput = (e: Event) => {
 </script>
 
 <template>
-    <div class="divide-y divide-stone-800">
+    <div class="divide-y divide-black-muted">
         <div class="flex justify-between w-full items-center my-2">
             <input
                 id="search"
                 :value="search"
-                class="bg-transparent h-8 flex-grow focus:outline-none placeholder-stone-600"
+                class="bg-transparent h-8 flex-grow focus:outline-none placeholder-white-muted"
                 type="search"
                 placeholder="Search..."
                 @input="onInput"

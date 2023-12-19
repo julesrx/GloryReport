@@ -24,7 +24,7 @@ watchDebounced(
     { debounce: 500 }
 );
 
-const resultClass = 'bg-stone-800 py-1 px-2 shadow block w-full rounded';
+const resultClass = 'bg-black-muted py-1 px-2 shadow block w-full rounded';
 </script>
 
 <template>
@@ -33,7 +33,7 @@ const resultClass = 'bg-stone-800 py-1 px-2 shadow block w-full rounded';
             id="gamertag"
             v-model="search"
             type="search"
-            class="placeholder-stone-600 bg-stone-800 py-1 px-2 rounded shadow block w-full focus:outline-none"
+            class="placeholder-white-muted bg-black-muted py-1 px-2 rounded shadow block w-full focus:outline-none"
             placeholder="Gamertag"
             autofocus
         />
@@ -45,7 +45,7 @@ const resultClass = 'bg-stone-800 py-1 px-2 shadow block w-full rounded';
                 <li v-for="r in results" :key="getMembershipTypeId(r)">
                     <NuxtLink
                         :to="`/${r.membershipType}/${r.membershipId}`"
-                        :class="[resultClass, 'hover:bg-stone-700 flex items-center space-x-2']"
+                        :class="[resultClass, 'flex items-center space-x-2']"
                     >
                         <img
                             :src="`https://bungie.net${r.iconPath}`"

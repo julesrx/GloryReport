@@ -38,11 +38,11 @@ const link = computed(() => {
             <h2>
                 <NuxtLink :to="link" target="_blank" class="space-x-1">
                     <span class="text-2xl font-bold">{{ split[0] }}</span>
-                    <span v-if="split[1]" class="opacity-50">#{{ split[1] }}</span>
+                    <span v-if="split[1]" class="text-white-muted">#{{ split[1] }}</span>
                 </NuxtLink>
             </h2>
 
-            <div class="text-sm opacity-50">played {{ durationPlayed }}</div>
+            <div class="text-sm text-white-muted">played {{ durationPlayed }}</div>
         </div>
     </div>
 </template>
