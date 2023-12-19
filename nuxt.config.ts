@@ -14,7 +14,10 @@ export default defineNuxtConfig({
         }
     },
     eslint: { fix: true, failOnError: true },
-    typescript: { typeCheck: true, strict: true },
+    typescript: {
+        typeCheck: false, // TODO: switch back to true => https://github.com/nuxt-modules/icon/issues/117
+        strict: true
+    },
     appConfig: { title },
     app: {
         head: {
