@@ -3,6 +3,7 @@ import { BungieMembershipType, type ServerResponse } from 'bungie-api-ts/common'
 import type { GlobalAlert } from 'bungie-api-ts/core';
 import type {
     DestinyActivityHistoryResults,
+    DestinyManifest,
     DestinyPostGameCarnageReportData,
     DestinyProfileResponse
 } from 'bungie-api-ts/destiny2';
@@ -74,4 +75,8 @@ export const getCachedPostGameCarnageReport = async (
         async () => await getPostGameCarnageReport(activityId).then(r => r.Response),
         cacheExpiration
     );
+};
+
+export const getDestinyManifest = async () => {
+    return await fetchApi<ServerResponse<DestinyManifest>>('Destiny2/Manifest/');
 };

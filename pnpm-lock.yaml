@@ -14,6 +14,9 @@ dependencies:
   '@pinia/nuxt':
     specifier: ^0.5.1
     version: 0.5.1(typescript@5.3.2)(vue@3.3.10)
+  idb-keyval:
+    specifier: ^6.2.1
+    version: 6.2.1
   nuxt-icon:
     specifier: ^0.6.6
     version: 0.6.6(nuxt@3.8.2)(vite@5.0.10)(vue@3.3.10)
@@ -26,11 +29,14 @@ dependencies:
   sql.js:
     specifier: ^1.9.0
     version: 1.9.0
+  unstorage:
+    specifier: ^1.10.1
+    version: 1.10.1(idb-keyval@6.2.1)
 
 devDependencies:
   '@nuxt/devtools':
     specifier: ^1.0.4
-    version: 1.0.4(nuxt@3.8.2)(vite@5.0.10)
+    version: 1.0.4(idb-keyval@6.2.1)(nuxt@3.8.2)(vite@5.0.10)
   '@nuxtjs/eslint-config-typescript':
     specifier: ^12.1.0
     version: 12.1.0(eslint@8.55.0)(typescript@5.3.2)
@@ -63,7 +69,7 @@ devDependencies:
     version: 5.0.1(eslint-config-prettier@9.1.0)(eslint@8.55.0)(prettier@3.1.0)
   nuxt:
     specifier: ^3.8.2
-    version: 3.8.2(eslint@8.55.0)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24)
+    version: 3.8.2(eslint@8.55.0)(idb-keyval@6.2.1)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24)
   postcss:
     specifier: ^8.4.31
     version: 8.4.32
@@ -1087,7 +1093,7 @@ packages:
     dependencies:
       idb-keyval: 6.2.1
       typescript: 5.3.2
-      unstorage: 1.10.1
+      unstorage: 1.10.1(idb-keyval@6.2.1)
     dev: false
 
   /@kwsites/file-exists@1.1.1:
@@ -1226,7 +1232,7 @@ packages:
       '@nuxt/kit': 3.8.2
       '@nuxt/schema': 3.8.2
       execa: 7.2.0
-      nuxt: 3.8.2(eslint@8.55.0)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24)
+      nuxt: 3.8.2(eslint@8.55.0)(idb-keyval@6.2.1)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24)
       vite: 5.0.10
     transitivePeerDependencies:
       - rollup
@@ -1246,7 +1252,7 @@ packages:
       rc9: 2.1.1
       semver: 7.5.4
 
-  /@nuxt/devtools@1.0.4(nuxt@3.8.2)(vite@5.0.10):
+  /@nuxt/devtools@1.0.4(idb-keyval@6.2.1)(nuxt@3.8.2)(vite@5.0.10):
     resolution: {integrity: sha512-G1Oo9+TaOYzePIXpNX+Zzalw/rJyIZKZpZmXfzolPlOJSA1i0JKzZX6Z7iQHdqPwNJ8t+HnVaF4PghPIpo1kwg==}
     hasBin: true
     peerDependencies:
@@ -1272,8 +1278,8 @@ packages:
       launch-editor: 2.6.1
       local-pkg: 0.5.0
       magicast: 0.3.2
-      nitropack: 2.8.1
-      nuxt: 3.8.2(eslint@8.55.0)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24)
+      nitropack: 2.8.1(idb-keyval@6.2.1)
+      nuxt: 3.8.2(eslint@8.55.0)(idb-keyval@6.2.1)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24)
       nypm: 0.3.3
       ofetch: 1.3.3
       ohash: 1.1.3
@@ -2511,7 +2517,7 @@ packages:
       '@vueuse/core': 10.6.1(vue@3.3.10)
       '@vueuse/metadata': 10.6.1
       local-pkg: 0.5.0
-      nuxt: 3.8.2(eslint@8.55.0)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24)
+      nuxt: 3.8.2(eslint@8.55.0)(idb-keyval@6.2.1)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24)
       vue-demi: 0.14.6(vue@3.3.10)
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -4761,7 +4767,6 @@ packages:
 
   /idb-keyval@6.2.1:
     resolution: {integrity: sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==}
-    dev: false
 
   /ignore-walk@6.0.4:
     resolution: {integrity: sha512-t7sv42WkwFkyKbivUCglsQW5YWMskWtbEf4MNKX5u/CCWHKSPzN4FtBQGsQZgCLbxOzpVlcbWVK5KB3auIOjSw==}
@@ -5523,7 +5528,7 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: true
 
-  /nitropack@2.8.1:
+  /nitropack@2.8.1(idb-keyval@6.2.1):
     resolution: {integrity: sha512-pODv2kEEzZSDQR+1UMXbGyNgMedUDq/qUomtiAnQKQvLy52VGlecXO1xDfH3i0kP1yKEcKTnWsx1TAF5gHM7xQ==}
     engines: {node: ^16.11.0 || >=17.0.0}
     hasBin: true
@@ -5596,7 +5601,7 @@ packages:
       unctx: 2.3.1
       unenv: 1.8.0
       unimport: 3.6.0(rollup@4.6.1)
-      unstorage: 1.10.1
+      unstorage: 1.10.1(idb-keyval@6.2.1)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -5795,7 +5800,7 @@ packages:
       - vue
     dev: false
 
-  /nuxt@3.8.2(eslint@8.55.0)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24):
+  /nuxt@3.8.2(eslint@8.55.0)(idb-keyval@6.2.1)(typescript@5.3.2)(vite@5.0.10)(vue-tsc@1.8.24):
     resolution: {integrity: sha512-HUAyifmqTs2zcQBGvcby3KNs2pBAk+l7ZbLjD1oCNqQQ+wBuZ1qgLC4Ebu++y4g3o3Y8WAWSvpafbKRLQZziPw==}
     engines: {node: ^14.18.0 || >=16.10.0}
     hasBin: true
@@ -5809,7 +5814,7 @@ packages:
         optional: true
     dependencies:
       '@nuxt/devalue': 2.0.2
-      '@nuxt/devtools': 1.0.4(nuxt@3.8.2)(vite@5.0.10)
+      '@nuxt/devtools': 1.0.4(idb-keyval@6.2.1)(nuxt@3.8.2)(vite@5.0.10)
       '@nuxt/kit': 3.8.2
       '@nuxt/schema': 3.8.2
       '@nuxt/telemetry': 2.5.3
@@ -5838,7 +5843,7 @@ packages:
       knitwork: 1.0.0
       magic-string: 0.30.5
       mlly: 1.4.2
-      nitropack: 2.8.1
+      nitropack: 2.8.1(idb-keyval@6.2.1)
       nuxi: 3.10.0
       nypm: 0.3.3
       ofetch: 1.3.3
@@ -7687,7 +7692,7 @@ packages:
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.6.1
 
-  /unstorage@1.10.1:
+  /unstorage@1.10.1(idb-keyval@6.2.1):
     resolution: {integrity: sha512-rWQvLRfZNBpF+x8D3/gda5nUCQL2PgXy2jNG4U7/Rc9BGEv9+CAJd0YyGCROUBKs9v49Hg8huw3aih5Bf5TAVw==}
     peerDependencies:
       '@azure/app-configuration': ^1.4.1
@@ -7732,6 +7737,7 @@ packages:
       chokidar: 3.5.3
       destr: 2.0.2
       h3: 1.9.0
+      idb-keyval: 6.2.1
       ioredis: 5.3.2
       listhen: 1.5.5
       lru-cache: 10.1.0

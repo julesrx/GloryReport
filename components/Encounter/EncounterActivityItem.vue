@@ -8,6 +8,7 @@ const data = await getCachedPostGameCarnageReport(props.instanceId, cache);
 
 const entry = data.entries.find(e => e.player.destinyUserInfo.membershipId === membershipId);
 
+const date = dateTimeShortFormatter.format(new Date(data.period));
 const win = entry && entry.values.standing.basic.value === 0;
 const score = entry && entry.score.basic.displayValue;
 const kd = entry && entry.values.killsDeathsRatio.basic.displayValue;
@@ -18,13 +19,17 @@ const kda = entry && entry.values.killsDeathsAssists.basic.displayValue;
     <NuxtLink
         :to="`https://www.bungie.net/7/en/Pgcr/${instanceId}`"
         target="_blank"
-        class="flex h-12"
+        class="flex justify-between"
     >
-        <div>win : {{ win }}</div>
-        <div>score : {{ score }}</div>
-        <div>kd : {{ kd }}</div>
-        <div>kda : {{ kda }}</div>
+        <div>
+            <div>score : {{ score }}</div>
+            <div>kd : {{ kd }}</div>
+            <div>kda : {{ kda }}</div>
+        </div>
 
-        <DateDistance :period="data.period" />
+        <div class="text-end">
+            <div>{{ win ? 'Victory' : 'Defeat' }}</div>
+            <div>{{ date }}</div>
+        </div>
     </NuxtLink>
 </template>
