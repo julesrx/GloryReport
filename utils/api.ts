@@ -1,6 +1,5 @@
 import type { CacheStorage } from '@julesrx/utils';
 import { BungieMembershipType, type ServerResponse } from 'bungie-api-ts/common';
-import type { GlobalAlert } from 'bungie-api-ts/core';
 import type {
     DestinyActivityHistoryResults,
     DestinyManifest,
@@ -16,10 +15,6 @@ const fetchApi = $fetch.create({
         if (!request.toString().endsWith('/')) throw new Error('Aborted');
     }
 });
-
-export const getGlobalAlerts = async () => {
-    return await fetchApi<ServerResponse<GlobalAlert[]>>('GlobalAlerts/');
-};
 
 export const searchByGlobalNamePost = async (displayNamePrefix: string) => {
     const body: UserSearchPrefixRequest = { displayNamePrefix };

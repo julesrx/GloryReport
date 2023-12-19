@@ -1,7 +1,5 @@
 <template>
     <main class="px-2 lg:px-0">
-        <GlobalAlerts />
-
         <slot />
 
         <Teleport to="body">

@@ -37,7 +37,7 @@ const {
 </script>
 
 <template>
-    <div>
+    <div class="space-y-2">
         <NuxtLink
             class="opacity-50 text-sm mb-4"
             :to="`/${route.params.membershipType}/${route.params.membershipId}`"
@@ -53,12 +53,18 @@ const {
             </Teleport>
         </div>
 
-        <div v-if="activities">
+        <div v-if="activities" class="space-y-2">
             <Suspense v-for="d in activities" :key="d.instanceId">
                 <EncounterActivityItem :instance-id="d.instanceId" />
             </Suspense>
 
-            <button v-if="showLoadMore" type="button" :disabled="pending" @click="onLoadMore">
+            <button
+                v-if="showLoadMore"
+                type="button"
+                :disabled="pending"
+                class="w-full py-4 opacity-70"
+                @click="onLoadMore"
+            >
                 Load more
             </button>
         </div>
