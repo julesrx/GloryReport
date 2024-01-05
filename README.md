@@ -7,6 +7,8 @@ Built with [Nuxt](https://nuxt.com), and [Tailwind CSS](https://tailwindcss.com)
 
 ## How to run
 
+Before doing anything, you need to configure an api key in the `.env` file. You can find it on [this page](https://www.bungie.net/en/Application).
+
 ```bash
 git clone git@github.com:julesrx/glory.report.git
 cd glory.report
