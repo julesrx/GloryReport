@@ -38,12 +38,12 @@ onUnmounted(() => abort());
         <hr class="my-4 border-black-muted" />
 
         <div class="flex justify-between text-white-muted text-sm">
-            <div>
-                Found {{ activities.activityCount }} activities
-                <template v-if="loading.loading"
-                    >(fetching... <Icon name="line-md:loading-loop" size="14" />)
-                </template>
+            <div v-if="loading.loading">
+                Analyzing {{ activities.activityCount }} activities
+                <Icon name="line-md:loading-loop" size="14" />
             </div>
+            <div v-else>Analyzed {{ activities.activityCount }} activities</div>
+
             <button v-if="showAbort" type="button" @click="abort">Abort</button>
         </div>
 
