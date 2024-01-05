@@ -39,7 +39,7 @@ const {
 <template>
     <div class="space-y-2">
         <NuxtLink
-            class="text-white-muted text-sm mb-4"
+            class="text-white-muted text-sm mb-4 underline"
             :to="`/${route.params.membershipType}/${route.params.membershipId}`"
         >
             <Icon name="material-symbols-light:keyboard-backspace" />

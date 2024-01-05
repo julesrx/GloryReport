@@ -31,14 +31,19 @@ onUnmounted(() => abort());
 <template>
     <div v-if="pending" class="text-white-muted">Loading profile...</div>
     <div v-else>
-        <div id="profiles" class="flex justify-between items-center">
+        <div id="profiles" class="flex justify-between items-center md:flex-row flex-col">
             <ProfileCard :profile="profile.profile!" :characters="profile.characters!" />
         </div>
 
         <hr class="my-4 border-black-muted" />
 
         <div class="flex justify-between text-white-muted text-sm">
-            <div>Found {{ activities.activityCount }} activities</div>
+            <div>
+                Found {{ activities.activityCount }} activities
+                <template v-if="loading.loading"
+                    >(fetching... <Icon name="line-md:loading-loop" size="14" />)
+                </template>
+            </div>
             <button v-if="showAbort" type="button" @click="abort">Abort</button>
         </div>
 

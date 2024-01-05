@@ -31,7 +31,11 @@ const link = computed(() => {
 <template>
     <div :class="{ 'flex items-center space-x-2': true, 'flex-row-reverse space-x-reverse': rtl }">
         <NuxtLink :to="link" target="_blank" class="space-x-1">
-            <img :src="emblem" :alt="displayName ?? 'Anonymous'" class="h-24 w-24" />
+            <img
+                :src="emblem"
+                :alt="displayName ?? 'Anonymous'"
+                class="md:h-24 md:w-24 h-20 w-20"
+            />
         </NuxtLink>
 
         <div :class="{ 'flex flex-col justify-center': true, 'items-end': rtl }">
