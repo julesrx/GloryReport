@@ -1,5 +1,4 @@
 {
-    "name": "glory.report",
     "private": true,
     "type": "module",
     "author": "julesrx (https://julesrx.fr)",
@@ -22,7 +21,7 @@
         "unstorage": "^1.10.1"
     },
     "devDependencies": {
-        "@nuxt/devtools": "^1.0.6",
+        "@nuxt/devtools": "latest",
         "@nuxtjs/eslint-config-typescript": "^12.1.0",
         "@nuxtjs/eslint-module": "^4.1.0",
         "@types/sql.js": "^1.4.9",
