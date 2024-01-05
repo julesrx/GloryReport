@@ -15,8 +15,14 @@ watchDebounced(
                 return;
             }
 
-            const res = await searchByGlobalNamePost(search);
-            results.value = res.Response.searchResults.map(l => l.destinyMemberships[0]);
+            if (search.includes('#')) {
+                const split = search.split('#');
+                const res = await searchDestinyPlayerByBungieName(split[0], Number(split[1]));
+                results.value = res.Response;
+            } else {
+                const res = await searchByGlobalNamePost(search);
+                results.value = res.Response.searchResults.map(l => l.destinyMemberships[0]);
+            }
         } finally {
             searching.value = false;
         }
@@ -34,7 +40,7 @@ const resultClass = 'bg-black-muted py-1 px-2 shadow block w-full rounded';
             v-model="search"
             type="search"
             class="placeholder-white-muted bg-black-muted py-1 px-2 rounded shadow block w-full focus:outline-none"
-            placeholder="Gamertag"
+            placeholder="BungieName#1234"
             autofocus
         />
 

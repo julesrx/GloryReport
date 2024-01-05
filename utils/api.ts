@@ -6,7 +6,12 @@ import type {
     DestinyPostGameCarnageReportData,
     DestinyProfileResponse
 } from 'bungie-api-ts/destiny2';
-import type { UserSearchResponse, UserSearchPrefixRequest } from 'bungie-api-ts/user';
+import type {
+    UserSearchResponse,
+    UserSearchPrefixRequest,
+    ExactSearchRequest,
+    UserInfoCard
+} from 'bungie-api-ts/user';
 
 const fetchApi = $fetch.create({
     baseURL: 'https://stats.bungie.net/Platform/',
@@ -22,6 +27,17 @@ export const searchByGlobalNamePost = async (displayNamePrefix: string) => {
         method: 'POST',
         body
     });
+};
+
+export const searchDestinyPlayerByBungieName = async (
+    displayName: string,
+    displayNameCode: number
+) => {
+    const body: ExactSearchRequest = { displayName, displayNameCode };
+    return await fetchApi<ServerResponse<UserInfoCard[]>>(
+        'Destiny2/SearchDestinyPlayerByBungieName/-1/',
+        { method: 'POST', body }
+    );
 };
 
 export const getProfile = async (
