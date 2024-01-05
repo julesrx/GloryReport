@@ -49,7 +49,7 @@ const {
         <div v-if="profile">
             <Teleport to="#profiles">
                 <div class="text-white-muted">vs</div>
-                <ProfileCard :profile="profile![0]" :characters="profile![1]" rtl />
+                <ProfileCard :profile="profile[0]" :characters="profile[1]" rtl />
             </Teleport>
         </div>
 
