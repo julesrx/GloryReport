@@ -21,7 +21,9 @@ watchDebounced(
                 results.value = res.Response;
             } else {
                 const res = await searchByGlobalNamePost(search);
-                results.value = res.Response.searchResults.map(l => l.destinyMemberships[0]);
+                results.value = res.Response.searchResults
+                    .filter(r => r.destinyMemberships && r.destinyMemberships.length)
+                    .map(l => l.destinyMemberships[0]);
             }
         } finally {
             searching.value = false;
