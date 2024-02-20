@@ -24,7 +24,7 @@ const durationPlayed = computed(() => {
 
 const link = computed(() => {
     const membershipTypeId = splitMembershipTypeId(getMembershipTypeId(props.profile.userInfo));
-    return `https://www.bungie.net/7/en/User/Profile/${membershipTypeId[0]}/${membershipTypeId[1]}`;
+    return `https://destinytracker.com/destiny-2/profile/${membershipTypeId[0]}/${membershipTypeId[1]}`;
 });
 </script>
 

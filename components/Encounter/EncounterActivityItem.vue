@@ -33,7 +33,7 @@ const definition = computedAsync<DestinyActivityModeDefinition | null>(async () 
 
 <template>
     <NuxtLink
-        :to="`https://www.bungie.net/7/en/Pgcr/${instanceId}`"
+        :to="`https://destinytracker.com/destiny-2/pgcr/${instanceId}`"
         target="_blank"
         class="flex items-center space-x-2"
     >
