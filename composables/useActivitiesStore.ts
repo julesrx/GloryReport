@@ -22,16 +22,26 @@ export default defineStore('activities', () => {
     };
 
     const loadCharacter = async (character: DestinyCharacterComponent, page: number) => {
-        const res = await getActivityHistory(
-            character.membershipId,
-            character.membershipType,
-            character.characterId,
-            abortcontroller.signal,
-            page
+        const res = await Promise.all(
+            new Array(3)
+                .fill(undefined)
+                .map((_, i) =>
+                    getActivityHistory(
+                        character.membershipId,
+                        character.membershipType,
+                        character.characterId,
+                        abortcontroller.signal,
+                        page + i
+                    )
+                )
         );
 
-        const acts = res.Response.activities;
-        if (!acts?.length) {
+        const acts = res
+            .map(r => r.Response.activities)
+            .filter(a => !!a)
+            .flat(1);
+
+        if (!acts.length) {
             removeLoading(character.characterId);
             return;
         }
@@ -41,7 +51,7 @@ export default defineStore('activities', () => {
         }
 
         activityCount.value += acts.length;
-        loadCharacter(character, page + 1);
+        loadCharacter(character, page + 3);
     };
 
     return { load, activityCount, done };
