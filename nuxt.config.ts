@@ -6,17 +6,12 @@ export default defineNuxtConfig({
     devtools: { enabled: true },
     ssr: false,
     css: ['@fontsource-variable/inter/index.css', '~/assets/main.css'],
-    modules: ['@vueuse/nuxt', '@pinia/nuxt', '@nuxtjs/eslint-module', '@nuxt/icon'],
+    modules: ['@vueuse/nuxt', '@pinia/nuxt', '@nuxt/icon'],
     postcss: {
         plugins: {
             tailwindcss: {},
             autoprefixer: {}
         }
-    },
-    eslint: { fix: true, failOnError: true },
-    typescript: {
-        typeCheck: false, // TODO: switch back to true => https://github.com/nuxt-modules/icon/issues/117
-        strict: true
     },
     appConfig: { title },
     app: {
