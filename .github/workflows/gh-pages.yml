@@ -8,16 +8,19 @@ jobs:
     build:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - name: Checkout
+              uses: actions/checkout@v4
 
-            - uses: actions/setup-node@v4
+            - name: Setup Node
+              uses: actions/setup-node@v4
               with:
                   node-version: 20
 
-            - uses: pnpm/action-setup@v2
+            - name: Install deps
+              uses: pnpm/action-setup@v4
               with:
                   run_install: true
-                  version: 8
+                  version: 9
 
             - name: Create env file
               run: echo "VITE_BUNGIE_API_KEY=${{ secrets.API_KEY }}" > .env
@@ -25,7 +28,8 @@ jobs:
             - name: Build
               run: pnpm build
 
-            - uses: peaceiris/actions-gh-pages@v3
+            - name: Deploy
+              uses: peaceiris/actions-gh-pages@v4
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   publish_dir: dist
